@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import isPlainObject from 'lodash.isplainobject';
 
 
 /**
@@ -13,7 +13,7 @@ export default function applyMiddlewareAsync(...middlewares) {
     let length = middlewares.length;
     let middlewareAPI = length > 0 ? middlewares[length - 1] : undefined;
 
-    middlewareAPI = _.isPlainObject(middlewareAPI) ? (length--, middlewareAPI) : undefined;
+    middlewareAPI = isPlainObject(middlewareAPI) ? (length--, middlewareAPI) : undefined;
     middlewares = middlewares.slice(0, length);
 
     const chain = middlewares.map(middleware => middleware(middlewareAPI));

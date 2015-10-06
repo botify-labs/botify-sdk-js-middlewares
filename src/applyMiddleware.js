@@ -1,6 +1,6 @@
-import _ from 'lodash';
+import mapValues from 'lodash.mapvalues';
+import endsWith from 'lodash.endswith';
 
-import { endsWith } from './utils/common';
 import applyMiddlewareAsync from './utils/applyMiddlewareAsync';
 
 
@@ -12,7 +12,7 @@ import applyMiddlewareAsync from './utils/applyMiddlewareAsync';
  */
 export default function applyMiddleware(...middlewares) {
   return sdk => {
-    return _.mapValues(sdk, (value, key) => {
+    return mapValues(sdk, (value, key) => {
       const isController = endsWith(key, 'Controller');
       return isController ? applyMiddlewareController(...middlewares)(value) : value;
     });
@@ -21,7 +21,7 @@ export default function applyMiddleware(...middlewares) {
 
 export function applyMiddlewareController(...middlewares) {
   return controller => {
-    return _.mapValues(controller, (operation, operationId) => {
+    return mapValues(controller, (operation, operationId) => {
       const middlewareAPI = {
         operationId,
         operation,
