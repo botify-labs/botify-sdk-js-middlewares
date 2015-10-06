@@ -43,7 +43,6 @@ describe('applyMiddleware', () => {
       expect(callback.callCount).toEqual(i + 1);
       expect(callback.getCall(i).args[0]).toEqual(output);
     });
-    expect(sdk.config).toEqual(baseSdk.config);
   });
 
   it('must compose multiples middlewares', () => {
@@ -66,6 +65,38 @@ describe('applyMiddleware', () => {
       expect(callback.callCount).toEqual(i + 1);
       expect(callback.getCall(i).args[0]).toEqual(output);
     });
+  });
+
+  it('must not change initial sdk', () => {
+    const baseSdk = {
+      config: {a: 'a', b: 'b'},
+      multController: {
+        mult2: (x, callback) => callback(x * 2),
+      },
+    };
+    const sdk = applyMiddleware(add3ToInput, add3ToOutput)(baseSdk);
+    let callback = sinon.spy();
+    const tests = [
+      {input: 1, output: 2},
+      {input: 2, output: 4},
+      {input: 5, output: 10},
+    ];
+
+    tests.forEach(({input, output}, i) => {
+      baseSdk.multController.mult2(input, callback);
+      expect(callback.callCount).toEqual(i + 1);
+      expect(callback.getCall(i).args[0]).toEqual(output);
+    });
+  });
+
+  it('must not affect not Controller properties', () => {
+    const baseSdk = {
+      config: {a: 'a', b: 'b'},
+      multController: {
+        mult2: (x, callback) => callback(x * 2),
+      },
+    };
+    const sdk = applyMiddleware(add3ToInput, add3ToOutput)(baseSdk);
     expect(sdk.config).toEqual(baseSdk.config);
   });
 });

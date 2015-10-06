@@ -103,4 +103,21 @@ describe('applyMiddlewareAsync', () => {
     expect(middleware2.callCount).toEqual(1);
     expect(middleware2.getCall(0).args[0]).toEqual(middlewareAPI);
   });
+
+  it('must not change initial func', () => {
+    const baseFunc = (x, callback) => callback(x * 2);
+    const func = applyMiddlewareAsync(add3ToInput, add3ToOutput)(baseFunc);
+    let callback = sinon.spy();
+    const tests = [
+      {input: 1, output: 2},
+      {input: 2, output: 4},
+      {input: 5, output: 10},
+    ];
+
+    tests.forEach(({input, output}, i) => {
+      baseFunc(input, callback);
+      expect(callback.callCount).toEqual(i + 1);
+      expect(callback.getCall(i).args[0]).toEqual(output);
+    });
+  });
 });
