@@ -36,8 +36,8 @@ sdk.ProjectController.getProjets(userId, (error, result) => {
 
 ## Documentation
 
-- [Introduction](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/introduction)
-- [How to write your own middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/howToWriteYourOwnMiddleware)
+- [Introduction](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/introduction.md)
+- [How to write your own middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/docs/howToWriteYourOwnMiddleware.md)
 - [Middlewares docs](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/middlewares)
 
 
