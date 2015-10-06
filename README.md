@@ -1,34 +1,48 @@
-# botify-sdk-jsplus
+# botify-sdk-middlewares
 
-Botify JS SDK Enhanced
+This package contains multiple middlewares in order to customize and optimize the behaviour of the Botify SDK,
+including local storage caching, request batching, api result post processing.
+
+
+## Influences
+
+The middleware pattern used in this package has been greated influenced by [Redux](https://github.com/rackt/redux)
+
+
+## Installation
+```
+npm install --save botify-sdk-middlewares
+```
+
+You’ll also need the Botify SDK (core).
+```
+npm install --save botify-sdk
+```
+
+## Usage
+```JS
+import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
+import sdk from 'botify-sdk';
+
+sdk = applyMiddleware(
+  middlewares.apiError,
+  middlewares.lscache
+)(sdk);
+
+sdk.ProjectController.getProjets(userId, (error, result) => {
+
+});
+```
+
+## Documentation
+
+- [Introduction](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/introduction)
+- [How to write your own middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/howToWriteYourOwnMiddleware)
+- [Middlewares docs](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/middlewares)
+
 
 ## Commands
 
-The gulp cli can be accessed via `npm run gulp` or simply `gulp` if you have installed gulp globally (`npm install -g gulp`). For instance, `gulp release` is equivalent to `npm run gulp -- release`.
-
-* `release [options]`: builds optimized bundle, bumps the version and releases to github. Options:
-  * `--type <major|minor|patch|prerelease>` (defaults to `patch`)
-  * `--version <v>`
-  * see [stevelacy/gulp-bump](https://github.com/stevelacy/gulp-bump) for more
-
-* `deps-tree`: builds bundle and prints dependency tree
-
-* `stats`: builds bundle and writes webpack stats to `stats.json`
-
-* `lint`: lints source files and tests (`lint-sources`, `lint-tests`)
-
-## Scripts
-
-* `bootstrap`: installs dependencies required to build and test the project.
-
-* `check`: lints the source with ESLint.
-
-* `build`: compiles the library into a single file
-
-* `test [options]`: runs tests. Options:
-  * `--watch` watches test files and rebuilds + rerun tests on change
-  * `--chrome` runs tests in Chrome, default browser is PhantomJS
-  * `--extension <path>` loads the Chromium extension at the given path (with `--chrome`)
-
-* `release [type]`: builds optimized bundle, bumps the version and releases to github. Type can be one of `major, minor, patch, prerelease`, defaults to `patch`.
-
+- `npm run lint`: lint sources and tests using ESlint.
+- `npm test`: launch tests
+- `npm run test:watch`: watch files and execute the tests whenever sources or tests change.
