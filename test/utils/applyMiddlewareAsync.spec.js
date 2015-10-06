@@ -89,4 +89,18 @@ describe('applyMiddlewareAsync', () => {
       expect(callback.getCall(i).args[0]).toEqual(output);
     });
   });
+
+  it('must should provide middlewareAPI to middlewares', () => {
+    const baseFunc = (x, callback) => callback(x * 2);
+    const middlewareAPI = { a: 'a'};
+    let middleware1 = sinon.spy(add3ToInput);
+    let middleware2 = sinon.spy(add3ToOutput);
+    const func = applyMiddlewareAsync(middleware1, middleware2, middlewareAPI)(baseFunc);
+
+    func('1', () => {});
+    expect(middleware1.callCount).toEqual(1);
+    expect(middleware1.getCall(0).args[0]).toEqual(middlewareAPI);
+    expect(middleware2.callCount).toEqual(1);
+    expect(middleware2.getCall(0).args[0]).toEqual(middlewareAPI);
+  });
 });
