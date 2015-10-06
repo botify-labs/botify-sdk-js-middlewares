@@ -1,8 +1,7 @@
 import expect from 'expect';
 import sinon from 'sinon';
 
-import applyMiddleware from '../src/applyMiddleware';
-import { applyMiddlewareController } from '../src/applyMiddleware';
+import applyMiddleware, { applyMiddlewareController } from '../src/applyMiddleware';
 
 
 const add3ToInput = () => {
