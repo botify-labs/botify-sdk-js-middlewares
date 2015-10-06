@@ -1,11 +1,11 @@
 import expect from 'expect';
 import chai from 'chai';
 
-import apiError, {ApiError} from '../../src/middlewares/apiError';
+import apiErrorMiddleware, {ApiError} from '../../src/middlewares/apiError';
 
 
-describe('apiError middleware', () => {
-  const nextHandler = apiError();
+describe('apiErrorMiddleware', () => {
+  const nextHandler = apiErrorMiddleware();
 
   it('must change callback\'s first argument from Object to an ApiError', done => {
     const func = (x, callback) => callback({
