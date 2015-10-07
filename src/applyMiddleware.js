@@ -20,9 +20,10 @@ export default function applyMiddleware(...middlewares) {
 }
 
 export function applyMiddlewareController(...middlewares) {
-  return controller => {
+  return (controller, contollerId) => {
     return mapValues(controller, (operation, operationId) => {
       const middlewareAPI = {
+        contollerId,
         operationId,
         operation,
       };
