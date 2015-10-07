@@ -95,4 +95,27 @@ describe('lscacheMiddleware', () => {
     });
   });
 
+  it('must not retrive value from local storage, if option invalidate == true', done => {
+    const params = 'foo';
+    const resourceValue = 1000;
+    const cacheKey = computeCacheKey(params);
+
+    const fetchX = (x, callback) => callback(null, resourceValue);
+    let spy = sinon.spy(fetchX);
+
+    //Populate local storage
+    lscache.set(cacheKey, resourceValue);
+
+    nextHandler(spy)(params, (error, result) => {
+      //Expect cache
+      const cacheKey = computeCacheKey(params);
+      chai.expect(spy.callCount).to.be.equal(1);
+
+      //Exect callback arguments
+      chai.expect(error).to.be.null;
+      chai.expect(result).to.be.equal(resourceValue);
+      done();
+    }, {cache: true, invalidate: true});
+  });
+
 });

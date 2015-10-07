@@ -6,16 +6,18 @@ const LSCACHE_EXPIRATION_MIN = 60 * 24 * 365; //In Minutes
 const LSCACHE_PREFIX = 'botifySdk-';
 
 export default function lscacheMiddleware() {
-  return next => function(params, callback, {cache = false} = {}) {
+  return next => function(params, callback, {cache = false, invalidate = false} = {}) {
     if (!cache) {
       return next(...arguments);
     }
 
     const cacheKey = computeCacheKey(params);
-    const cacheValue = lscache.get(cacheKey);
-    if (cacheValue) {
-      callback(null, cacheValue);
-      return false;
+    if (!invalidate) {
+      const cacheValue = lscache.get(cacheKey);
+      if (cacheValue) {
+        callback(null, cacheValue);
+        return false;
+      }
     }
 
     next(
