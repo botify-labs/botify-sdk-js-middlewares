@@ -1,11 +1,11 @@
 import applyMiddleware from './applyMiddleware';
-import apiError from './middlewares/error';
-import lscache from './middlewares/lscache';
+import apiErrorMiddleware from './middlewares/apiErrorMiddleware';
+import lscacheMiddleware from './middlewares/lscacheMiddleware';
 
 export {
   applyMiddleware,
   middlewares: {
-    apiError,
-    lscache,
+    apiErrorMiddleware,
+    lscacheMiddleware,
   },
 };

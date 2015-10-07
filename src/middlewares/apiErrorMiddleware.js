@@ -1,7 +1,7 @@
 import ExtendableError from 'es6-error';
 
 
-export default function apiErrorMiddleware(operationId) {
+export default function apiErrorMiddleware() {
   return next => (params, callback, ...othersParams) => {
     next(
       params,

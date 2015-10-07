@@ -2,7 +2,7 @@ import chai from 'chai';
 import sinon from 'sinon';
 import lscache from 'lscache';
 
-import lscacheMiddleware, {computeCacheKey} from '../../src/middlewares/lscache';
+import lscacheMiddleware, {computeCacheKey} from '../../src/middlewares/lscacheMiddleware';
 
 
 describe('lscacheMiddleware', () => {
@@ -29,7 +29,7 @@ describe('lscacheMiddleware', () => {
     lscache.flush();
   });
 
-  it('must change store in local storage result if cache option == true', done => {
+  it('must change store in local storage result if option cache == true', done => {
     const params = 'foo';
     const resourceValue = 1000;
     const cacheKey = computeCacheKey(params);
@@ -49,7 +49,7 @@ describe('lscacheMiddleware', () => {
     }, {cache: true});
   });
 
-  it('must retrive value from local storage if available if cache option == true', done => {
+  it('must retrive value from local storage if available if option cache == true', done => {
     const params = 'foo';
     const resourceValue = 1000;
     const cacheKey = computeCacheKey(params);
@@ -72,7 +72,7 @@ describe('lscacheMiddleware', () => {
     }, {cache: true});
   });
 
-  it('must not retrive value from local storage or store it when received, if cache option == false', done => {
+  it('must not retrive value from local storage or store it when received, if option cache == false', done => {
     const params = 'foo';
     const resourceValue = 1000;
     const cacheKey = computeCacheKey(params);

@@ -2,7 +2,10 @@ import lscache from 'lscache';
 import hash from 'object-hash';
 
 
-export default function lscacheMiddleware(operationId) {
+const LSCACHE_EXPIRATION_MIN = 60 * 24 * 365; //In Minutes
+const LSCACHE_PREFIX = 'botifySdk-';
+
+export default function lscacheMiddleware() {
   return next => function(params, callback, {cache = false} = {}) {
     if (!cache) {
       return next(...arguments);
@@ -19,16 +22,13 @@ export default function lscacheMiddleware(operationId) {
       params,
       function(error, result) {
         if (!error && cache) {
-          lscache.set(cacheKey, result);
+          lscache.set(cacheKey, result, LSCACHE_EXPIRATION_MIN);
         }
         callback(...arguments);
       }
     );
   };
 }
-
-export const CACHED_OPERATIONS = [];
-const LSCACHE_PREFIX = 'botifySdk-';
 
 export function computeCacheKey(params) {
   return `${LSCACHE_PREFIX}${hash(params)}`;
