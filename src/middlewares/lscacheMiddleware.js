@@ -35,6 +35,7 @@ export default function lscacheMiddleware() {
       }
     }
 
+    const options = arguments[2];
     next(
       params,
       function(error, result) {
@@ -42,7 +43,8 @@ export default function lscacheMiddleware() {
           bucket.set(itemKey, result, LSCACHE_EXPIRATION_MIN);
         }
         callback(...arguments);
-      }
+      },
+      options
     );
   };
 }
