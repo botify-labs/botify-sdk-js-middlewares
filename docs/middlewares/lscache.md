@@ -12,11 +12,11 @@ none
 ## Usage
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
+const { lscacheMiddleware } = middlewares;
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
-  middlewares.apiError,
-  middlewares.lscache
+  lscacheMiddleware
 )(baseSdk);
 
 const callback = (error, result) => {

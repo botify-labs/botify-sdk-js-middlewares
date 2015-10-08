@@ -11,10 +11,11 @@ none
 ## Usage
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
+const { apiErrorMiddleware } = middlewares;
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
-  middlewares.apiError,
+  apiErrorMiddleware,
 )(baseSdk);
 
 const { ApiError } = middlewares.apiError.ApiError;

@@ -23,11 +23,12 @@ Use `applyMiddleware` function to apply middlewares you need.
 
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
+const { lscacheMiddleware, apiErrorMiddleware } = middlewares;
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
-  middlewares.apiError,
-  middlewares.lscache
+  apiErrorMiddleware,
+  lscacheMiddleware
 )(baseSdk);
 ```
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
@@ -48,7 +49,7 @@ const params = {
 const options = {
   cache: true,
 };
-sdk.AnalysesController.getAnalysisInfo(params, (error, result) => {
+sdk.AnalysesController.getAnalysis(params, (error, result) => {
   //Handle result
 }, options);
 ```

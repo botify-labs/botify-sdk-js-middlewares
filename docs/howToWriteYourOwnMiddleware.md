@@ -1,6 +1,6 @@
 # How to write your own middleware
 
-To define a new middleware you must export a function that creates you middleware using the provided middleware API.
+To define a new middleware you must export a function that creates your middleware using the provided middleware API.
 
 ```JS
 /**
@@ -43,7 +43,7 @@ export default function lscacheMiddleware({contollerId, operationId, operation})
     );
   };
 }
-
+```
 
 ## Example
 Read `src/middlewares/lscacheMiddleware.js`
