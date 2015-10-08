@@ -1,21 +1,29 @@
-import lscache from 'lscache';
+import lscache from 'ls-cache';
 import hash from 'object-hash';
 
 
 const LSCACHE_EXPIRATION_MIN = 60 * 24 * 365; //In Minutes
-const LSCACHE_PREFIX = 'botifySdk-';
+const LSCACHE_BUCKET_ID = 'botifySdk-';
+export const lscacheBucket = lscache.createBucket(LSCACHE_BUCKET_ID);
 
 export default function lscacheMiddleware() {
-  return next => function(params, callback, {cache = false, invalidate = false} = {}) {
+  /**
+   * @param  {Object}   params
+   * @param  {Function} callback
+   * @param  {Boolean?}  options.cache
+   * @param  {String?}  options.bucketId
+   */
+  return next => function(params, callback, {cache = false, invalidate = false, bucketId} = {}) {
     if (!cache) {
       return next(...arguments);
     }
 
-    const cacheKey = computeCacheKey(params);
+    const bucket = bucketId ? lscache.createBucket(bucketId) : lscacheBucket;
+    const itemKey = computeItemCacheKey(params);
     if (!invalidate) {
-      const cacheValue = lscache.get(cacheKey);
-      if (cacheValue) {
-        callback(null, cacheValue);
+      const itemValue = bucket.get(itemKey);
+      if (itemValue) {
+        callback(null, itemValue);
         return false;
       }
     }
@@ -23,8 +31,8 @@ export default function lscacheMiddleware() {
     next(
       params,
       function(error, result) {
-        if (!error && cache) {
-          lscache.set(cacheKey, result, LSCACHE_EXPIRATION_MIN);
+        if (!error) {
+          bucket.set(itemKey, result, LSCACHE_EXPIRATION_MIN);
         }
         callback(...arguments);
       }
@@ -32,6 +40,6 @@ export default function lscacheMiddleware() {
   };
 }
 
-export function computeCacheKey(params) {
-  return `${LSCACHE_PREFIX}${hash(params)}`;
+export function computeItemCacheKey(params) {
+  return `${hash(params)}`;
 }
