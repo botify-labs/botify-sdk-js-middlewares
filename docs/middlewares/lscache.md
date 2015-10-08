@@ -2,8 +2,9 @@
 
 The middleware enable api calls to be cached in the browser's local storage.
 
-## Description
-If the option cache is set to true, sdk first tries to retrieve api result from local storage before requesting the API. Local storage available space is limited, therefore only mostly used resources are kept in cache.
+## Options
+- cache: is set to true, sdk first tries to retrieve api result from local storage before calling the API. Local storage available space is limited, therefore only mostly used resources are kept in cache.
+- invalidate: Replace the stored value by the value returned by the API.
 
 ## Middleware requirement
 none
@@ -11,14 +12,15 @@ none
 ## Usage
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-import sdk from 'botify-sdk';
+import baseSdk from 'botify-sdk';
 
-sdk = applyMiddleware(
+const sdk = applyMiddleware(
   middlewares.apiError,
   middlewares.lscache
-)(sdk);
+)(baseSdk);
 
-sdk.ProjectController.getProjets(userId, (error, result) => {
+const callback = (error, result) => {
   //Handle result
-}, {cache: true});
+};
+sdk.ProjectController.getProjets(userId, callback, {cache: true});
 ```

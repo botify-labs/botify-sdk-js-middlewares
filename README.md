@@ -6,7 +6,7 @@ including local storage caching, request batching, api result post processing.
 
 ## Influences
 
-The middleware pattern used in this package has been greated influenced by [Redux](https://github.com/rackt/redux)
+The middleware pattern used in this package has been greated influenced by [Redux] middlewares (https://github.com/rackt/redux)
 
 
 ## Installation
@@ -20,25 +20,46 @@ npm install --save botify-sdk
 ```
 
 ## Usage
+Use `applyMiddleware` function to apply middlewares you need.
+**<!> Becareful: order maters.** (read **requirement section** of middleware's documentation for more details)
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-import sdk from 'botify-sdk';
+import baseSdk from 'botify-sdk';
 
-sdk = applyMiddleware(
+const sdk = applyMiddleware(
   middlewares.apiError,
   middlewares.lscache
-)(sdk);
-
-sdk.ProjectController.getProjets(userId, (error, result) => {
-
-});
+)(baseSdk);
 ```
+
+Some middlewares use options (read **option section** of middleware's documentation for more details)
+```JS
+SDK::Controller::operation(params: Object, callback: Func, options: Object?)
+```
+
+Example:
+```JS
+const params = {
+  username: 'botify',
+  projectSlug: 'botify.com',
+  analyseSlug: 'foo',
+};
+const options = {
+  cache: true,
+};
+sdk.AnalysesController.getAnalysisInfo(params, (error, result) => {
+  //Handle result
+}, options);
+```
+
 
 ## Documentation
 
 - [Introduction](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/introduction.md)
 - [How to write your own middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/docs/howToWriteYourOwnMiddleware.md)
 - [Middlewares docs](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/middlewares)
+
+Note: examples are written with ES6 syntax but nothing prevents you to use this lib (and create middlewares) with plain old school JavaScript.
 
 
 ## Commands

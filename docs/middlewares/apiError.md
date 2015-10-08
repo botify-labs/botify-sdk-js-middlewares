@@ -2,17 +2,20 @@
 
 The middleware transform callback error (if exists) from an Error Payload to a Javascript Error
 
+## Options
+none
+
 ## Middleware requirement
 none
 
 ## Usage
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-import sdk from 'botify-sdk';
+import baseSdk from 'botify-sdk';
 
-sdk = applyMiddleware(
+const sdk = applyMiddleware(
   middlewares.apiError,
-)(sdk);
+)(baseSdk);
 
 const { ApiError } = middlewares.apiError.ApiError;
 sdk.ProjectController.getProjets(userId, (error, result) => {
