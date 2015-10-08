@@ -2,9 +2,13 @@ import lscache from 'ls-cache';
 import hash from 'object-hash';
 
 
-const LSCACHE_EXPIRATION_MIN = 60 * 24 * 365; //In Minutes
+const LSCACHE_EXPIRATION_MIN = 60 * 24 * 365; // In Minutes
 const LSCACHE_BUCKET_ID = 'botifySdk-';
 export const lscacheBucket = lscache.createBucket(LSCACHE_BUCKET_ID);
+
+export function computeItemCacheKey(params) {
+  return `${hash(params)}`;
+}
 
 export default function lscacheMiddleware() {
   /**
@@ -38,8 +42,4 @@ export default function lscacheMiddleware() {
       }
     );
   };
-}
-
-export function computeItemCacheKey(params) {
-  return `${hash(params)}`;
 }

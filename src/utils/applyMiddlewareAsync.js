@@ -1,6 +1,10 @@
 import isPlainObject from 'lodash.isplainobject';
 
 
+function compose(...middlewares) {
+  return initial => middlewares.reduceRight((prev, next) => next(prev), initial);
+}
+
 /**
  * @metaParam {...Middlewares} middlewares
  * @metaParam {Object?} middlewareAPI
@@ -14,13 +18,9 @@ export default function applyMiddlewareAsync(...middlewares) {
     let middlewareAPI = length > 0 ? middlewares[length - 1] : undefined;
 
     middlewareAPI = isPlainObject(middlewareAPI) ? (length--, middlewareAPI) : undefined;
-    middlewares = middlewares.slice(0, length);
+    middlewares = middlewares.slice(0, length); // eslint-disable-line no-param-reassign
 
     const chain = middlewares.map(middleware => middleware(middlewareAPI));
     return compose(...chain)(func);
-  }
-}
-
-function compose(...middlewares) {
-  return initial => middlewares.reduceRight((prev, next) => next(prev), initial);
+  };
 }

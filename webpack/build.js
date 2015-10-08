@@ -27,9 +27,9 @@ export default function build(callback) {
       hash: false,
       timings: false,
       chunks: false,
-      chunkModules: false
+      chunkModules: false,
     }));
 
     callback();
   });
-};
+}

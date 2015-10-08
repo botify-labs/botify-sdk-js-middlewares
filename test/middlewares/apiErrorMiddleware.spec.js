@@ -1,4 +1,3 @@
-import expect from 'expect';
 import chai from 'chai';
 
 import apiErrorMiddleware, {ApiError} from '../../src/middlewares/apiErrorMiddleware';
@@ -10,7 +9,7 @@ describe('apiErrorMiddleware', () => {
   it('must change callback\'s first argument from Object to an ApiError', done => {
     const func = (x, callback) => callback({
       ErrorMessage: 'That 301',
-      ErrorCode: 301
+      ErrorCode: 301,
     });
     nextHandler(func)(1, (error, result) => {
       chai.expect(error).to.be.an.instanceof(ApiError);
@@ -24,10 +23,9 @@ describe('apiErrorMiddleware', () => {
   it('must not change anything if callback does not return an error', done => {
     const func = (x, callback) => callback(null, 2);
     nextHandler(func)(1, (error, result) => {
-      chai.expect(error).to.be.null;
+      chai.expect(error).to.be.equal(null);
       chai.expect(result).to.be.equal(2);
       done();
     });
   });
-
 });

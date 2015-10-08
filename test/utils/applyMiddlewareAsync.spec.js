@@ -8,7 +8,7 @@ const add3ToInput = () => {
   return next => (x, callback) => {
     next(x + 3, callback);
   };
-}
+};
 
 const add3ToOutput = () => {
   return next => (x, callback) => {
@@ -19,13 +19,13 @@ const add3ToOutput = () => {
       }
     );
   };
-}
+};
 
 describe('applyMiddlewareAsync', () => {
   it('must not change baseFunc behaviour if no middleware is given', () => {
     const baseFunc = (x, callback) => callback(x * 2);
     const func = applyMiddlewareAsync()(baseFunc);
-    let callback = sinon.spy();
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 2},
       {input: 2, output: 4},
@@ -42,7 +42,7 @@ describe('applyMiddlewareAsync', () => {
   it('must compose middlewares that modify input', () => {
     const baseFunc = (x, callback) => callback(x * 2);
     const func = applyMiddlewareAsync(add3ToInput)(baseFunc);
-    let callback = sinon.spy();
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 8},
       {input: 2, output: 10},
@@ -59,7 +59,7 @@ describe('applyMiddlewareAsync', () => {
   it('must compose middlewares that modify output', () => {
     const baseFunc = (x, callback) => callback(x * 2);
     const func = applyMiddlewareAsync(add3ToOutput)(baseFunc);
-    let callback = sinon.spy();
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 5},
       {input: 2, output: 7},
@@ -76,7 +76,7 @@ describe('applyMiddlewareAsync', () => {
   it('must compose multiples middlewares', () => {
     const baseFunc = (x, callback) => callback(x * 2);
     const func = applyMiddlewareAsync(add3ToInput, add3ToOutput)(baseFunc);
-    let callback = sinon.spy();
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 11},
       {input: 2, output: 13},
@@ -93,8 +93,8 @@ describe('applyMiddlewareAsync', () => {
   it('must should provide middlewareAPI to middlewares', () => {
     const baseFunc = (x, callback) => callback(x * 2);
     const middlewareAPI = { a: 'a'};
-    let middleware1 = sinon.spy(add3ToInput);
-    let middleware2 = sinon.spy(add3ToOutput);
+    const middleware1 = sinon.spy(add3ToInput);
+    const middleware2 = sinon.spy(add3ToOutput);
     const func = applyMiddlewareAsync(middleware1, middleware2, middlewareAPI)(baseFunc);
 
     func('1', () => {});
@@ -106,8 +106,8 @@ describe('applyMiddlewareAsync', () => {
 
   it('must not change initial func', () => {
     const baseFunc = (x, callback) => callback(x * 2);
-    const func = applyMiddlewareAsync(add3ToInput, add3ToOutput)(baseFunc);
-    let callback = sinon.spy();
+    applyMiddlewareAsync(add3ToInput, add3ToOutput)(baseFunc);
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 2},
       {input: 2, output: 4},

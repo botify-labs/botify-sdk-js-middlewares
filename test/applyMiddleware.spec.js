@@ -8,7 +8,7 @@ const add3ToInput = () => {
   return next => (x, callback) => {
     next(x + 3, callback);
   };
-}
+};
 
 const add3ToOutput = () => {
   return next => (x, callback) => {
@@ -19,7 +19,7 @@ const add3ToOutput = () => {
       }
     );
   };
-}
+};
 
 describe('applyMiddleware', () => {
   it('must not change baseFunc behaviour if no middleware is given', () => {
@@ -30,7 +30,7 @@ describe('applyMiddleware', () => {
       },
     };
     const sdk = applyMiddleware()(baseSdk);
-    let callback = sinon.spy();
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 2},
       {input: 2, output: 4},
@@ -52,7 +52,7 @@ describe('applyMiddleware', () => {
       },
     };
     const sdk = applyMiddleware(add3ToInput, add3ToOutput)(baseSdk);
-    let callback = sinon.spy();
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 11},
       {input: 2, output: 13},
@@ -73,8 +73,8 @@ describe('applyMiddleware', () => {
         mult2: (x, callback) => callback(x * 2),
       },
     };
-    const sdk = applyMiddleware(add3ToInput, add3ToOutput)(baseSdk);
-    let callback = sinon.spy();
+    applyMiddleware(add3ToInput, add3ToOutput)(baseSdk);
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 2},
       {input: 2, output: 4},
@@ -107,7 +107,7 @@ describe('applyMiddlewareController', () => {
       mult2: (x, callback) => callback(x * 2),
     };
     const controller = applyMiddlewareController()(baseController);
-    let callback = sinon.spy();
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 2},
       {input: 2, output: 4},
@@ -126,7 +126,7 @@ describe('applyMiddlewareController', () => {
       mult2: (x, callback) => callback(x * 2),
     };
     const controller = applyMiddlewareController(add3ToInput, add3ToOutput)(baseController);
-    let callback = sinon.spy();
+    const callback = sinon.spy();
     const tests = [
       {input: 1, output: 11},
       {input: 2, output: 13},

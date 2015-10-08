@@ -4,6 +4,19 @@ import endsWith from 'lodash.endswith';
 import applyMiddlewareAsync from './utils/applyMiddlewareAsync';
 
 
+export function applyMiddlewareController(...middlewares) {
+  return (controller, contollerId) => {
+    return mapValues(controller, (operation, operationId) => {
+      const middlewareAPI = {
+        contollerId,
+        operationId,
+        operation,
+      };
+      return applyMiddlewareAsync(...middlewares.concat(middlewareAPI))(operation);
+    });
+  };
+}
+
 /**
  * Apply middleware(s) on sdk's controllers
  * @metaParam {...Middleware} middlewares
@@ -19,15 +32,3 @@ export default function applyMiddleware(...middlewares) {
   };
 }
 
-export function applyMiddlewareController(...middlewares) {
-  return (controller, contollerId) => {
-    return mapValues(controller, (operation, operationId) => {
-      const middlewareAPI = {
-        contollerId,
-        operationId,
-        operation,
-      };
-      return applyMiddlewareAsync(...middlewares.concat(middlewareAPI))(operation);
-    });
-  }
-}
