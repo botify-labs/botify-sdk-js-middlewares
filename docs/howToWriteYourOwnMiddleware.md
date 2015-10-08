@@ -24,7 +24,7 @@ export default function lscacheMiddleware({contollerId, operationId, operation})
       return next(...arguments);
     }
 
-    if (...)
+    if (...) {
       // Call operation callback to give result right away
       callback(null, itemValue);
       // Return false to stop middelwares chains
