@@ -50,8 +50,8 @@ describe('lscacheMiddleware', () => {
 
     nextHandler(spy)(params, (error, result) => {
       //Expect cache
-      const itemKey = computeItemCacheKey(params);
       chai.expect(spy.callCount).to.be.equal(0);
+      chai.expect(lscacheBucket.get(itemKey)).to.be.equal(itemValue);
 
       //Exect callback arguments
       chai.expect(error).to.be.null;
@@ -73,8 +73,8 @@ describe('lscacheMiddleware', () => {
 
     nextHandler(spy)(params, (error, result) => {
       //Expect cache
-      const itemKey = computeItemCacheKey(params);
       chai.expect(spy.callCount).to.be.equal(1);
+      chai.expect(lscacheBucket.get(itemKey)).to.be.equal(itemValue);
 
       //Exect callback arguments
       chai.expect(error).to.be.null;
@@ -85,6 +85,7 @@ describe('lscacheMiddleware', () => {
 
   it('must not retrive value from local storage, if option invalidate == true', done => {
     const params = 'foo';
+    const previousItemValue = 1300;
     const itemValue = 1000;
     const itemKey = computeItemCacheKey(params);
 
@@ -92,18 +93,41 @@ describe('lscacheMiddleware', () => {
     let spy = sinon.spy(fetchX);
 
     //Populate local storage
-    lscacheBucket.set(itemKey, itemValue);
+    lscacheBucket.set(itemKey, previousItemValue);
 
     nextHandler(spy)(params, (error, result) => {
       //Expect cache
-      const itemKey = computeItemCacheKey(params);
       chai.expect(spy.callCount).to.be.equal(1);
+      chai.expect(lscacheBucket.get(itemKey)).to.be.equal(itemValue);
 
       //Exect callback arguments
       chai.expect(error).to.be.null;
       chai.expect(result).to.be.equal(itemValue);
       done();
     }, {cache: true, invalidate: true});
+  });
+
+  it('must storage value in the given bucket if provided', done => {
+    const params = 'foo';
+    const itemValue = 1000;
+    const itemKey = computeItemCacheKey(params);
+    const specificBucketId = 'AAAA';
+    const specificBucket = lscache.createBucket(specificBucketId);
+
+    const fetchX = (x, callback) => callback(null, itemValue);
+    let spy = sinon.spy(fetchX);
+
+    nextHandler(spy)(params, (error, result) => {
+      //Expect cache
+      chai.expect(spy.callCount).to.be.equal(1);
+      chai.expect(lscacheBucket.get(itemKey)).to.be.equal(null);
+      chai.expect(specificBucket.get(itemKey)).to.be.equal(itemValue);
+
+      //Exect callback arguments
+      chai.expect(error).to.be.null;
+      chai.expect(result).to.be.equal(itemValue);
+      done();
+    }, {cache: true, bucketId: specificBucketId});
   });
 
 });
