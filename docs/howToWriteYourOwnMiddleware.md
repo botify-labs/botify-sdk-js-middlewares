@@ -1,7 +1,17 @@
 # How to write your own middleware
 
-To define a new middleware you must export a function that creates your middleware using the provided middleware API.
+Middlewares are functions that perform tasks before and after an operation (calling an API endpoint).
 
+They can be used to modify parameters given to the operation, modify data received by the API, stop an operation call, cache data on the fly, batch requests, etc.
+
+## Lexical
+- **Operation:** function that is specifically designed to call ONE API endpoint. *ie. getProjectDatasets*
+- **Controller:** Set of operations. *ie. AnalysisController, ProjectController*
+
+## Examples
+Example middlewares can be found at: https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/src/middlewares; you should read them first as they provide simple examples of what you can achieve with this project.
+
+## Structure
 ```JS
 /**
  * @param  {String} middlewareAPI.contollerId ie. 'AnalysesController'
@@ -19,25 +29,41 @@ export default function lscacheMiddleware({contollerId, operationId, operation})
    * @return    {Boolean}  Return false to stop middlewares chain and prevent operation to be called
    */
   return next => function(params, callback, options) {
-    if (...) {
-      // Call next with modifing arguments as is to not modify operation
-      return next(...arguments);
-    }
+    // Perform any kind of modifications on arguments
+    // Or even stop operation call
+  };
+}
+```
 
-    if (...) {
-      // Call operation callback to give result right away
-      callback(null, itemValue);
-      // Return false to stop middelwares chains
-      return false;
-    }
+## Use cases
+All of the following use cases can be composed to match your needs. Keep in mind that they are just examples.
 
-    //Overide callback to do any kind of processing when the callback is called (once the API has return data or once a later middleware call it).
+### Modify params given to the operation (before the call)
+```JS
+export default function lscacheMiddleware() {
+  return next => function(params, callback, options) {
+    const newParams = {
+      ...params,
+      foo: 'bar',
+    };
+    next(newParams, callback, options);
+  };
+}
+```
+
+### Modify data recevied by the API
+```JS
+export default function lscacheMiddleware() {
+  return next => function(params, callback, options) {
     next(
-      params,
+      newParams,
       function(error, result) {
-        // You may want to postprocess callback result.
-        result = anyPostProcessing(result);
-        callback(error, result);
+        if (error) {
+          // If error, do not perform any modifications
+          callback(...arguments);
+        }
+        const newResult = _.indexBy(result, 'id');
+        callback(error, newResult);
       },
       options
     );
@@ -45,5 +71,13 @@ export default function lscacheMiddleware({contollerId, operationId, operation})
 }
 ```
 
-## Example
-Read `src/middlewares/lscacheMiddleware.js`
+### Stop calling the operation (and the next middlewares)
+```JS
+export default function lscacheMiddleware() {
+  return next => function(params, callback, options) {
+    callback(new ForbiddenError());
+    return false;
+    //Don't forget to call the callback to give the result to the caller.
+  };
+}
+```
