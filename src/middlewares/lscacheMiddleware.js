@@ -1,7 +1,10 @@
 import lscache from 'ls-cache';
 import hash from 'object-hash';
 
+import flushLocalStorageIfDataModelVersionChanged from '../utils/flushLocalStorage';
 
+
+const DATA_MODEL_VERSION = '0.0.1';
 const LSCACHE_EXPIRATION_MIN = 60 * 24 * 365; // In Minutes
 const LSCACHE_BUCKET_ID = 'botifySdk-';
 export const lscacheBucket = lscache.createBucket(LSCACHE_BUCKET_ID);
@@ -43,3 +46,5 @@ export default function lscacheMiddleware() {
     );
   };
 }
+
+flushLocalStorageIfDataModelVersionChanged(DATA_MODEL_VERSION);
