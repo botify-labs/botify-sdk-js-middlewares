@@ -61,14 +61,14 @@ class Queue {
             return callback(error);
           }
           if (!result) {
-            return callback(apiErrorObject('API returned null'));
+            return callback(apiErrorObject('API returned an empty body'));
           }
-          const resourceError = result.status < 200 && result.status > 206;
+          const resourceResponse = result[i];
+          const resourceError = resourceResponse.status < 200 || resourceResponse.status > 206;
           if (resourceError) {
-            return callback(apiErrorObject(result.error, result.status));
+            return callback(apiErrorObject(resourceResponse.error, resourceResponse.status));
           }
-          const resourceResult = result.data[i];
-          return callback(null, resourceResult);
+          return callback(null, resourceResponse.data);
         });
       },
       this.options

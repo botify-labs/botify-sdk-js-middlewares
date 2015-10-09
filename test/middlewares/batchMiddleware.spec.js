@@ -16,26 +16,27 @@ describe('batchMiddleware', () => {
   const nextHandler = batchMiddleware()(middlewareAPI);
 
   it('must call only once the operation but call every caller callbacks at the end', done => {
-    const getQueryAggregate = ({queries}, callback) => callback(null, {
+    const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
       status: 200,
-      data: queries.map(v => v * 2),
-    });
+      data: v * 2,
+    })));
     const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
     const requests = [
-      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), output: 2},
-      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), output: 4},
-      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), output: 6},
+      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: 2},
+      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: 4},
+      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: 6},
     ];
 
     requests.forEach(({input, callback}, i) => {
       nextHandler(getQueryAggregateSpy)(input, callback, options);
     });
+
     setTimeout(() => {
       // Expect each callback to be called with rights params
-      requests.forEach(({callback, output}) => {
+      requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
         chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
-        chai.expect(callback.getCall(0).args[1]).to.be.equal(output);
+        chai.expect(callback.getCall(0).args[1]).to.be.equal(result);
       });
 
       // Expect operation to be called only once (MOST IMPORTANT)
@@ -46,7 +47,102 @@ describe('batchMiddleware', () => {
       });
       chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
       done();
-    }, 100);
+    }, 5);
+  });
+
+  it('must returns the operation error if given', done => {
+    const apiError = 'that error';
+    const getQueryAggregate = ({queries}, callback) => callback(apiError);
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const requests = [
+      {input: {...analysisParams, queries: [1]}, callback: sinon.spy()},
+      {input: {...analysisParams, queries: [2]}, callback: sinon.spy()},
+      {input: {...analysisParams, queries: [3]}, callback: sinon.spy()},
+    ];
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args[0]).to.be.equal(apiError);
+        chai.expect(callback.getCall(0).args[1]).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+      done();
+    }, 5);
+  });
+
+  it('must returns an error if API returns an empty body', done => {
+    const getQueryAggregate = ({queries}, callback) => callback(null);
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const requests = [
+      {input: {...analysisParams, queries: [1]}, callback: sinon.spy()},
+      {input: {...analysisParams, queries: [2]}, callback: sinon.spy()},
+      {input: {...analysisParams, queries: [3]}, callback: sinon.spy()},
+    ];
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args[0]).to.be.deep.equal({
+          ErrorMessage: 'API returned an empty body',
+          ErrorCode: undefined,
+        });
+      });
+      done();
+    }, 5);
+  });
+
+  it('must returns an error if specific resource failed', done => {
+    const requests = [
+      {
+        input: {...analysisParams, queries: [0]},
+        callback: sinon.spy(),
+        apiResult: {status: 200, data: 2},
+        middlewareOutput: [null, 2],
+      },
+      {
+        input: {...analysisParams, queries: [1]},
+        callback: sinon.spy(),
+        apiResult: {status: 500, error: 'Server error'},
+        middlewareOutput: [{
+          ErrorMessage: 'Server error',
+          ErrorCode: 500,
+        }],
+      },
+      {
+        input: {...analysisParams, queries: [2]},
+        callback: sinon.spy(),
+        apiResult: {status: 200, data: 6},
+        middlewareOutput: [null, 6],
+      },
+    ];
+    const getQueryAggregate = ({queries}, callback) => {
+      callback(null, queries.map(i => requests[i].apiResult));
+    };
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, middlewareOutput}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args).to.be.deep.equal(middlewareOutput);
+      });
+
+      done();
+    }, 5);
   });
 
   it('must NOT do anything on not batched operation', done => {
