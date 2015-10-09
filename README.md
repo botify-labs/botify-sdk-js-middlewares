@@ -32,7 +32,6 @@ const sdk = applyMiddleware(
 )(baseSdk);
 ```
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
-```
 
 
 ## Documentation
