@@ -1,6 +1,6 @@
 # How to write your own middleware
 
-Middlewares are functions that perform tasks before and after an operation (calling an API endpoint).
+Middlewares are functions that perform tasks before and after an operation (that call an API endpoint).
 
 They can be used to modify parameters given to the operation, modify data received by the API, stop an operation call, cache data on the fly, batch requests, etc.
 
@@ -19,7 +19,7 @@ Example middlewares can be found at: https://github.com/botify-labs/botify-sdk-j
  * @param  {Func}   middlewareAPI.operation
  * @return {Middleware}
  */
-export default function lscacheMiddleware({contollerId, operationId, operation}) {
+export default function someMiddleware({contollerId, operationId, operation}) {
 
   /**
    * @metaparam {Func}     next Function to call with modified arguments for the next middleware
@@ -40,7 +40,7 @@ All of the following use cases can be composed to match your needs. Keep in mind
 
 ### Modify params given to the operation (before the call)
 ```JS
-export default function lscacheMiddleware() {
+export default function someMiddleware() {
   return next => function(params, callback, options) {
     const newParams = {
       ...params,
@@ -53,17 +53,15 @@ export default function lscacheMiddleware() {
 
 ### Modify data recevied by the API
 ```JS
-export default function lscacheMiddleware() {
+export default function someMiddleware() {
   return next => function(params, callback, options) {
     next(
       newParams,
       function(error, result) {
-        if (error) {
-          // If error, do not perform any modifications
-          callback(...arguments);
+        if (!error) {
+          result = _.indexBy(result, 'id');
         }
-        const newResult = _.indexBy(result, 'id');
-        callback(error, newResult);
+        callback(error, result);
       },
       options
     );
@@ -71,9 +69,9 @@ export default function lscacheMiddleware() {
 }
 ```
 
-### Stop calling the operation (and the next middlewares)
+### Stop operation call (and the next middlewares)
 ```JS
-export default function lscacheMiddleware() {
+export default function someMiddleware() {
   return next => function(params, callback, options) {
     callback(new ForbiddenError());
     return false;
