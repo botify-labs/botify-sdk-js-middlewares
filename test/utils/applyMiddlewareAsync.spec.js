@@ -90,6 +90,44 @@ describe('applyMiddlewareAsync', () => {
     });
   });
 
+  it('must call middlewares in the right order : from left->right on input, right->left on output', () => {
+    const add5InputAndOutput = () => {
+      return next => (x, callback) => {
+        next(
+          x + 5,
+          (result) => {
+            callback(result + 5);
+          }
+        );
+      };
+    };
+
+    const multi3InputAndOutput = () => {
+      return next => (x, callback) => {
+        next(
+          x * 3,
+          (result) => {
+            callback(result * 3);
+          }
+        );
+      };
+    };
+    const baseFunc = (x, callback) => callback(x * 2);
+    const func = applyMiddlewareAsync(add5InputAndOutput, multi3InputAndOutput)(baseFunc);
+    const callback = sinon.spy();
+    const tests = [
+      {input: 1, output: 113},
+      {input: 2, output: 131},
+      {input: 5, output: 185},
+    ];
+
+    tests.forEach(({input, output}, i) => {
+      func(input, callback);
+      expect(callback.callCount).toEqual(i + 1);
+      expect(callback.getCall(i).args[0]).toEqual(output);
+    });
+  });
+
   it('must should provide middlewareAPI to middlewares', () => {
     const baseFunc = (x, callback) => callback(x * 2);
     const middlewareAPI = { a: 'a'};
