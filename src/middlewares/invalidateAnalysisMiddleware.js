@@ -1,5 +1,5 @@
 import lscache from 'ls-cache';
-import hash from 'object-hash';
+import objectHash from 'object-hash';
 
 
 const ANALYSES_CONTROLLER_ID = 'AnalysesController';
@@ -11,7 +11,7 @@ const INVALIDATE_ANALYSIS_BUCKET_ID = 'botifySdk-invalAna';
 export const invalidateAnalysisBucket = lscache.createBucket(INVALIDATE_ANALYSIS_BUCKET_ID);
 
 export function getAnalysisBucketId({ username, projectSlug, analysisSlug }) {
-  return hash({username, projectSlug, analysisSlug });
+  return objectHash({username, projectSlug, analysisSlug });
 }
 
 /**

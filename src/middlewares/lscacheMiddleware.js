@@ -1,5 +1,5 @@
 import lscache from 'ls-cache';
-import hash from 'object-hash';
+import objectHash from 'object-hash';
 
 import flushLocalStorageIfDataModelVersionChanged from '../utils/flushLocalStorage';
 
@@ -10,7 +10,7 @@ const LSCACHE_BUCKET_ID = 'botifySdk-';
 export const lscacheBucket = lscache.createBucket(LSCACHE_BUCKET_ID);
 
 export function computeItemCacheKey(params) {
-  return `${hash(params)}`;
+  return objectHash(params);
 }
 
 export default function lscacheMiddleware() {
@@ -18,6 +18,7 @@ export default function lscacheMiddleware() {
    * @param  {Object}   params
    * @param  {Function} callback
    * @param  {Boolean?}  options.cache
+   * @param  {Boolean?}  options.invalidate
    * @param  {String?}  options.bucketId
    */
   return next => function(params, callback, {cache = false, invalidate = false, bucketId} = {}) {
