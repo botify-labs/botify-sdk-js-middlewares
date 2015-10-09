@@ -26,12 +26,12 @@ describe('invalidateAnalysisMiddleware', () => {
     analysisSlug: 'thatAnalysis',
   };
 
+  const middlewareAPI = { controllerId: 'AnalysesController', operationId: 'getAnalysis' };
+  const nextHandler = invalidateAnalysisMiddleware(middlewareAPI);
+
   it('must flush analysis cache if date last modified not stored', done => {
     const newDateLastModified = '2015-10-08T15:43:10.073Z';
     const analysisData = {date_last_modified: newDateLastModified};
-
-    const middlewareAPI = { controllerId: 'AnalysesController', operationId: 'getAnalysis' };
-    const nextHandler = invalidateAnalysisMiddleware(middlewareAPI);
 
     const getAnalysis = (x, callback) => callback(null, analysisData);
     const getAnalysisSpy = sinon.spy(getAnalysis);
@@ -61,9 +61,6 @@ describe('invalidateAnalysisMiddleware', () => {
     const previousDateLastModified = '2015-10-08T15:43:10.073Z';
     const newDateLastModified = '2015-10-10T15:43:10.073Z';
     const analysisData = {date_last_modified: newDateLastModified};
-
-    const middlewareAPI = { controllerId: 'AnalysesController', operationId: 'getAnalysis' };
-    const nextHandler = invalidateAnalysisMiddleware(middlewareAPI);
 
     const getAnalysis = (x, callback) => callback(null, analysisData);
     const getAnalysisSpy = sinon.spy(getAnalysis);
@@ -97,9 +94,6 @@ describe('invalidateAnalysisMiddleware', () => {
     const newDateLastModified = '2015-10-08T15:43:10.073Z';
     const analysisData = {date_last_modified: newDateLastModified};
 
-    const middlewareAPI = { controllerId: 'AnalysesController', operationId: 'getAnalysis' };
-    const nextHandler = invalidateAnalysisMiddleware(middlewareAPI);
-
     const getAnalysis = (x, callback) => callback(null, analysisData);
     const getAnalysisSpy = sinon.spy(getAnalysis);
 
@@ -130,8 +124,10 @@ describe('invalidateAnalysisMiddleware', () => {
 
   it('must NOT flush any analysis cache if not a getAnalysis operation', done => {
     const someAnalysisDateLastModified = '2015-10-08T15:43:10.073Z';
-    const middlewareAPI = { controllerId: 'ProjectsController', operationId: 'getProject' };
-    const nextHandler = invalidateAnalysisMiddleware(middlewareAPI);
+    const nextHandlerNotAnalysis = invalidateAnalysisMiddleware({
+      controllerId: 'ProjectsController',
+      operationId: 'getProject',
+    });
 
     const apiResult = 'foo';
     const getProject = (x, callback) => callback(null, apiResult);
@@ -148,7 +144,7 @@ describe('invalidateAnalysisMiddleware', () => {
     invalidateAnalysisBucket.set(someAnalysisBucketId, someAnalysisDateLastModified, CACHE_EXPIRATION);
     chai.expect(invalidateAnalysisBucket.keys().length).to.be.equal(1);
 
-    nextHandler(getProjectSpy)(analysisParams, (error, result) => {
+    nextHandlerNotAnalysis(getProjectSpy)(analysisParams, (error, result) => {
       chai.expect(getProjectSpy.callCount).to.be.equal(1);
 
       // Expect cache
