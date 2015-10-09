@@ -51,7 +51,7 @@ export default function someMiddleware() {
 }
 ```
 
-### Modify data recevied by the API
+### Modify data received by the API
 ```JS
 export default function someMiddleware() {
   return next => function(params, callback, options) {
