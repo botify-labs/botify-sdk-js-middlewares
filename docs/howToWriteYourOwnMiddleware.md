@@ -16,10 +16,9 @@ Example middlewares can be found at: https://github.com/botify-labs/botify-sdk-j
 /**
  * @param  {String} middlewareAPI.contollerId ie. 'AnalysesController'
  * @param  {String} middlewareAPI.operationId ie. 'getAnalysisInfo'
- * @param  {Func}   middlewareAPI.operation
  * @return {Middleware}
  */
-export default function someMiddleware({contollerId, operationId, operation}) {
+export default function someMiddleware({contollerId, operationId}) {
 
   /**
    * @metaparam {Func}     next Function to call with modified arguments for the next middleware

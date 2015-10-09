@@ -10,7 +10,6 @@ export function applyMiddlewareController(...middlewares) {
       const middlewareAPI = {
         contollerId,
         operationId,
-        operation,
       };
       return applyMiddlewareAsync(...middlewares.concat(middlewareAPI))(operation);
     });
