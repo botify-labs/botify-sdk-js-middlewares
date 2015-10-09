@@ -1,7 +1,7 @@
 import chai from 'chai';
 import sinon from 'sinon';
 
-import batchMiddleware from '../../src/middlewares/batchMiddleware';
+import batchMiddleware, { DEFAULT_BATCHED_OPERATIONS } from '../../src/middlewares/batchMiddleware';
 
 
 describe('batchMiddleware', () => {
@@ -141,6 +141,55 @@ describe('batchMiddleware', () => {
         chai.expect(callback.getCall(0).args).to.be.deep.equal(middlewareOutput);
       });
 
+      done();
+    }, 5);
+  });
+
+  it('must respect the queue limit', done => {
+    const limitedNextHandler = batchMiddleware({
+      ...DEFAULT_BATCHED_OPERATIONS,
+      getQueryAggregate: {
+        ...DEFAULT_BATCHED_OPERATIONS.getQueryAggregate,
+        queueLimit: 2,
+      },
+    })(middlewareAPI);
+    const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
+      status: 200,
+      data: v * 2,
+    })));
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const requests = [
+      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: 2},
+      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: 4},
+      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: 6},
+    ];
+
+    requests.forEach(({input, callback}, i) => {
+      limitedNextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, result}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
+        chai.expect(callback.getCall(0).args[1]).to.be.equal(result);
+      });
+
+      // Expect operation to be called only once (MOST IMPORTANT)
+      chai.expect(getQueryAggregateSpy.callCount).to.be.equal(2);
+      // First batch
+      chai.expect(getQueryAggregateSpy.getCall(0).args[0]).to.be.deep.equal({
+        ...analysisParams,
+        queries: [1, 2],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
+      // Second batch
+      chai.expect(getQueryAggregateSpy.getCall(1).args[0]).to.be.deep.equal({
+        ...analysisParams,
+        queries: [3],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(1).args[2]).to.be.equal(options);
       done();
     }, 5);
   });

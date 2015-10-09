@@ -10,6 +10,7 @@ export const DEFAULT_BATCHED_OPERATIONS = {
   getQueryAggregate: {
     paramKeysCommon: ['username', 'projectSlug', 'analysisSlug'],
     paramKeyBatched: 'queries',
+    queueLimit: 20,
   },
 };
 
@@ -27,12 +28,16 @@ class Queue {
    * @param  {String} paramKeyBached
    * @param  {Object} options
    */
-  constructor(operation, params, paramKeyBached, options) {
+  constructor(operation, params, paramKeyBached, options, queueLimit = null) {
     this.operation = operation;
     this.params = params;
     this.bachedKey = paramKeyBached;
     this.options = options;
+    this.queueLimit = queueLimit;
+
     this.resources = [];
+    this.onRequestListeners = [];
+    this.sent = false;
   }
 
   /**
@@ -47,9 +52,32 @@ class Queue {
       items,
       callback,
     });
+    this._requestIfNeed();
   }
 
-  request() {
+  addOnRequestListener(handler) {
+    this.onRequestListeners.push(handler);
+  }
+
+  _requestIfNeed() {
+    if (this.resources.length === 1) {
+      nextTick(() => {
+        this._request();
+      });
+    }
+    if (this.queueLimit && this.resources.length >= this.queueLimit) {
+      this._request();
+    }
+  }
+
+  _request() {
+    if (this.sent) {
+      return;
+    }
+
+    this.sent = true;
+    this._onRequest();
+
     this.operation(
       {
         ...this.params,
@@ -74,6 +102,10 @@ class Queue {
       this.options
     );
   }
+
+  _onRequest() {
+    this.onRequestListeners.forEach(handler => handler());
+  }
 }
 
 const queues = {};
@@ -95,21 +127,17 @@ export default function(batchedOperations = DEFAULT_BATCHED_OPERATIONS) {
         options,
         operationId,
       });
-      const createQueue = !queues[hash];
 
+      const createQueue = !queues[hash];
       if (createQueue) {
         queues[hash] = new Queue(
           next,
           params,
           batchOperation.paramKeyBatched,
-          options
+          options,
+          batchOperation.queueLimit
         );
-
-        // Empty queue at next tick
-        nextTick(() => {
-          queues[hash].request();
-          queues[hash] = null;
-        });
+        queues[hash].addOnRequestListener(() => queues[hash] = null);
       }
 
       queues[hash].addResource(params[batchOperation.paramKeyBatched], callback);
