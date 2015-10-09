@@ -14,7 +14,6 @@ none
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
 const { invalidateAnalysisMiddleware, lscacheMiddleware } = middlewares;
-const { setAnalysisDateLastModified } = invalidateAnalysisMiddleware;
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
