@@ -4,10 +4,6 @@ Middlewares are functions that perform tasks before and after an operation (that
 
 They can be used to modify parameters given to the operation, modify data received by the API, stop an operation call, cache data on the fly, batch requests, etc.
 
-## Lexical
-- **Operation:** function that is specifically designed to call ONE API endpoint. *ie. getProjectDatasets*
-- **Controller:** Set of operations. *ie. AnalysisController, ProjectController*
-
 ## Examples
 Example middlewares can be found at: https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/src/middlewares; you should read them first as they provide simple examples of what you can achieve with this project.
 
@@ -75,6 +71,17 @@ export default function someMiddleware() {
     callback(new ForbiddenError());
     return false;
     //Don't forget to call the callback to give the result to the caller.
+  };
+}
+```
+
+### Delay call
+```JS
+export default function someMiddleware() {
+  return next => function(params, callback, options) {
+    setTimeout(() => {
+      next(...arguments);
+    }, 3000);
   };
 }
 ```

@@ -32,31 +32,11 @@ const sdk = applyMiddleware(
 )(baseSdk);
 ```
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
-
-### Middlewares options
-Some middlewares use options (read middleware's documentation **option section**)
-```JS
-SDK::Controller::operation(params: Object, callback: Func, options: Object?)
-```
-
-Example:
-```JS
-const params = {
-  username: 'botify',
-  projectSlug: 'botify.com',
-  analyseSlug: 'foo',
-};
-const options = {
-  cache: true,
-};
-sdk.AnalysesController.getAnalysis(params, (error, result) => {
-  //Handle result
-}, options);
 ```
 
 
 ## Documentation
-
+- [Introduction](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/docs/introduction.md)
 - [How to write your own middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/docs/howToWriteYourOwnMiddleware.md)
 - [Middlewares docs](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/middlewares)
 
