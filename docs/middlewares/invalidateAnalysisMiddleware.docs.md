@@ -1,14 +1,14 @@
-# invalidateAnalysis middleware
+# [InvalidateAnalysis middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/invalidateAnalysisMiddleware.js)
 
 The middleware automatically invalidate Analysis cache when needed.
 
 When requesting analysis's main info, the API returns (amongst other things) the date last modified. Leading that if this date changes, any data cached for this analysis need to be invalidated as they might have changed.
 
-## Options
-none
-
 ## Middleware requirement
 - lscache (after)
+
+## Operation options
+none
 
 ## Usage
 ```JS

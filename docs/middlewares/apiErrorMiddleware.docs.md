@@ -1,11 +1,11 @@
-# apiError middleware
+# [ApiError middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/apiErrorMiddleware.js)
 
 The middleware transform callback error (if exists) from an Error Payload to a Javascript Error
 
-## Options
+## Middleware requirement
 none
 
-## Middleware requirement
+## Operation options
 none
 
 ## Usage
