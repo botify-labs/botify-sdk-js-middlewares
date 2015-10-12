@@ -1,6 +1,7 @@
 # getQueryAggregate middleware
 
 ## API Query
+```JSON
 {
   "aggs": [
     {
@@ -10,7 +11,7 @@
             "field": "http_code",
             "metadata": {}
           }
-        }
+        },
         {
           "range": {
             "field": "delay_last_byte",
@@ -45,12 +46,13 @@
       ]
     }
   ],
-  "fields": {
+  "filters": {
   	"field": "strategic.is_strategic",
   	"predicate": "eq",
   	"value": true
   }
 }
+```
 
 ## Sent Query
 ```JSON
@@ -90,7 +92,7 @@
       ]
     }
   ],
-  "fields": {
+  "filters": {
   	"field": "compliant.is_compliant",
   	"predicate": "eq",
   	"value": true
