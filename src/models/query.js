@@ -6,8 +6,7 @@ class Query {
 
     constructor(name = '') {
       this._aggregates = this._aggregates || [];
-      this._query = this._query || [];
-      this._query.fields = this._query.fields || [];
+      this.filters = this.filters || [];
       this.name = name;
     }
     // aggregates
@@ -16,20 +15,18 @@ class Query {
       this._aggregates = this._aggregates.concat(aggregate);
       return this;
     }
-    getAggregate(name) {
-      return find(this._aggregates, agg => {
-        return agg.name === name;
-      });
+    getAggregates() {
+      return this._aggregates;
     }
 
     // Filters
     setFilters(filters) {
       // @TODO validate object type
-      this._query.filters = filters;
+      this.filters = filters;
       return this;
     }
     getFilters() {
-      return this._query.filters;
+      return this.filters;
     }
 
     // Sort
@@ -39,35 +36,19 @@ class Query {
 
     // Generates the JSON object needed to call the API
     toJsonAPI() {
-      let agg;
-      let aggregates;
-      let json;
-      aggregates = (function() { //eslint-disable-line
-        let _i;
-        let _len;
-        let _ref;
-        let _results;
-        _ref = this._aggregates;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          agg = _ref[_i];
-          _results.push(agg.toJsonAPI());
-        }
-        return _results;
-      }).call(this);
+      let aggregates = [];
+      map(this._aggregates, value => {
+        aggregates = aggregates.concat(value.toJsonAPI());
+      });
+      let json = {}; //eslint-disable-line
 
-      json = {};
-      if (this._query.filters) {
-        json.filters = this._query.filters;
+      if (this.filters) {
+        json.filters = this.filters;
       }
       if (aggregates.length) {
         json.aggs = aggregates;
       }
       return json;
-    }
-
-    fromObject(object) {
-      return true;
     }
 
 }
