@@ -121,7 +121,7 @@ Corresponding request (to previous examples):
   "aggs": [
     {
       "group_by": [
-        "host",
+        "http_code",
         {
           "range": {
             "field": "delay_last_byte",
@@ -135,11 +135,7 @@ Corresponding request (to previous examples):
                 "to": 1000
               },
               {
-                "from": 1000,
-                "to": 2000
-              },
-              {
-                "from": 2000
+                "from": 1000
               }
             ]
           }
