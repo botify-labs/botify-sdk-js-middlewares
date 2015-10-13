@@ -86,7 +86,85 @@ describe('batchMiddleware', () => {
   });
 
   it('must batch what can be batch together', done => {
-    throw new Error('TODO');
+    const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
+      status: 200,
+      data: v * 2,
+    })));
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const requests = [
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.com',
+          analysisSlug: 'thatAnalysis',
+          queries: [1]
+        },
+        callback: sinon.spy(),
+        result: [2],
+      },
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.fr',
+          analysisSlug: 'thatAnalysis',
+          queries: [2],
+        },
+        callback: sinon.spy(),
+        result: [4],
+      },
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.com',
+          analysisSlug: 'thatAnalysis2',
+          queries: [3],
+        },
+        callback: sinon.spy(),
+        result: [6]},
+    ];
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, result}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
+        chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(result);
+      });
+
+      // Expect operation to be called only once (MOST IMPORTANT)
+      chai.expect(getQueryAggregateSpy.callCount).to.be.equal(3);
+      // First batch
+      chai.expect(getQueryAggregateSpy.getCall(0).args[0]).to.be.deep.equal({
+        username: 'botify',
+        projectSlug: 'botify.com',
+        analysisSlug: 'thatAnalysis',
+        queries: [1],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
+
+      // Second batch
+      chai.expect(getQueryAggregateSpy.getCall(1).args[0]).to.be.deep.equal({
+        username: 'botify',
+        projectSlug: 'botify.fr',
+        analysisSlug: 'thatAnalysis',
+        queries: [2],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(1).args[2]).to.be.equal(options);
+
+      // Thrid batch
+      chai.expect(getQueryAggregateSpy.getCall(2).args[0]).to.be.deep.equal({
+        username: 'botify',
+        projectSlug: 'botify.com',
+        analysisSlug: 'thatAnalysis2',
+        queries: [3],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(2).args[2]).to.be.equal(options);
+      done();
+    }, 5);
   });
 
   it('must returns the operation error if given', done => {
