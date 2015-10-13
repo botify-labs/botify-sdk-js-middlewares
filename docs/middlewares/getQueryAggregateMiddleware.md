@@ -1,6 +1,8 @@
 # getQueryAggregate middleware
 
-## Define a Query
+The following explain the query aggregate request process from the query preparation to the result given by the SDK through the middleware request and response transformations. To do so, the same example is use from the beginning to the end.
+
+## 1. Query Prepartion
 To define a query you have to ways, either using the `Query` class or using a JS plain Object.
 
 A `Query` is composed of `Filters` (see Filters documentation) and a set of `Aggregate`s.
@@ -11,7 +13,7 @@ An `Aggregate` can define some `metric` to compute and a set of `groupby`s to op
   - buckets (`terms` or `ranges`). It's possible to attach metadata for each bucket that will be injected into the response. Note: define `ranges` is a **mandatory** for `range groupby`.
 - `metric`: define the operation to compute. Available metrics are: `count`, `sum`, `avg`, `min`, `max`. Execpt for count, a field on which compute the sum for instance, must be provided. The default metric is `count`.
 
-### 1. Using `Query` class
+### 1.1. Using `Query` class
 ```JS
 import { models } from 'botify-sdk-middlewares';
 const { Query, QueryAggregate } = models;
@@ -21,11 +23,11 @@ let query = new Query();
   new QueryAggregate()
     .addTermGroupBy('http_code', [
       {
-        key: 301,
+        value: 301,
         metadata: { label: 'Redirections' }
       },
       {
-        key: 404,
+        value: 404,
         metadata: { label: 'Page Not Found' }
       }
     ])
@@ -54,7 +56,7 @@ let query = new Query();
 });
 ```
 
-### 2. Using a JS plain Object
+### 1.2. Using a JS plain Object
 ```JS
 {
   aggs: [
@@ -65,11 +67,11 @@ let query = new Query();
             field: 'http_code',
             terms: [
               {
-                key: 301,
+                value: 301,
                 metadata: { label: 'Redirections' }
               },
               {
-                key: 404,
+                value: 404,
                 metadata: { label: 'Page Not Found' }
               }
             ]
@@ -114,8 +116,7 @@ let query = new Query();
 }
 ```
 
-## Query Sent by the SDK to the API
-Corresponding request (to previous examples):
+## 2. Query Sent by the SDK to the API
 ```JSON
 {
   "aggs": [
@@ -150,9 +151,125 @@ Corresponding request (to previous examples):
     }
   ],
   "filters": {
-  	"field": "compliant.is_compliant",
+  	"field": "strategic.is_strategic",
   	"predicate": "eq",
   	"value": true
   }
+}
+```
+
+### 3. API Response
+```JSON
+{
+  "count": 37,
+  "aggs": [
+    {
+      "groups": [
+        {
+          "key": [
+            200,
+            {
+              "to": 500,
+              "from": 0
+            }
+          ],
+          "metrics": [
+            4,
+            157.25
+          ],
+        },
+        {
+          "key": [
+            200,
+            {
+              "to": 1000,
+              "from": 500
+            }
+          ],
+          "metrics": [
+            28,
+            751.25
+          ],
+        },
+        {
+          "key": [
+            301,
+            {
+              "from": 1000
+            }
+          ],
+          "metrics": [
+            5,
+            1809.8
+          ],
+        }
+      ]
+    }
+  ]
+}
+```
+
+## 4. Result given by the SDK
+The sdk process the response by:
+- turning `term` keys into objects
+- injecting metadata (for both `term` and `range` keys)
+- normalizing boolean keys: for boolean fields, the API returns `'T'` and `'F'` keys which are transform to `true` and `false`
+
+```JS
+{
+  count: 37,
+  aggs: [
+    {
+      groups: [
+        {
+          key: [
+            {
+              value: 200,
+            }
+            {
+              to: 500,
+              from: 0,
+              metadata: { label: 'Fast' }
+            }
+          ],
+          metrics: [
+            4,
+            157.25
+          ],
+        },
+        {
+          key: [
+            {
+              value: 200,
+            }
+            {
+              to: 1000,
+              from: 500,
+              metadata: { label: 'Quite Slow' }
+            }
+          ],
+          metrics: [
+            28,
+            751.25
+          ],
+        },
+        {
+          key: [
+            {
+              value: 301,
+              metadata: { label: 'Redirections' }
+            }
+            {
+              from: 1000
+            }
+          ],
+          metrics: [
+            5,
+            1809.8
+          ],
+        }
+      ]
+    }
+  ],
 }
 ```
