@@ -1,13 +1,16 @@
 import QueryRangeGroupBy from './queryRangeGroupBy';
 import QueryTermGroupBy from './queryTermGroupBy';
-import map from 'lodash.map';
 
-class QueryAggregate { // eslint-disable-line no-unused-vars
-
+class QueryAggregate {
+    /**
+     * [constructor description]
+     * @param  {String} name [description]
+     * @return {QueryAggregate Class}      [description]
+     */
     constructor(name) {
       this.name = name;
-      this.group_by = this.group_by || [];
-      this.metrics = this.metrics || [];
+      this.groupBy = [];
+      this.metrics = [];
     }
 
     /**
@@ -17,25 +20,38 @@ class QueryAggregate { // eslint-disable-line no-unused-vars
      */
     addTermGroupBy(field, terms = []) {
       const termGroupBy = new QueryTermGroupBy(field, terms);
-      this.group_by = this.group_by.concat(termGroupBy);
+      this.groupBy = this.groupBy.concat(termGroupBy);
       return this;
     }
 
-    // @param {String || QueryRangeGroupBy} group_by [Group by field name or by a QueryRangeGroupBy]
+    /**
+     * [addGroupBy description]
+     * @param {String} field [description]
+     */
     addGroupBy(field) {
       return this.addTermGroupBy(field);
     }
 
+    /**
+     * [addRangeGroupBy description]
+     * @param {[String} field  [description]
+     * @param {Array} ranges [description]
+     */
     addRangeGroupBy(field, ranges) {
       const rangeGroupBy = new QueryRangeGroupBy(field, ranges);
-      this.group_by = this.group_by.concat(rangeGroupBy);
+      this.groupBy = this.groupBy.concat(rangeGroupBy);
       return this;
     }
     getGroupBys() {
-      return this.group_by;
+      return this.groupBy;
     }
 
-    addMetric(operation, field) {
+    /**
+     * [addMetric description]
+     * @param {String} operation [description]
+     * @param {String || null} field     [description]
+     */
+    addMetric(operation, field = null) {
       const metric = { [operation]: field};
       this.metrics.push(metric);
       return this;
@@ -45,15 +61,11 @@ class QueryAggregate { // eslint-disable-line no-unused-vars
     }
 
     toJsonAPI() {
-      let json = {}; //eslint-disable-line
-      if (this.group_by) {
+      const json = {};
+      if (this.groupBy) {
         let groupByList = [];
-        map(this.group_by, value => {
-          if (typeof value === 'string') {
-            groupByList = groupByList.concat(value);
-          } else {
-            groupByList = groupByList.concat(value.toJsonAPI());
-          }
+        groupByList = this.groupBy.map(groupby => {
+          return typeof groupby === 'string' ? groupby : groupby.toJsonAPI();
         });
         json.group_by = groupByList;
       }

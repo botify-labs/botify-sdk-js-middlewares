@@ -61,4 +61,65 @@ describe('QueryAggregate', function() {
       chai.expect(queryAggregate.getGroupBys()).to.include({field, terms});
     });
   });
+  describe('toJsonApi', function() {
+    it('should return jsonApi object', function() {
+      const queryName = 'test_query';
+      const queryAggregate = new QueryAggregate(queryName);
+      queryAggregate
+      .addTermGroupBy('http_code', [{ value: 301, metadata: { label: 'Redirections' }}, { value: 404, metadata: { label: 'Page Not Found' }}])
+      .addRangeGroupBy('delay_last_byte', [{ from: 0, to: 500, metadata: { label: 'Fast' } },
+                                          { from: 500, to: 1000, metadata: { label: 'Quite slow' } },
+                                          { from: 1000 }])
+      .addMetric('count')
+      .addMetric('avg', 'delay_last_byte');
+      const json = {
+        group_by: [
+          {
+            term: {
+              field: 'http_code',
+              terms: [
+                {
+                  value: 301,
+                  metadata: { label: 'Redirections' },
+                },
+                {
+                  value: 404,
+                  metadata: { label: 'Page Not Found' },
+                },
+              ],
+            },
+          },
+          {
+            range: {
+              field: 'delay_last_byte',
+              ranges: [
+                {
+                  from: 0,
+                  to: 500,
+                  metadata: { label: 'Fast' },
+                },
+                {
+                  from: 500,
+                  to: 1000,
+                  metadata: { label: 'Quite slow' },
+                },
+                {
+                  from: 1000,
+                },
+              ],
+            },
+          },
+        ],
+        metrics: [
+          {
+            count: null,
+          },
+          {
+            avg: 'delay_last_byte',
+          },
+        ],
+      };
+      chai.expect(queryAggregate.toJsonAPI()).to.deep.equal(json);
+    });
+  });
 });

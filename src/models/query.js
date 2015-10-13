@@ -1,14 +1,19 @@
-import map from'lodash.map';
-
-
 class Query {
-
+    /**
+     * [constructor description]
+     * @param  {String} name [description]
+     * @return {Query Class}      [description]
+     */
     constructor(name = '') {
-      this._aggregates = this._aggregates || [];
-      this.filters = this.filters || [];
+      this._aggregates = [];
+      this.filters = [];
       this.name = name;
     }
-    // aggregates
+
+    /**
+     * [addAggregate description]
+     * @param {Array} aggregate [description]
+     */
     addAggregate(aggregate) {
       // @TODO validate QueryAggregate instance
       this._aggregates = this._aggregates.concat(aggregate);
@@ -18,7 +23,10 @@ class Query {
       return this._aggregates;
     }
 
-    // Filters
+    /**
+     * [setFilters description]
+     * @param {Object} filters [description]
+     */
     setFilters(filters) {
       // @TODO validate object type
       this.filters = filters;
@@ -36,15 +44,13 @@ class Query {
     // Generates the JSON object needed to call the API
     toJsonAPI() {
       let aggregates = [];
-      map(this._aggregates, value => {
-        aggregates = aggregates.concat(value.toJsonAPI());
-      });
-      let json = {}; //eslint-disable-line
+      aggregates = this._aggregates.map( agg => agg.toJsonAPI());
+      const json = {};
 
       if (this.filters) {
         json.filters = this.filters;
       }
-      if (aggregates.length) {
+      if (aggregates.length > 0) {
         json.aggs = aggregates;
       }
       return json;

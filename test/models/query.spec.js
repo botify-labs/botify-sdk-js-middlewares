@@ -45,4 +45,102 @@ describe('Query', function() {
       chai.expect(query.getAggregates()).to.have.length(2);
     });
   });
+  describe('toJsonApi', function() {
+    it('should return jsonApi object', function() {
+      const queryName = 'test_query';
+      const query = new Query(queryName)
+        .addAggregate(
+          new QueryAggregate()
+            .addTermGroupBy('http_code', [
+              {
+                value: 301,
+                metadata: { label: 'Redirections' },
+              },
+              {
+                value: 404,
+                metadata: { label: 'Page Not Found' },
+              },
+            ])
+            .addRangeGroupBy('delay_last_byte', [
+              {
+                from: 0,
+                to: 500,
+                metadata: { label: 'Fast' },
+              },
+              {
+                from: 500,
+                to: 1000,
+                metadata: { label: 'Quite slow' },
+              },
+              {
+                from: 1000,
+              },
+            ])
+            .addMetric('count')
+            .addMetric('avg', 'delay_last_byte')
+        )
+        .setFilters({
+          field: 'strategic.is_strategic',
+          predicate: 'eq',
+          value: true,
+        });
+      const json = {
+        aggs: [
+          {
+            group_by: [
+              {
+                term: {
+                  field: 'http_code',
+                  terms: [
+                    {
+                      value: 301,
+                      metadata: { label: 'Redirections' },
+                    },
+                    {
+                      value: 404,
+                      metadata: { label: 'Page Not Found' },
+                    },
+                  ],
+                },
+              },
+              {
+                range: {
+                  field: 'delay_last_byte',
+                  ranges: [
+                    {
+                      from: 0,
+                      to: 500,
+                      metadata: { label: 'Fast' },
+                    },
+                    {
+                      from: 500,
+                      to: 1000,
+                      metadata: { label: 'Quite slow' },
+                    },
+                    {
+                      from: 1000,
+                    },
+                  ],
+                },
+              },
+            ],
+            metrics: [
+              {
+                count: null,
+              },
+              {
+                avg: 'delay_last_byte',
+              },
+            ],
+          },
+        ],
+        filters: {
+          field: 'strategic.is_strategic',
+          predicate: 'eq',
+          value: true,
+        },
+      };
+      chai.expect(query.toJsonAPI()).to.deep.equal(json);
+    });
+  });
 });

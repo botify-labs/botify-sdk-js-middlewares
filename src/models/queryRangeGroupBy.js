@@ -1,22 +1,20 @@
-import map from 'lodash.map';
-import cloneDeep from 'lodash.clonedeep';
-
 class QueryRangeGroupBy {
-    constructor(field, rangesList = []) {
+    /**
+     * [constructor description]
+     * @param  {String} field  [description]
+     * @param  {Array}  ranges [description]
+     * @return {QueryRangeGroupBy Class}        [description]
+     */
+    constructor(field, ranges = []) {
       this.field = field;
-      this.rangesList = rangesList;
+      this.ranges = ranges;
     }
 
-    toJSON() {
-      const ranges = cloneDeep(this.rangesList);
-      let range;
-      map(ranges, value => {
-        return value.metadata && delete range.metadata;
-      });
+    toJsonAPI() {
       return {
         range: {
           field: this.field,
-          ranges: ranges,
+          ranges: this.ranges,
         },
       };
     }
