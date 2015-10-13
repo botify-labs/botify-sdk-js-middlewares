@@ -22,9 +22,9 @@ describe('batchMiddleware', () => {
     })));
     const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
     const requests = [
-      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: 2},
-      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: 4},
-      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: 6},
+      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: [2]},
+      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: [4]},
+      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: [6]},
     ];
 
     requests.forEach(({input, callback}, i) => {
@@ -36,7 +36,7 @@ describe('batchMiddleware', () => {
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
         chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
-        chai.expect(callback.getCall(0).args[1]).to.be.equal(result);
+        chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(result);
       });
 
       // Expect operation to be called only once (MOST IMPORTANT)
@@ -48,6 +48,45 @@ describe('batchMiddleware', () => {
       chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
       done();
     }, 5);
+  });
+
+  it('must call handle calls with multiple queries', done => {
+    const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
+      status: 200,
+      data: v * 2,
+    })));
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const requests = [
+      {input: {...analysisParams, queries: [1, 2]}, callback: sinon.spy(), result: [2, 4]},
+      {input: {...analysisParams, queries: [3, 4]}, callback: sinon.spy(), result: [6, 8]},
+      {input: {...analysisParams, queries: [5, 6]}, callback: sinon.spy(), result: [10, 12]},
+    ];
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, result}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
+        chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(result);
+      });
+
+      // Expect operation to be called only once (MOST IMPORTANT)
+      chai.expect(getQueryAggregateSpy.callCount).to.be.equal(1);
+      chai.expect(getQueryAggregateSpy.getCall(0).args[0]).to.be.deep.equal({
+        ...analysisParams,
+        queries: [1, 2, 3, 4, 5, 6],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
+      done();
+    }, 5);
+  });
+
+  it('must batch what can be batch together', done => {
+    throw new Error('TODO');
   });
 
   it('must returns the operation error if given', done => {
@@ -107,7 +146,7 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, queries: [0]},
         callback: sinon.spy(),
         apiResult: {status: 200, data: 2},
-        middlewareOutput: [null, 2],
+        middlewareOutput: [null, [2]],
       },
       {
         input: {...analysisParams, queries: [1]},
@@ -122,7 +161,7 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, queries: [2]},
         callback: sinon.spy(),
         apiResult: {status: 200, data: 6},
-        middlewareOutput: [null, 6],
+        middlewareOutput: [null, [6]],
       },
     ];
     const getQueryAggregate = ({queries}, callback) => {
@@ -159,9 +198,9 @@ describe('batchMiddleware', () => {
     })));
     const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
     const requests = [
-      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: 2},
-      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: 4},
-      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: 6},
+      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: [2]},
+      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: [4]},
+      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: [6]},
     ];
 
     requests.forEach(({input, callback}, i) => {
@@ -173,7 +212,7 @@ describe('batchMiddleware', () => {
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
         chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
-        chai.expect(callback.getCall(0).args[1]).to.be.equal(result);
+        chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(result);
       });
 
       // Expect operation to be called only once (MOST IMPORTANT)

@@ -1,3 +1,4 @@
+import find from 'lodash.find';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
@@ -84,19 +85,20 @@ class Queue {
         [this.bachedKey]: flatten(pluck(this.resources, 'items')),
       },
       (error, result) => {
-        this.resources.forEach(({callback}, i) => {
+        let resultIndex = 0;
+        this.resources.forEach(({items, callback}) => {
           if (error) {
             return callback(error);
           }
           if (!result) {
             return callback(apiErrorObject('API returned an empty body'));
           }
-          const resourceResponse = result[i];
-          const resourceError = resourceResponse.status < 200 || resourceResponse.status > 206;
+          const itemsResults = items.map(item => result[resultIndex++]);
+          const resourceError = find(itemsResults, itemResult => !!itemResult.error);
           if (resourceError) {
-            return callback(apiErrorObject(resourceResponse.error, resourceResponse.status));
+            return callback(apiErrorObject(resourceError.error, resourceError.status));
           }
-          return callback(null, resourceResponse.data);
+          return callback(null, itemsResults.map(itemResult => itemResult.data));
         });
       },
       this.options
