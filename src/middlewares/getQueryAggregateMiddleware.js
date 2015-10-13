@@ -1,4 +1,4 @@
-const Query = class Query {}; //TODO: Replace by real class
+const Query = class Query {}; // TODO: Replace by real class
 
 
 const GET_QUERY_AGGREGATES_OPERATION_ID = 'getQueryAggregate';
@@ -8,7 +8,7 @@ const QUERIES_PARAM_KEY = 'queries';
  * @param  {Boolean?} options.transformTermKeys Turn term keys into objects: key -> { value: key }
  * @param  {Boolean?} options.injectMetadata    Inject metadata in groups keys
  * @param  {Boolean?} options.normalizeBoolean  Transform keys 'T' and 'F' to true and false
- * @return {Middleware}                            [description]
+ * @return {Middleware}
  */
 export default function({
   transformTermKeys = true,
@@ -21,16 +21,16 @@ export default function({
         next(...arguments);
       }
       const queries = params[QUERIES_PARAM_KEY].map(query => {
-        if (query instanceof Query) {
+        if (query instanceof Query) {
           return query;
         }
         return new Query().fromObject(query);
-      })
+      });
 
       next(
         {
           ...params,
-          queries: queries.map(query => query.toJsonAPI)
+          queries: queries.map(query => query.toJsonAPI),
         },
         function(error, results) {
           if (error) {
@@ -47,5 +47,5 @@ export default function({
         options
       );
     };
-  }
+  };
 }
