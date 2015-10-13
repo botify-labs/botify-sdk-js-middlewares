@@ -112,9 +112,11 @@ const queues = {};
 
 /**
  * @param  {Map<String, {paramKeysCommon: Array<String>, paramKeyBatched: String}>} batchedOperations indexed by operationId
- * @return {Func}
+ * @return {Middleware}
  */
-export default function(batchedOperations = DEFAULT_BATCHED_OPERATIONS) {
+export default function(
+  batchedOperations = DEFAULT_BATCHED_OPERATIONS
+) {
   return function batchMiddleware({operationId}) {
     return next => function(params, callback, options) {
       const batchOperation = batchedOperations[operationId];
