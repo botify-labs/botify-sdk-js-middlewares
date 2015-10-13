@@ -27,6 +27,28 @@ const sdk = applyMiddleware(
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
 
 
+### RECOMMENDED setup
+```JS
+import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
+const {
+  apiErrorMiddleware,
+  batchMiddleware,
+  getQueryAggregateMiddleware,
+  invalidateAnalysisMiddleware,
+  lscacheMiddleware,
+} = middlewares;
+import baseSdk from 'botify-sdk';
+
+const sdk = applyMiddleware(
+  apiErrorMiddleware,
+  invalidateAnalysisMiddleware,
+  lscacheMiddleware,
+  getQueryAggregateMiddleware(),
+  batchMiddleware(),
+)(baseSdk);
+```
+
+
 ### Middlewares options
 Some middlewares takes options (read middleware's documentation **middlewares options section**). If they does, **they need to be called as functions**.
 
