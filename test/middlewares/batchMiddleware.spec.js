@@ -97,7 +97,7 @@ describe('batchMiddleware', () => {
           username: 'botify',
           projectSlug: 'botify.com',
           analysisSlug: 'thatAnalysis',
-          queries: [1]
+          queries: [1],
         },
         callback: sinon.spy(),
         result: [2],
@@ -223,13 +223,11 @@ describe('batchMiddleware', () => {
       {
         input: {...analysisParams, queries: [0]},
         callback: sinon.spy(),
-        apiResult: {status: 200, data: 2},
         middlewareOutput: [null, [2]],
       },
       {
         input: {...analysisParams, queries: [1]},
         callback: sinon.spy(),
-        apiResult: {status: 500, error: 'Server error'},
         middlewareOutput: [{
           ErrorMessage: 'Server error',
           ErrorCode: 500,
@@ -238,12 +236,59 @@ describe('batchMiddleware', () => {
       {
         input: {...analysisParams, queries: [2]},
         callback: sinon.spy(),
-        apiResult: {status: 200, data: 6},
         middlewareOutput: [null, [6]],
       },
     ];
+    const apiResult = [
+      {status: 200, data: 2},
+      {status: 500, error: 'Server error'},
+      {status: 200, data: 6},
+    ];
+
     const getQueryAggregate = ({queries}, callback) => {
-      callback(null, queries.map(i => requests[i].apiResult));
+      callback(null, apiResult);
+    };
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, middlewareOutput}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args).to.be.deep.equal(middlewareOutput);
+      });
+
+      done();
+    }, 5);
+  });
+
+  it('must returns an error if specific item failed', done => {
+    const requests = [
+      {
+        input: {...analysisParams, queries: [0, 2]},
+        callback: sinon.spy(),
+        middlewareOutput: [{
+          ErrorMessage: 'Server error',
+          ErrorCode: 500,
+        }],
+      },
+      {
+        input: {...analysisParams, queries: [2]},
+        callback: sinon.spy(),
+        middlewareOutput: [null, [6]],
+      },
+    ];
+    const apiResult = [
+      {status: 200, data: 2},
+      {status: 500, error: 'Server error'},
+      {status: 200, data: 6},
+    ];
+
+    const getQueryAggregate = ({queries}, callback) => {
+      callback(null, apiResult);
     };
     const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
 
