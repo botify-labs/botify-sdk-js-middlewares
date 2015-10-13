@@ -88,21 +88,7 @@ describe('Query', function() {
         aggs: [
           {
             group_by: [
-              {
-                term: {
-                  field: 'http_code',
-                  terms: [
-                    {
-                      value: 301,
-                      metadata: { label: 'Redirections' },
-                    },
-                    {
-                      value: 404,
-                      metadata: { label: 'Page Not Found' },
-                    },
-                  ],
-                },
-              },
+              'http_code',
               {
                 range: {
                   field: 'delay_last_byte',
@@ -110,12 +96,10 @@ describe('Query', function() {
                     {
                       from: 0,
                       to: 500,
-                      metadata: { label: 'Fast' },
                     },
                     {
                       from: 500,
                       to: 1000,
-                      metadata: { label: 'Quite slow' },
                     },
                     {
                       from: 1000,

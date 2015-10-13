@@ -3,57 +3,59 @@ import QueryTermGroupBy from './queryTermGroupBy';
 
 class QueryAggregate {
     /**
-     * [constructor description]
-     * @param  {String} name [description]
-     * @return {QueryAggregate Class}      [description]
+     * [constructor]
+     * @param  {String} name
+     * @return {QueryAggregate Class}
      */
     constructor(name) {
       this.name = name;
-      this.groupBy = [];
+      this.groupBys = [];
       this.metrics = [];
     }
 
     /**
-     * [addTermGroupBy description]
-     * @param {String} field [description]
-     * @param {Array}  terms [description]
+     * [addTermGroupBy]
+     * @param {String} field
+     * @param {Array}  terms
      */
     addTermGroupBy(field, terms = []) {
       const termGroupBy = new QueryTermGroupBy(field, terms);
-      this.groupBy = this.groupBy.concat(termGroupBy);
+      this.groupBys = this.groupBys.concat(termGroupBy);
       return this;
     }
 
     /**
-     * [addGroupBy description]
-     * @param {String} field [description]
+     * [addGroupBy]
+     * @param {String} field
      */
     addGroupBy(field) {
       return this.addTermGroupBy(field);
     }
 
     /**
-     * [addRangeGroupBy description]
-     * @param {[String} field  [description]
-     * @param {Array} ranges [description]
+     * [addRangeGroupBy]
+     * @param {[String} field
+     * @param {Array} ranges
      */
     addRangeGroupBy(field, ranges) {
       const rangeGroupBy = new QueryRangeGroupBy(field, ranges);
-      this.groupBy = this.groupBy.concat(rangeGroupBy);
+      this.groupBys = this.groupBys.concat(rangeGroupBy);
       return this;
     }
     getGroupBys() {
-      return this.groupBy;
+      return this.groupBys;
     }
 
     /**
-     * [addMetric description]
-     * @param {String} operation [description]
-     * @param {String || null} field     [description]
+     * [addMetric]
+     * @param {String} operation
+     * @param {String || null} field
      */
     addMetric(operation, field = null) {
-      const metric = { [operation]: field};
-      this.metrics.push(metric);
+      this.metrics = this.metrics.concat({
+        operation,
+        field,
+      });
       return this;
     }
     getMetrics() {
@@ -62,15 +64,15 @@ class QueryAggregate {
 
     toJsonAPI() {
       const json = {};
-      if (this.groupBy) {
-        let groupByList = [];
-        groupByList = this.groupBy.map(groupby => {
-          return typeof groupby === 'string' ? groupby : groupby.toJsonAPI();
+      if (this.groupBys) {
+        json.group_by = this.groupBys.map(groupby => {
+          return groupby.toJsonAPI();
         });
-        json.group_by = groupByList;
       }
       if (this.metrics) {
-        json.metrics = this.metrics;
+        json.metrics = this.metrics.map(metric => ({
+          [metric.operation]: metric.field,
+        }));
       }
       return json;
     }

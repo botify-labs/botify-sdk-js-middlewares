@@ -1,16 +1,19 @@
 class QueryRangeGroupBy {
     /**
-     * [constructor description]
-     * @param  {String} field  [description]
-     * @param  {Array}  ranges [description]
-     * @return {QueryRangeGroupBy Class}        [description]
+     * [constructor]
+     * @param  {String} field
+     * @param  {Array}  ranges mandatory
+     * @return {QueryRangeGroupBy Class}
      */
-    constructor(field, ranges = []) {
+    constructor(field, ranges) {
       this.field = field;
       this.ranges = ranges;
     }
 
     toJsonAPI() {
+      this.ranges.map(value => {
+        return value.metadata && delete value.metadata;
+      });
       return {
         range: {
           field: this.field,

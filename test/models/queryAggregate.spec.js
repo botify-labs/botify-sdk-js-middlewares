@@ -20,7 +20,7 @@ describe('QueryAggregate', function() {
       const field = null;
       queryAggregate.addMetric(operation, field);
       chai.expect(queryAggregate.getMetrics()).to.have.length(1);
-      chai.expect(queryAggregate.getMetrics()).to.include({[operation]: field});
+      chai.expect(queryAggregate.getMetrics()).to.include({operation, field});
     });
   });
   describe('addTermGroupBy', function() {
@@ -74,21 +74,7 @@ describe('QueryAggregate', function() {
       .addMetric('avg', 'delay_last_byte');
       const json = {
         group_by: [
-          {
-            term: {
-              field: 'http_code',
-              terms: [
-                {
-                  value: 301,
-                  metadata: { label: 'Redirections' },
-                },
-                {
-                  value: 404,
-                  metadata: { label: 'Page Not Found' },
-                },
-              ],
-            },
-          },
+          'http_code',
           {
             range: {
               field: 'delay_last_byte',
@@ -96,12 +82,10 @@ describe('QueryAggregate', function() {
                 {
                   from: 0,
                   to: 500,
-                  metadata: { label: 'Fast' },
                 },
                 {
                   from: 500,
                   to: 1000,
-                  metadata: { label: 'Quite slow' },
                 },
                 {
                   from: 1000,

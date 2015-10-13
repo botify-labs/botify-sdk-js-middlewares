@@ -1,9 +1,9 @@
 class QueryTermGroupBy {
   /**
-   * [constructor description]
-   * @param  {String} field [description]
-   * @param  {Array}  terms [description]
-   * @return {QueryTermGroupBy Class}       [description]
+   * [constructor]
+   * @param  {String} field
+   * @param  {Array}  terms
+   * @return {QueryTermGroupBy Class}
    */
     constructor(field, terms = []) {
       this.field = field;
@@ -11,12 +11,7 @@ class QueryTermGroupBy {
     }
 
     toJsonAPI() {
-      return {
-        term: {
-          field: this.field,
-          terms: this.terms,
-        },
-      };
+      return this.field;
     }
 }
 
