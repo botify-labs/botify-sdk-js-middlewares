@@ -45,7 +45,7 @@ let query = new Query();
       }
     ])
     .addMetric('count')
-    .addMetric('avg': 'delay_last_byte')
+    .addMetric('avg', 'delay_last_byte')
 )
 .setFilters({
 	field: 'strategic.is_strategic',
@@ -98,7 +98,7 @@ let query = new Query();
       ],
       metrics: [
         {
-          count: 'url'
+          count: null,
         },
         {
           avg: 'delay_last_byte'
