@@ -3,6 +3,8 @@ import apiErrorMiddleware from './middlewares/apiErrorMiddleware';
 import batchMiddleware from './middlewares/batchMiddleware';
 import invalidateAnalysisMiddleware from './middlewares/invalidateAnalysisMiddleware';
 import lscacheMiddleware from './middlewares/lscacheMiddleware';
+import query from './models/query';
+import queryAggregate from './models/queryAggregate';
 
 const middlewares = {
   apiErrorMiddleware,
@@ -14,4 +16,6 @@ const middlewares = {
 export {
   applyMiddleware,
   middlewares,
+  query,
+  queryAggregate,
 };

@@ -1,47 +1,59 @@
-import QueryAggregate from '../../src/models/queryAggregate';
+import QueryAggregate from './queryAggregate';
 
 class Query {
-    /**
-     * [constructor]
-     * @param  {String} name
-     * @return {Query Instance}
-     */
+
     constructor(name = '') {
       this.aggregates = [];
-      this.filters = [];
+      this.filters = {};
       this.name = name;
     }
 
     /**
-     * [addAggregate]
-     * @param {Array} aggregate
+     * @param {Array} aggregate [Array of Objects]
      */
     addAggregate(aggregate) {
-      this.aggregates = this.aggregates.concat(aggregate instanceof QueryAggregate ? aggregate : []);
+      if (!(aggregate instanceof QueryAggregate)) {
+        throw new Error('aggregate must be an instance of QueryAggregate');
+      }
+      this.aggregates = this.aggregates.concat(aggregate);
       return this;
     }
+
+    /**
+     * @return {Array} [Array of Objects]
+     */
     getAggregates() {
       return this.aggregates;
     }
 
     /**
-     * [setFilters]
      * @param {Object} filters
      */
     setFilters(filters) {
-      this.filters = typeof filters === 'object' ? filters : {};
+      if (typeof filters !== 'object') {
+        throw new Error('filters must be an object');
+      }
+      this.filters = filters;
       return this;
     }
+
+    /**
+     * @return {Object}
+     */
     getFilters() {
       return this.filters;
     }
 
-    // Sort
+    /**
+     * @return {String}
+     */
     getName() {
       return this.name;
     }
 
-    // Generates the JSON object needed to call the API
+    /**
+     * [toJsonAPI Generates the JSON object needed to call the API]
+     */
     toJsonAPI() {
       const json = {};
       if (this.getAggregates().length > 0) {

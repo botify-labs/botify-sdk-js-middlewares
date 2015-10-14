@@ -4,15 +4,16 @@ import Query from '../../src/models/query';
 import QueryAggregate from '../../src/models/queryAggregate';
 
 describe('Query', function() {
-  describe('Construct', function() {
+  describe('Constructor', function() {
     it('should create a basic object with empty fields, aggregates, filters and sort', function() {
       const queryName = 'test_query';
       const query = new Query(queryName);
-      chai.expect(query.name).to.equal(queryName); // eslint-disable-line
-      chai.expect(query.getFilters()).to.be.empty; // eslint-disable-line
-      chai.expect(query.getAggregates()).to.be.empty; // eslint-disable-line
+      chai.expect(query.name).to.equal(queryName);
+      chai.expect(query.getFilters()).to.be.empty;
+      chai.expect(query.getAggregates()).to.be.empty;
     });
   });
+
   describe('setFilters', function() {
     it('should set a filter object on the query', function() {
       const queryName = 'test_query';
@@ -22,14 +23,35 @@ describe('Query', function() {
       chai.expect(query.getFilters()).to.deep.equal(filters);
     });
   });
+
+  describe('setFilters Error', function() {
+    it('should throw an error', function() {
+      const queryName = 'test_query';
+      const query = new Query(queryName);
+      const error = 'filters must be an object';
+      // create aggregator
+      chai.expect(query.setFilters.bind(null, 'filter')).to.throw(error);
+    });
+  });
+
   describe('addAggregate', function() {
     it('should add a new instance of QueryAggregate', function() {
       const queryName = 'test_query';
       const query = new Query(queryName);
-      const agg = new QueryAggregate('new_agg', {});
+      const agg = new QueryAggregate('new_agg');
       // create aggregator
       query.addAggregate(agg);
       chai.expect(query.getAggregates()).to.have.length(1);
+    });
+  });
+
+  describe('addAggregate Error', function() {
+    it('should throw an error', function() {
+      const queryName = 'test_query';
+      const query = new Query(queryName);
+      const error = 'aggregate must be an instance of QueryAggregate';
+      // create aggregator
+      chai.expect(query.addAggregate.bind(null, 'agg')).to.throw(error);
     });
   });
 
@@ -45,8 +67,9 @@ describe('Query', function() {
       chai.expect(query.getAggregates()).to.have.length(2);
     });
   });
-  describe('toJsonApi', function() {
-    it('should return jsonApi object', function() {
+
+  describe('toJsonAPI', function() {
+    it('should return JSON object', function() {
       const queryName = 'test_query';
       const query = new Query(queryName)
         .addAggregate(
@@ -109,9 +132,7 @@ describe('Query', function() {
               },
             ],
             metrics: [
-              {
-                count: null,
-              },
+              'count',
               {
                 avg: 'delay_last_byte',
               },
