@@ -1,5 +1,5 @@
-import mapValues from 'lodash.mapvalues';
 import endsWith from 'lodash.endswith';
+import mapValues from 'lodash.mapvalues';
 
 import applyMiddlewareAsync from './utils/applyMiddlewareAsync';
 
