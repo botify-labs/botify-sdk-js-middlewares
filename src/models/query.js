@@ -1,15 +1,24 @@
+import isEmpty from 'lodash.isempty';
+import isPlainObject from 'lodash.isplainobject';
+import isUndefined from 'lodash.isundefined';
+import omit from 'lodash.omit';
+
 import QueryAggregate from './queryAggregate';
+
 
 class Query {
 
+    /**
+     * @param  {String} name
+     */
     constructor(name = '') {
       this.aggregates = [];
-      this.filters = {};
+      this.filters = null;
       this.name = name;
     }
 
     /**
-     * @param {Array} aggregate [Array of Objects]
+     * @param {QueryAggregate} aggregate
      */
     addAggregate(aggregate) {
       if (!(aggregate instanceof QueryAggregate)) {
@@ -20,7 +29,7 @@ class Query {
     }
 
     /**
-     * @return {Array} [Array of Objects]
+     * @return {Array<QueryAggregate>}
      */
     getAggregates() {
       return this.aggregates;
@@ -30,7 +39,7 @@ class Query {
      * @param {Object} filters
      */
     setFilters(filters) {
-      if (typeof filters !== 'object') {
+      if (!isPlainObject(filters)) {
         throw new Error('filters must be an object');
       }
       this.filters = filters;
@@ -38,7 +47,7 @@ class Query {
     }
 
     /**
-     * @return {Object}
+     * @return {Object || null}
      */
     getFilters() {
       return this.filters;
@@ -52,17 +61,22 @@ class Query {
     }
 
     /**
-     * [toJsonAPI Generates the JSON object needed to call the API]
+     * Generates the JSON object needed to call the API
+     * @return {Object}
      */
     toJsonAPI() {
-      const json = {};
-      if (this.getAggregates().length > 0) {
-        json.aggs = this.aggregates.map( agg => agg.toJsonAPI());
-      }
-      if (this.filters) {
-        json.filters = this.filters;
-      }
-      return json;
+      return omit({
+        aggs: this.aggregates.map(agg => agg.toJsonAPI()),
+        filters: this.filters,
+      }, v => isUndefined(v) || isEmpty(v));
+    }
+
+    /**
+     * @param  {Object} object
+     * @return {}
+     */
+    fromObject(object) {
+      throw new Error('Not implemented yet');
     }
 
 }

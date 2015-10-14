@@ -2,8 +2,9 @@ import chai from 'chai';
 
 import QueryTermGroupBy from '../../src/models/queryTermGroupBy';
 
+
 describe('QueryTermGroupBy', function() {
-  describe('Constructor', function() {
+  describe('constructor', function() {
     it('should create a Term Group object with field and terms', function() {
       const field = 'http_code';
       const terms = [
@@ -20,7 +21,16 @@ describe('QueryTermGroupBy', function() {
         },
       ];
       const queryTermGroupBy = new QueryTermGroupBy(field, terms);
+
       chai.expect(queryTermGroupBy.terms).to.be.equal(terms);
+    });
+
+    it('should throw an error if terms param is not an array', function() {
+      const instanciation = (field, terms) => () => new QueryTermGroupBy(field, terms);
+      const expectedError = 'terms must be an Array';
+
+      chai.expect(instanciation('delay_last_byte', 'foo')).to.throw(expectedError);
+      chai.expect(instanciation('delay_last_byte')).to.not.throw(expectedError);
     });
   });
 

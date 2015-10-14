@@ -1,12 +1,11 @@
-import omit from 'lodash.omit';
 import isUndefined from 'lodash.isundefined';
+import omit from 'lodash.omit';
+
 
 class QueryRangeGroupBy {
     /**
-     * [constructor]
      * @param  {String} field
      * @param  {Array}  ranges
-     * @return {QueryRangeGroupBy Class}
      */
     constructor(field, ranges) {
       this.field = field;

@@ -2,8 +2,9 @@ import chai from 'chai';
 
 import QueryRangeGroupBy from '../../src/models/queryRangeGroupBy';
 
+
 describe('QueryRangeGroupBy', function() {
-  describe('Constructor', function() {
+  describe('constructor', function() {
     it('should create a Range Group object with field and ranges', function() {
       const field = 'delay_last_byte';
       const ranges = [
@@ -27,6 +28,14 @@ describe('QueryRangeGroupBy', function() {
       ];
       const queryRangeGroupBy = new QueryRangeGroupBy(field, ranges);
       chai.expect(queryRangeGroupBy.ranges).to.be.equal(ranges);
+    });
+
+    it('should throw an error if ranges param is not an array', function() {
+      const instanciation = (field, ranges) => () => new QueryRangeGroupBy(field, ranges);
+      const expectedError = 'ranges must be an Array';
+
+      chai.expect(instanciation('delay_last_byte', 'foo')).to.throw(expectedError);
+      chai.expect(instanciation('delay_last_byte')).to.throw(expectedError);
     });
   });
 
@@ -72,6 +81,7 @@ describe('QueryRangeGroupBy', function() {
           ],
         },
       };
+
       chai.expect(queryRangeGroupBy.toJsonAPI()).to.deep.equal(json);
     });
   });
