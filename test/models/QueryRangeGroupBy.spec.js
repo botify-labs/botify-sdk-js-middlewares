@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import QueryRangeGroupBy from '../../src/models/queryRangeGroupBy';
+import QueryRangeGroupBy from '../../src/models/QueryRangeGroupBy';
 
 
 describe('QueryRangeGroupBy', function() {

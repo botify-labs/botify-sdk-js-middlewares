@@ -3,7 +3,7 @@ import isPlainObject from 'lodash.isplainobject';
 import isUndefined from 'lodash.isundefined';
 import omit from 'lodash.omit';
 
-import QueryAggregate from './queryAggregate';
+import QueryAggregate from './QueryAggregate';
 
 
 class Query {

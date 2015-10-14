@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import QueryTermGroupBy from '../../src/models/queryTermGroupBy';
+import QueryTermGroupBy from '../../src/models/QueryTermGroupBy';
 
 
 describe('QueryTermGroupBy', function() {

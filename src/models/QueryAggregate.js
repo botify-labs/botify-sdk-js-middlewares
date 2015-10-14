@@ -2,8 +2,8 @@ import isEmpty from 'lodash.isempty';
 import isUndefined from 'lodash.isundefined';
 import omit from 'lodash.omit';
 
-import QueryRangeGroupBy from './queryRangeGroupBy';
-import QueryTermGroupBy from './queryTermGroupBy';
+import QueryRangeGroupBy from './QueryRangeGroupBy';
+import QueryTermGroupBy from './QueryTermGroupBy';
 
 
 class QueryAggregate {

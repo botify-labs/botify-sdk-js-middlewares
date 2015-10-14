@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import QueryAggregate from '../../src/models/queryAggregate';
+import QueryAggregate from '../../src/models/QueryAggregate';
 
 
 describe('QueryAggregate', function() {
