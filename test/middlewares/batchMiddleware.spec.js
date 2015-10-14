@@ -50,7 +50,7 @@ describe('batchMiddleware', () => {
     }, 5);
   });
 
-  it('must call handle calls with multiple queries', done => {
+  it('must handle calls with multiple queries', done => {
     const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
       status: 200,
       data: v * 2,

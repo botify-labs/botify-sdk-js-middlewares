@@ -1,6 +1,6 @@
 # [Batch middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/batchMiddleware.js)
 
-Whenever possible, the middleware automatically batch operations called in the **same tick**. [read about JS ticks](http://blog.carbonfive.com/2013/10/27/the-javascript-event-loop-explained)
+Whenever possible, the middleware automatically batches operations called in the **same tick**. [read about JS ticks](http://blog.carbonfive.com/2013/10/27/the-javascript-event-loop-explained)
 
 The middleware makes also the batch endpoint like `getQueryAggregate` easier to use by restructuring the result.
 
@@ -49,7 +49,7 @@ sdk.AnalysesController.getQueryAggregate(
 
 ## Result restructuring
 
-A Batch endpoint like `getQueryAggregate` will **always respond in 200**. Thought **a real status code is given for each requested resource** (query) using the following structure `{ status: Number, data: Any }`.
+A Batch endpoint like `getQueryAggregate` **always responds in 200**. Thought **a real status code is given for each requested resource** (query) using the following structure `{ status: Number, data: Any }`.
 
 ### Without the middleware
 ```JS
@@ -76,7 +76,7 @@ sdk.AnalysesController.getQueryAggregate(
 ```
 
 ### With the middleware
-When every queries succeed, you can expect the following. As you can see, the response is much more straightforward and easier to use.
+When every query succeeds, you can expect the following. As you can see, the response is much more straightforward and easier to use.
 ```JS
 sdk = applyMiddleware(
   batchMiddleware()
@@ -129,7 +129,7 @@ Because of the way resources (queries) are processed (see bellow), it's good to 
 When 2 queries depend on each other to be processed (like a chart requiring both), you should request both queries in a single call because the middleware composes for you possible errors.
 
 ### When to split queries
-Although, when 2 queries doesn't depend on each others, you should split calls, because allows to manage errors independently, and may allow you to receive the first batch of queries quicker.
+Although, when 2 queries doesn't depend on each others, you should split calls, because it allows you to manage errors independently, and may allow you to receive the first batch of queries quicker.
 
 ### Example
 ```JS
@@ -142,7 +142,7 @@ const someQuery2 = ...;
 const someQuery3 = ...;
 
 // someQuery1 and someQuery2 depends on each other to be used, so they should be
-// called together, the middleware will return a composed error for both if needed.
+// called together, the middleware will return a composed error for both if ones fail.
 sdk.AnalysesController.getQueryAggregate(
   {...params, queries: [someQuery1, someQuery2]}, (error, result) => {
     //Handle someQuery1 and someQuery2 results
@@ -150,13 +150,10 @@ sdk.AnalysesController.getQueryAggregate(
 );
 
 // someQuery3 doesn't depend on the others to be used, so it should be
-// called separately in order to be manage independently.
+// called separately in order to be managed independently.
 sdk.AnalysesController.getQueryAggregate(
   {...params, queries: [someQuery3]}, (error, result) => {
     //Handle someQuery3 result
   }
 );
 ```
-
-
-
