@@ -42,7 +42,8 @@ describe('QueryAggregate', function() {
       const queryAggregate = new QueryAggregate(queryName);
       const field = 'http_code';
       const terms = [
-        { value: 301,
+        {
+          value: 301,
           metadata: {
             label: 'Redirections',
           },
@@ -78,7 +79,8 @@ describe('QueryAggregate', function() {
       const queryAggregate = new QueryAggregate(queryName);
       const field = 'delay_last_byte';
       const ranges = [
-        { from: 0,
+        {
+          from: 0,
           to: 500,
           metadata: {
             label: 'Fast',
@@ -109,7 +111,8 @@ describe('QueryAggregate', function() {
       const queryAggregate = new QueryAggregate(queryName);
       const field = 'http_code';
       const terms = [
-        { value: 301,
+        {
+          value: 301,
           metadata: {
             label: 'Redirections',
           },
@@ -136,7 +139,8 @@ describe('QueryAggregate', function() {
       const queryAggregate = new QueryAggregate(queryName);
       const field = 'http_code';
       const terms = [
-        { value: 301,
+        {
+          value: 301,
           metadata: {
             label: 'Redirections',
           },
