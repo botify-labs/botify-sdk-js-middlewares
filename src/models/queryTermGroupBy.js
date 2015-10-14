@@ -4,17 +4,17 @@ class QueryTermGroupBy {
    * @param  {Array?}  terms
    * @return {QueryTermGroupBy Class}
    */
-    constructor(field, terms = []) {
-      this.field = field;
-      if (!Array.isArray(terms)) {
-        throw new Error('terms must be an Array');
-      }
-      this.terms = terms;
+  constructor(field, terms = []) {
+    this.field = field;
+    if (!Array.isArray(terms)) {
+      throw new Error('terms must be an Array');
     }
+    this.terms = terms;
+  }
 
-    toJsonAPI() {
-      return this.field;
-    }
+  toJsonAPI() {
+    return this.field;
+  }
 }
 
 export default QueryTermGroupBy;
