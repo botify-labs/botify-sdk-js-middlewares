@@ -30,7 +30,7 @@ export default function({
       next(
         {
           ...params,
-          queries: queries.map(query => query.toJsonAPI),
+          queries: queries.map(query => query.toJsonAPI()),
         },
         function(error, results) {
           if (error) {

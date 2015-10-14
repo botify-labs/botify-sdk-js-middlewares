@@ -1,6 +1,6 @@
 # [GetQueryAggregate middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/getQueryAggregateMiddleware.js)
 
-This middleware makes it easy to use the operation `getQueryAggregate` which allows you to process complex queries on Botify database (read paragraph *Query Aggregate Request Process* for details).
+This middleware makes it easy to use the operation `getQueryAggregate` which allows you to perform complex queries on Botify database (read paragraph *Query Aggregate Request Process* for details).
 
 Indeed, it enables you to use the [Query](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/models/query.js) class to define aggregations you want to perform. Plus, it transforms the response to make it easier to process (transformations can be configured).
 
