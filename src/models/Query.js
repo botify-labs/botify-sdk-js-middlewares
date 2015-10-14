@@ -9,7 +9,7 @@ import QueryAggregate from './QueryAggregate';
 class Query {
 
   /**
-   * @param  {String} name
+   * @param  {?String} name
    */
   constructor(name = '') {
     this.aggregates = [];

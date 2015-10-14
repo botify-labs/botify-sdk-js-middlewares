@@ -9,8 +9,7 @@ import QueryTermGroupBy from './QueryTermGroupBy';
 class QueryAggregate {
 
   /**
-   * @param  {String?
-   * } name
+   * @param  {?String} name
    */
   constructor(name = '') {
     this.name = name;
@@ -20,7 +19,7 @@ class QueryAggregate {
 
   /**
    * @param {String} field
-   * @param {Array<{value: Any, metadata: Object?}>} terms
+   * @param {?Array<{value, ?metadata}>} terms
    * Example of Terms format
    * [
    *   {
@@ -50,7 +49,7 @@ class QueryAggregate {
 
   /**
    * @param {String} field
-   * @param {Array<{from: Any?, to: Any?, metadata: Object?}>} ranges
+   * @param {Array<{?from, ?to, ?metadata}>} ranges
    * Example of ranges format
    * [
    *   {
@@ -79,7 +78,7 @@ class QueryAggregate {
 
   /**
    * @param {String} operation
-   * @param {String?} field    Field is a mandatory is operation is different from 'count'
+   * @param {?String} field    Field is a mandatory if operation is different from 'count'
    */
   addMetric(operation, field = null) {
     this.metrics = this.metrics.concat({
@@ -90,7 +89,7 @@ class QueryAggregate {
   }
 
   /**
-   * @return {Array<{operation, field}>}
+   * @return {Array<{operation, ?field}>}
    */
   getMetrics() {
     return this.metrics;

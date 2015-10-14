@@ -1,3 +1,4 @@
+import isArray from 'lodash.isarray';
 import isUndefined from 'lodash.isundefined';
 import omit from 'lodash.omit';
 
@@ -9,7 +10,7 @@ class QueryRangeGroupBy {
    */
   constructor(field, ranges) {
     this.field = field;
-    if (!Array.isArray(ranges)) {
+    if (!isArray(ranges)) {
       throw new Error('ranges must be an Array');
     }
     this.ranges = ranges;
