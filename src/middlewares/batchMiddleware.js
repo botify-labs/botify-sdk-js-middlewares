@@ -1,4 +1,4 @@
-import find from 'lodash.find';
+import findIndex from 'lodash.findindex';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
@@ -94,9 +94,16 @@ class Queue {
             return callback(apiErrorObject('API returned an empty body'));
           }
           const itemsResults = items.map(item => result[resultIndex++]);
-          const resourceError = find(itemsResults, itemResult => !!itemResult.error);
-          if (resourceError) {
-            return callback(apiErrorObject(resourceError.error, resourceError.status));
+          const resourceErrorIndex = findIndex(itemsResults, itemResult => !!itemResult.error);
+          if (resourceErrorIndex >= 0) {
+            const resourceError = itemsResults[resourceErrorIndex];
+            return callback(
+              apiErrorObject({
+                ...resourceError.error,
+                error_resource_index: resourceErrorIndex,
+              },
+              resourceError.status
+            ));
           }
           return callback(null, itemsResults.map(itemResult => itemResult.data));
         });

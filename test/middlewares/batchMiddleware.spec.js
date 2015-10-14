@@ -229,7 +229,10 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, queries: [1]},
         callback: sinon.spy(),
         middlewareOutput: [{
-          ErrorMessage: 'Server error',
+          ErrorMessage: {
+            error_resource_index: 0,
+            message: 'Server error',
+          },
           ErrorCode: 500,
         }],
       },
@@ -241,7 +244,9 @@ describe('batchMiddleware', () => {
     ];
     const apiResult = [
       {status: 200, data: 2},
-      {status: 500, error: 'Server error'},
+      {status: 500, error: {
+        message: 'Server error',
+      }},
       {status: 200, data: 6},
     ];
 
@@ -271,7 +276,11 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, queries: [0, 2]},
         callback: sinon.spy(),
         middlewareOutput: [{
-          ErrorMessage: 'Server error',
+          ErrorMessage: {
+            error_code: 34,
+            error_resource_index: 1,
+            message: 'Query is not valid',
+          },
           ErrorCode: 500,
         }],
       },
@@ -283,7 +292,10 @@ describe('batchMiddleware', () => {
     ];
     const apiResult = [
       {status: 200, data: 2},
-      {status: 500, error: 'Server error'},
+      {status: 500, error: {
+        error_code: 34,
+        message: 'Query is not valid',
+      }},
       {status: 200, data: 6},
     ];
 

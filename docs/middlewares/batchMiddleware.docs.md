@@ -112,9 +112,9 @@ sdk.AnalysesController.getQueryAggregate(
     assert(error).to.be.equal({
       ErrorCode: 400,
       ErrorMessage: {
-        resourceErrorIndex: 1, //Index (0-based) of the resource in error.
+        error_code: 34,
+        error_resource_index: 1, //Index (0-based) of the resource in error.
         message: 'Query is not valid',
-        code: 34,
       },
     });
     assert(result).to.be.undefined;

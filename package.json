@@ -16,7 +16,7 @@
   "dependencies": {
     "es6-error": "^2.0.0",
     "lodash.endswith": "^3.0.0",
-    "lodash.find": "^3.2.1",
+    "lodash.findindex": "^3.2.1",
     "lodash.flatten": "^3.0.2",
     "lodash.isarray": "^3.0.4",
     "lodash.isplainobject ": "^3.0.0",
