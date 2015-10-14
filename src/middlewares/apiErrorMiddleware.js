@@ -12,7 +12,7 @@ export class ApiError extends ExtendableError {
 }
 
 export default function apiErrorMiddleware() {
-  return next => (params, callback, options) => {
+  return next => function(params, callback, options) {
     next(
       params,
       function(error) {

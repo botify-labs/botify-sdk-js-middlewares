@@ -1,3 +1,4 @@
+import findIndex from 'lodash.findindex';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
@@ -84,19 +85,27 @@ class Queue {
         [this.bachedKey]: flatten(pluck(this.resources, 'items')),
       },
       (error, result) => {
-        this.resources.forEach(({callback}, i) => {
+        let resultIndex = 0;
+        this.resources.forEach(({items, callback}) => {
           if (error) {
             return callback(error);
           }
           if (!result) {
             return callback(apiErrorObject('API returned an empty body'));
           }
-          const resourceResponse = result[i];
-          const resourceError = resourceResponse.status < 200 || resourceResponse.status > 206;
-          if (resourceError) {
-            return callback(apiErrorObject(resourceResponse.error, resourceResponse.status));
+          const itemsResults = items.map(item => result[resultIndex++]);
+          const resourceErrorIndex = findIndex(itemsResults, itemResult => !!itemResult.error);
+          if (resourceErrorIndex >= 0) {
+            const resourceError = itemsResults[resourceErrorIndex];
+            return callback(
+              apiErrorObject({
+                ...resourceError.error,
+                error_resource_index: resourceErrorIndex,
+              },
+              resourceError.status
+            ));
           }
-          return callback(null, resourceResponse.data);
+          return callback(null, itemsResults.map(itemResult => itemResult.data));
         });
       },
       this.options
@@ -112,9 +121,11 @@ const queues = {};
 
 /**
  * @param  {Map<String, {paramKeysCommon: Array<String>, paramKeyBatched: String}>} batchedOperations indexed by operationId
- * @return {Func}
+ * @return {Middleware}
  */
-export default function(batchedOperations = DEFAULT_BATCHED_OPERATIONS) {
+export default function(
+  batchedOperations = DEFAULT_BATCHED_OPERATIONS
+) {
   return function batchMiddleware({operationId}) {
     return next => function(params, callback, options) {
       const batchOperation = batchedOperations[operationId];

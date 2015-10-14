@@ -22,9 +22,9 @@ describe('batchMiddleware', () => {
     })));
     const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
     const requests = [
-      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: 2},
-      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: 4},
-      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: 6},
+      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: [2]},
+      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: [4]},
+      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: [6]},
     ];
 
     requests.forEach(({input, callback}, i) => {
@@ -36,7 +36,7 @@ describe('batchMiddleware', () => {
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
         chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
-        chai.expect(callback.getCall(0).args[1]).to.be.equal(result);
+        chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(result);
       });
 
       // Expect operation to be called only once (MOST IMPORTANT)
@@ -46,6 +46,123 @@ describe('batchMiddleware', () => {
         queries: [1, 2, 3],
       });
       chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
+      done();
+    }, 5);
+  });
+
+  it('must handle calls with multiple queries', done => {
+    const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
+      status: 200,
+      data: v * 2,
+    })));
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const requests = [
+      {input: {...analysisParams, queries: [1, 2]}, callback: sinon.spy(), result: [2, 4]},
+      {input: {...analysisParams, queries: [3, 4]}, callback: sinon.spy(), result: [6, 8]},
+      {input: {...analysisParams, queries: [5, 6]}, callback: sinon.spy(), result: [10, 12]},
+    ];
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, result}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
+        chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(result);
+      });
+
+      // Expect operation to be called only once (MOST IMPORTANT)
+      chai.expect(getQueryAggregateSpy.callCount).to.be.equal(1);
+      chai.expect(getQueryAggregateSpy.getCall(0).args[0]).to.be.deep.equal({
+        ...analysisParams,
+        queries: [1, 2, 3, 4, 5, 6],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
+      done();
+    }, 5);
+  });
+
+  it('must batch what can be batch together', done => {
+    const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
+      status: 200,
+      data: v * 2,
+    })));
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const requests = [
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.com',
+          analysisSlug: 'thatAnalysis',
+          queries: [1],
+        },
+        callback: sinon.spy(),
+        result: [2],
+      },
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.fr',
+          analysisSlug: 'thatAnalysis',
+          queries: [2],
+        },
+        callback: sinon.spy(),
+        result: [4],
+      },
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.com',
+          analysisSlug: 'thatAnalysis2',
+          queries: [3],
+        },
+        callback: sinon.spy(),
+        result: [6]},
+    ];
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, result}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
+        chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(result);
+      });
+
+      // Expect operation to be called only once (MOST IMPORTANT)
+      chai.expect(getQueryAggregateSpy.callCount).to.be.equal(3);
+      // First batch
+      chai.expect(getQueryAggregateSpy.getCall(0).args[0]).to.be.deep.equal({
+        username: 'botify',
+        projectSlug: 'botify.com',
+        analysisSlug: 'thatAnalysis',
+        queries: [1],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
+
+      // Second batch
+      chai.expect(getQueryAggregateSpy.getCall(1).args[0]).to.be.deep.equal({
+        username: 'botify',
+        projectSlug: 'botify.fr',
+        analysisSlug: 'thatAnalysis',
+        queries: [2],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(1).args[2]).to.be.equal(options);
+
+      // Thrid batch
+      chai.expect(getQueryAggregateSpy.getCall(2).args[0]).to.be.deep.equal({
+        username: 'botify',
+        projectSlug: 'botify.com',
+        analysisSlug: 'thatAnalysis2',
+        queries: [3],
+      });
+      chai.expect(getQueryAggregateSpy.getCall(2).args[2]).to.be.equal(options);
       done();
     }, 5);
   });
@@ -106,27 +223,84 @@ describe('batchMiddleware', () => {
       {
         input: {...analysisParams, queries: [0]},
         callback: sinon.spy(),
-        apiResult: {status: 200, data: 2},
-        middlewareOutput: [null, 2],
+        middlewareOutput: [null, [2]],
       },
       {
         input: {...analysisParams, queries: [1]},
         callback: sinon.spy(),
-        apiResult: {status: 500, error: 'Server error'},
         middlewareOutput: [{
-          ErrorMessage: 'Server error',
+          ErrorMessage: {
+            error_resource_index: 0,
+            message: 'Server error',
+          },
           ErrorCode: 500,
         }],
       },
       {
         input: {...analysisParams, queries: [2]},
         callback: sinon.spy(),
-        apiResult: {status: 200, data: 6},
-        middlewareOutput: [null, 6],
+        middlewareOutput: [null, [6]],
       },
     ];
+    const apiResult = [
+      {status: 200, data: 2},
+      {status: 500, error: {
+        message: 'Server error',
+      }},
+      {status: 200, data: 6},
+    ];
+
     const getQueryAggregate = ({queries}, callback) => {
-      callback(null, queries.map(i => requests[i].apiResult));
+      callback(null, apiResult);
+    };
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, middlewareOutput}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args).to.be.deep.equal(middlewareOutput);
+      });
+
+      done();
+    }, 5);
+  });
+
+  it('must returns an error if specific item failed', done => {
+    const requests = [
+      {
+        input: {...analysisParams, queries: [0, 2]},
+        callback: sinon.spy(),
+        middlewareOutput: [{
+          ErrorMessage: {
+            error_code: 34,
+            error_resource_index: 1,
+            message: 'Query is not valid',
+          },
+          ErrorCode: 500,
+        }],
+      },
+      {
+        input: {...analysisParams, queries: [2]},
+        callback: sinon.spy(),
+        middlewareOutput: [null, [6]],
+      },
+    ];
+    const apiResult = [
+      {status: 200, data: 2},
+      {status: 500, error: {
+        error_code: 34,
+        message: 'Query is not valid',
+      }},
+      {status: 200, data: 6},
+    ];
+
+    const getQueryAggregate = ({queries}, callback) => {
+      callback(null, apiResult);
     };
     const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
 
@@ -159,9 +333,9 @@ describe('batchMiddleware', () => {
     })));
     const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
     const requests = [
-      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: 2},
-      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: 4},
-      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: 6},
+      {input: {...analysisParams, queries: [1]}, callback: sinon.spy(), result: [2]},
+      {input: {...analysisParams, queries: [2]}, callback: sinon.spy(), result: [4]},
+      {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: [6]},
     ];
 
     requests.forEach(({input, callback}, i) => {
@@ -173,7 +347,7 @@ describe('batchMiddleware', () => {
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
         chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
-        chai.expect(callback.getCall(0).args[1]).to.be.equal(result);
+        chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(result);
       });
 
       // Expect operation to be called only once (MOST IMPORTANT)
