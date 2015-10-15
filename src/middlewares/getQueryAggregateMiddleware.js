@@ -1,7 +1,10 @@
+import isArray from 'lodash.isarray';
+
 import Query from '../models/Query';
 
 
-const GET_QUERY_AGGREGATES_OPERATION_ID = 'getQueryAggregate';
+const CONTROLLER_ID = 'AnalysisController';
+const OPERATION_ID = 'getQueryAggregate';
 const QUERIES_PARAM_KEY = 'queries';
 
 /**
@@ -14,19 +17,22 @@ export default function({
   transformTermKeys = true,
   injectMetadata = true,
   normalizeBoolean = true,
-}) {
-  return function getQueriesAggregateMiddleware({operationId}) {
+} = {}) {
+  return function getQueriesAggregateMiddleware({controllerId, operationId}) {
     return next => function(params, callback, options) {
-      if (operationId !== GET_QUERY_AGGREGATES_OPERATION_ID) {
-        next(...arguments);
+      if (controllerId !== CONTROLLER_ID || operationId !== OPERATION_ID) {
+        return next(...arguments);
       }
-      const queries = params[QUERIES_PARAM_KEY].map(query => {
-        if (query instanceof Query) {
-          return query;
-        }
-        return new Query().fromObject(query);
-      });
 
+      const queriesError = !params
+                      || !isArray(params[QUERIES_PARAM_KEY])
+                      || !params[QUERIES_PARAM_KEY].every(query => query instanceof Query);
+
+      if (queriesError) {
+        throw new Error('queries param must be an array of Query');
+      }
+
+      const queries = params.queries;
       next(
         {
           ...params,
