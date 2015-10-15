@@ -12,10 +12,7 @@
     "check": "npm run lint && npm run test",
     "build:lib": "rimraf lib && babel src --out-dir lib",
     "build:umd": "rimraf dist && webpack src/index.js dist/botify-sdk.min.js --config webpack.config.production.js",
-    "build": "npm run build:lib && npm run build:umd",
-    "preversion": "npm run check",
-    "version": "npm run build",
-    "postversion": "git push && git push --tags && npm run clean"
+    "build": "npm run build:lib && npm run build:umd"
   },
   "repository": {
     "type": "git",
