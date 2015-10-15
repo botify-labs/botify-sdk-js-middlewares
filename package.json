@@ -14,7 +14,10 @@
     "build:umd": "webpack --config webpack.config.production.js",
     "build": "npm run clean && npm run build:lib && npm run build:umd",
     "postinstall": "npm run build",
-    "stats": "webpack --config webpack.config.stats.js && npm run clean"
+    "stats": "webpack --config webpack.config.stats.js && npm run clean",
+    "preversion": "npm run clean && npm run check",
+    "version": "npm run build",
+    "postversion": "git push && git push --tags && npm run clean"
   },
   "repository": {
     "type": "git",
