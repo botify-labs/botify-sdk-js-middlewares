@@ -27,7 +27,7 @@ describe('batchMiddleware', () => {
       {input: {...analysisParams, queries: [3]}, callback: sinon.spy(), result: [6]},
     ];
 
-    requests.forEach(({input, callback}, i) => {
+    requests.forEach(({input, callback}) => {
       nextHandler(getQueryAggregateSpy)(input, callback, options);
     });
 
