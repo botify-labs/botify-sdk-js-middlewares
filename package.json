@@ -3,12 +3,20 @@
   "version": "1.0.0",
   "description": "Botify JS SDK middlewares",
   "author": "Botify <labs@botify.com>",
+  "main": "lib/index.js",
   "scripts": {
+    "clean": "rimraf lib dist",
     "lint": "eslint .",
     "test": "mocha --compilers js:babel/register --recursive",
-    "test:watch": "npm test -- --watch"
+    "test:watch": "npm test -- --watch",
+    "check": "npm run lint && npm run test",
+    "build:lib": "rimraf lib && babel src --out-dir lib",
+    "build:umd": "rimraf dist && webpack src/index.js dist/botify-sdk.min.js --config webpack.config.production.js",
+    "build": "npm run build:lib && npm run build:umd",
+    "preversion": "npm run check",
+    "version": "npm run build",
+    "postversion": "git push && git push --tags && npm run clean"
   },
-  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/botify-hq/botify-sdk-jsplus.git"
@@ -40,14 +48,10 @@
     "eslint": "^1.4.1",
     "eslint-config-airbnb": "^0.1.0",
     "expect": "^1.6.0",
-    "gulp": "^3.9.0",
-    "gulp-bump": "^0.2.2",
-    "gulp-shell": "^0.4.0",
     "mocha": "^2.2.5",
     "mock-local-storage": "^1.0.2",
-    "nyan-progress-webpack-plugin": "^1.0.0",
+    "rimraf": "^2.4.3",
     "sinon": "^1.17.1",
-    "strftime": "^0.8.4",
     "webpack": "^1.9.5",
     "yargs": "^3.5.3"
   }

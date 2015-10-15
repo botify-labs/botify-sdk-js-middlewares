@@ -4,8 +4,8 @@ import batchMiddleware from './middlewares/batchMiddleware';
 import getQueryAggregateMiddleware from './middlewares/getQueryAggregateMiddleware';
 import invalidateAnalysisMiddleware from './middlewares/invalidateAnalysisMiddleware';
 import lscacheMiddleware from './middlewares/lscacheMiddleware';
-import Query from './models/query';
-import QueryAggregate from './models/queryAggregate';
+import Query from './models/Query';
+import QueryAggregate from './models/QueryAggregate';
 
 const middlewares = {
   apiErrorMiddleware,
