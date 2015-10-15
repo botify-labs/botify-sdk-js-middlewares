@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import Query from '../../src/models/Query';
+import Query, {ApiResponseError} from '../../src/models/Query';
 import QueryAggregate from '../../src/models/QueryAggregate';
 
 
@@ -137,6 +137,206 @@ describe('Query', function() {
       };
 
       chai.expect(query.toJsonAPI()).to.deep.equal(json);
+    });
+  });
+
+  describe('processResponse', function() {
+    it('should return JSON object', function() {
+      const queryAggregate = new QueryAggregate()
+        .addTermGroupBy('http_code', [
+          {
+            value: 301,
+            metadata: { label: 'Redirections' },
+          },
+          {
+            value: 404,
+            metadata: { label: 'Page Not Found' },
+          },
+        ])
+        .addRangeGroupBy('delay_last_byte', [
+          {
+            from: 0,
+            to: 500,
+            metadata: { label: 'Fast' },
+          },
+          {
+            from: 500,
+            to: 1000,
+            metadata: { label: 'Quite slow' },
+          },
+          {
+            from: 1000,
+          },
+        ])
+        .addMetric('count')
+        .addMetric('avg', 'delay_last_byte');
+
+      const query = new Query()
+        .addAggregate(queryAggregate)
+        .setFilters({
+          field: 'strategic.is_strategic',
+          predicate: 'eq',
+          value: true,
+        });
+
+      const response = {
+        count: 37,
+        aggs: [
+          {
+            groups: [
+              {
+                key: [
+                  200,
+                  {
+                    from: 0,
+                    to: 500,
+                  },
+                ],
+                metrics: [
+                  4,
+                  157.25,
+                ],
+              },
+              {
+                key: [
+                  200,
+                  {
+                    from: 500,
+                    to: 1000,
+                  },
+                ],
+                metrics: [
+                  28,
+                  751.25,
+                ],
+              },
+              {
+                key: [
+                  301,
+                  {
+                    from: 1000,
+                  },
+                ],
+                metrics: [
+                  5,
+                  1809.8,
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const expectedOutput = {
+        count: 37,
+        aggs: [
+          {
+            groups: [
+              {
+                key: [
+                  {
+                    value: 200,
+                    metadata: {},
+                  },
+                  {
+                    from: 0,
+                    to: 500,
+                    metadata: { label: 'Fast' },
+                  },
+                ],
+                metrics: [
+                  4,
+                  157.25,
+                ],
+              },
+              {
+                key: [
+                  {
+                    value: 200,
+                    metadata: {},
+                  },
+                  {
+                    from: 500,
+                    to: 1000,
+                    metadata: { label: 'Quite slow' },
+                  },
+                ],
+                metrics: [
+                  28,
+                  751.25,
+                ],
+              },
+              {
+                key: [
+                  {
+                    value: 301,
+                    metadata: { label: 'Redirections' },
+                  },
+                  {
+                    from: 1000,
+                    metadata: {},
+                  },
+                ],
+                metrics: [
+                  5,
+                  1809.8,
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      chai.expect(query.processResponse(response)).to.deep.equal(expectedOutput);
+    });
+
+    it('should not add a aggs property if no aggregate defined', function() {
+      const query = new Query();
+      const response = {
+        count: 37,
+      };
+      const expectedOutput = {
+        count: 37,
+      };
+
+      chai.expect(query.processResponse(response)).to.deep.equal(expectedOutput);
+    });
+
+    it('should throw an error if no response', function() {
+      const query = new Query()
+        .addAggregate(
+          new QueryAggregate().addMetric('avg', 'delay')
+        );
+      const response = null;
+
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'missing response');
+    });
+
+    it('should throw an error if no aggs in response whereas aggregates have been defined', function() {
+      const query = new Query()
+        .addAggregate(
+          new QueryAggregate().addMetric('avg', 'delay')
+        );
+      const queryNoAggs = new Query();
+      const response = {
+        count: 37,
+      };
+
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'missing aggs whereas aggregate(s) have been defined');
+      chai.expect(queryNoAggs.processResponse.bind(queryNoAggs, response)).to.not.throw(ApiResponseError);
+    });
+
+    it('should throw an error if aggs length doesnt match with number of defined aggregates', function() {
+      const query = new Query()
+        .addAggregate(
+          new QueryAggregate().addMetric('avg', 'delay')
+        );
+      const response = {
+        count: 37,
+        aggs: [],
+      };
+
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'missing agg items');
     });
   });
 });

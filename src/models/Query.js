@@ -4,10 +4,10 @@ import isUndefined from 'lodash.isundefined';
 import omit from 'lodash.omit';
 
 import QueryAggregate from './QueryAggregate';
+import ApiResponseError from '../errors/ApiResponseError';
 
 
 class Query {
-
   /**
    * @param  {?String} name
    */
@@ -79,6 +79,33 @@ class Query {
     throw new Error('Not implemented yet');
   }
 
+  processResponse(response, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+    if (!response) {
+      throw new ApiResponseError('missing response');
+    }
+    if (this.aggregates.length === 0) {
+      return response;
+    }
+    if (!response.aggs) {
+      throw new ApiResponseError('missing aggs whereas aggregate(s) have been defined');
+    }
+    if (response.aggs.length !== this.aggregates.length) {
+      throw new ApiResponseError('missing agg items');
+    }
+    return {
+      ...response,
+      aggs: response.aggs.map((agg, i) => {
+        return this.aggregates[i].processResponse(agg, {
+          transformTermKeys,
+          injectMetadata,
+          normalizeBoolean,
+        });
+      }),
+    };
+  }
 }
 
 export default Query;
+export {
+  ApiResponseError,
+};

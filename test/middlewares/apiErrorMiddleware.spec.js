@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import apiErrorMiddleware, {ApiError} from '../../src/middlewares/apiErrorMiddleware';
+import apiErrorMiddleware, { ApiError } from '../../src/middlewares/apiErrorMiddleware';
 
 
 describe('apiErrorMiddleware', () => {

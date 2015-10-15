@@ -34,7 +34,7 @@ const params = {
 
 // The following requests will be batched. (Though, it doesn't affect the way you use the SDK)
 sdk.AnalysesController.getQueryAggregate(
-  {...params, queries: Array<Query>},
+  {...params, queries: Array<Object>},
   (error, result) => {
     //Handle Result
   }

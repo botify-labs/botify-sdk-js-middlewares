@@ -1,8 +1,50 @@
-# getQueryAggregate middleware
+# [GetQueryAggregate middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/getQueryAggregateMiddleware.js)
+
+This middleware makes it easy to use the operation `getQueryAggregate` which allows you to perform complex queries on Botify database (read paragraph *Query Aggregate Request Process* for details).
+
+Indeed, it enables you to use the [Query](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/models/Query.js) class to define aggregations you want to perform. Plus, it transforms the response to make it easier to process (transformations can be configured).
+
+## Middleware requirement
+- batchMiddleware (after)
+
+## Middleware options
+- {Boolean} transformTermKeys Turn term keys into objects: key -> { value: key }
+- {Boolean} injectMetadata    Inject metadata in groups keys
+- {Boolean} normalizeBoolean  Transform keys 'T' and 'F' to true and false
+
+## Operation options
+none
+
+## Usage
+```JS
+import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
+const { getQueryAggregateMiddleware, batchMiddleware } = middlewares;
+import baseSdk from 'botify-sdk';
+
+const sdk = applyMiddleware(
+  getQueryAggregateMiddleware(),
+  batchMiddleware()
+)(baseSdk);
+
+const params = {
+  username: 'botify',
+  projectSlug: 'botify.com',
+  analyseSlug: 'foo',
+};
+
+sdk.AnalysesController.getQueryAggregate(
+  {...params, queries: Array<Query>},
+  (error, result) => {
+    //Handle Result
+  }
+);
+```
+
+## Query Aggregate Request Process
 
 The following explain the query aggregate request process from the query preparation to the result given by the SDK through the middleware request and response transformations. To do so, the same example is use from the beginning to the end.
 
-## 1. Query Prepartion
+### 1. Query Prepartion
 To define a query you have to ways, either using the `Query` class or using a JS plain Object.
 
 A `Query` is composed of `Filters` (see Filters documentation) and a set of `Aggregate`s.
@@ -13,7 +55,7 @@ An `Aggregate` can define some `metric` to compute and a set of `groupby`s to op
   - buckets (`terms` or `ranges`). It's possible to attach metadata for each bucket that will be injected into the response. Note: define `ranges` is a **mandatory** for `range groupby`.
 - `metric`: define the operation to compute. Available metrics are: `count`, `sum`, `avg`, `min`, `max`. Execpt for count, a field on which compute the sum for instance, must be provided. The default metric is `count`.
 
-### 1.1. Using `Query` class
+#### 1.1. Using `Query` class
 ```JS
 import { models } from 'botify-sdk-middlewares';
 const { Query, QueryAggregate } = models;
@@ -56,7 +98,7 @@ let query = new Query();
 });
 ```
 
-### 1.2. Using a JS plain Object
+#### 1.2. Using a JS plain Object
 ```JS
 {
   aggs: [
@@ -116,7 +158,7 @@ let query = new Query();
 }
 ```
 
-## 2. Query Sent by the SDK to the API
+### 2. Query Sent by the SDK to the API
 ```JSON
 {
   "aggs": [
@@ -158,7 +200,7 @@ let query = new Query();
 }
 ```
 
-### 3. API Response
+#### 3. API Response
 ```JSON
 {
   "count": 37,
@@ -209,7 +251,7 @@ let query = new Query();
 }
 ```
 
-## 4. Result given by the SDK
+### 4. Result given by the SDK
 The sdk process the response by:
 - turning `term` keys into objects
 - injecting metadata (for both `term` and `range` keys)

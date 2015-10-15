@@ -4,10 +4,10 @@ import omit from 'lodash.omit';
 
 import QueryRangeGroupBy from './QueryRangeGroupBy';
 import QueryTermGroupBy from './QueryTermGroupBy';
+import ApiResponseError from '../errors/ApiResponseError';
 
 
 class QueryAggregate {
-
   /**
    * @param  {?String} name
    */
@@ -112,6 +112,48 @@ class QueryAggregate {
       }),
     }, v => isUndefined(v) || isEmpty(v));
   }
+
+  processResponse(aggResponse, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+    if (!aggResponse) {
+      throw new ApiResponseError('missing agg');
+    }
+    if (this.groupBys.length === 0) {
+      return aggResponse;
+    }
+    if (!aggResponse.groups) {
+      throw new ApiResponseError('missing groups whereas groupby(s) have been defined');
+    }
+
+    return {
+      ...aggResponse,
+      groups: aggResponse.groups.map(this._processGroupResponse.bind(this)),
+    };
+  }
+
+  _processGroupResponse(groupResponse, {transformTermKeys, injectMetadata, normalizeBoolean}) {
+    if (!groupResponse) {
+      throw new ApiResponseError('missing group');
+    }
+    if (!groupResponse.key) {
+      throw new ApiResponseError('missing group key');
+    }
+    if (groupResponse.key.length !== this.groupBys.length) {
+      throw new ApiResponseError('missing group key items');
+    }
+    return {
+      ...groupResponse,
+      key: groupResponse.key.map((keyItem, i) => {
+        return this.groupBys[i].applyKeyReducers(keyItem, {
+          transformTermKeys,
+          injectMetadata,
+          normalizeBoolean,
+        });
+      }),
+    };
+  }
 }
 
 export default QueryAggregate;
+export {
+  ApiResponseError,
+};
