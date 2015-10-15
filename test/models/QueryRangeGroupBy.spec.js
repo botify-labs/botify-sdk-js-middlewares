@@ -1,4 +1,5 @@
 import chai from 'chai';
+import sinon from 'sinon';
 
 import QueryRangeGroupBy from '../../src/models/QueryRangeGroupBy';
 
@@ -83,6 +84,104 @@ describe('QueryRangeGroupBy', function() {
       };
 
       chai.expect(queryRangeGroupBy.toJsonAPI()).to.deep.equal(json);
+    });
+  });
+
+  describe('applyKeyReducers', function() {
+    it('should inject metadata by default', function() {
+      const field = 'delay_last_byte';
+      const ranges = [];
+      const queryRangeGroupBy = new QueryRangeGroupBy(field, ranges);
+      sinon.spy(queryRangeGroupBy, '_injectMetadata');
+
+      queryRangeGroupBy.applyKeyReducers({});
+      chai.expect(queryRangeGroupBy._injectMetadata.callCount).to.be.equal(1);
+    });
+
+    it('should not inject metadata if specified', function() {
+      const field = 'delay_last_byte';
+      const ranges = [];
+      const queryRangeGroupBy = new QueryRangeGroupBy(field, ranges);
+      sinon.spy(queryRangeGroupBy, '_injectMetadata');
+
+      queryRangeGroupBy.applyKeyReducers({}, {injectMetadata: false});
+      chai.expect(queryRangeGroupBy._injectMetadata.callCount).to.be.equal(0);
+    });
+  });
+
+  describe('_injectMetadata', function() {
+    it('should inject metadata', function() {
+      const field = 'delay_last_byte';
+      const ranges = [
+        {
+          from: 0,
+          to: 500,
+          metadata: {
+            label: 'Fast',
+          },
+        },
+        {
+          from: 500,
+          to: 1000,
+          metadata: {
+            label: 'Quite slow',
+          },
+        },
+        {
+          from: 1000,
+        },
+      ];
+      const queryRangeGroupBy = new QueryRangeGroupBy(field, ranges);
+
+      const input = {
+        from: 0,
+        to: 500,
+      };
+
+      const output = {
+        from: 0,
+        to: 500,
+        metadata: {
+          label: 'Fast',
+        },
+      };
+
+      chai.expect(queryRangeGroupBy._injectMetadata(input)).to.deep.equal(output);
+    });
+
+    it('should inject empty metadata if not available', function() {
+      const field = 'delay_last_byte';
+      const ranges = [
+        {
+          from: 0,
+          to: 500,
+          metadata: {
+            label: 'Fast',
+          },
+        },
+        {
+          from: 500,
+          to: 1000,
+          metadata: {
+            label: 'Quite slow',
+          },
+        },
+        {
+          from: 1000,
+        },
+      ];
+      const queryRangeGroupBy = new QueryRangeGroupBy(field, ranges);
+
+      const input = {
+        from: 1000,
+      };
+
+      const output = {
+        from: 1000,
+        metadata: {},
+      };
+
+      chai.expect(queryRangeGroupBy._injectMetadata(input)).to.deep.equal(output);
     });
   });
 });

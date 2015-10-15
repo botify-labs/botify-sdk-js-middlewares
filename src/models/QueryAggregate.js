@@ -118,7 +118,7 @@ class QueryAggregate {
         return {
           metrics,
           key: key.map((keyItem, i) => {
-            return this.groupBys[i].processKeyResponse(keyItem, {
+            return this.groupBys[i].applyKeyReducers(keyItem, {
               transformTermKeys,
               injectMetadata,
               normalizeBoolean,

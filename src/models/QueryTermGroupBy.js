@@ -20,20 +20,26 @@ class QueryTermGroupBy {
     return this.field;
   }
 
-  processKeyResponse(keyItem, {transformKeys = true, injectMetadata = true, normalizeBoolean = true}) {
+  applyKeyReducers(keyItem, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
     let key = keyItem;
 
-    if (transformKeys) {
-      key = this._transformTermKeys(key);
-    }
-    if (injectMetadata && transformKeys) {
-      key = this._injectMetadata(key);
-    }
     if (normalizeBoolean) {
       key = this._normalizeBoolean(key);
     }
+    if (transformTermKeys) {
+      key = this._transformTermKeys(key);
+    }
+    if (injectMetadata && transformTermKeys) {
+      key = this._injectMetadata(key);
+    }
 
     return key;
+  }
+
+  _normalizeBoolean(key) {
+    return key === 'T' ? true
+         : key === 'F' ? false
+         : key;
   }
 
   _transformTermKeys(key) {
@@ -50,13 +56,6 @@ class QueryTermGroupBy {
       ...key,
       metadata: relatedTerm && relatedTerm.metadata || {},
     };
-  }
-
-
-  _normalizeBoolean(key) {
-    return key === 'T' ? true
-         : key === 'F' ? false
-         : key;
   }
 }
 
