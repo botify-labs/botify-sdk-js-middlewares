@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import Query from '../../src/models/Query';
+import Query, { ApiResponseError } from '../../src/models/Query';
 import QueryAggregate from '../../src/models/QueryAggregate';
 
 
@@ -288,6 +288,54 @@ describe('Query', function() {
       };
 
       chai.expect(query.processResponse(response)).to.deep.equal(expectedOutput);
+    });
+
+    it('should return empty aggs array if no aggregate defined', function() {
+      const query = new Query();
+      const response = {
+        count: 37,
+      };
+      const expectedOutput = {
+        count: 37,
+        aggs: [],
+      };
+
+      chai.expect(query.processResponse(response)).to.deep.equal(expectedOutput);
+    });
+
+    it('should throw an error if no response', function() {
+      const query = new Query()
+        .addAggregate(
+          new QueryAggregate().addMetric('avg', 'delay')
+        );
+      const response = null;
+
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'no response');
+    });
+
+    it('should throw an error if no aggs in response whereas aggregate have been defined', function() {
+      const query = new Query()
+        .addAggregate(
+          new QueryAggregate().addMetric('avg', 'delay')
+        );
+      const response = {
+        count: 37,
+      };
+
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'no aggs');
+    });
+
+    it('should throw an error if aggs in response whereas aggregate have been defined', function() {
+      const query = new Query()
+        .addAggregate(
+          new QueryAggregate().addMetric('avg', 'delay')
+        );
+      const response = {
+        count: 37,
+        aggs: [],
+      };
+
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'aggs length does not match with number of aggregates');
     });
   });
 });

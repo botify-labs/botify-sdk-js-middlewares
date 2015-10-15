@@ -1,3 +1,4 @@
+import ExtendableError from 'es6-error';
 import isEmpty from 'lodash.isempty';
 import isPlainObject from 'lodash.isplainobject';
 import isUndefined from 'lodash.isundefined';
@@ -5,6 +6,13 @@ import omit from 'lodash.omit';
 
 import QueryAggregate from './QueryAggregate';
 
+
+export class ApiResponseError extends ExtendableError {
+  constructor(message) {
+    super(message);
+    this.message = message;
+  }
+}
 
 class Query {
   /**
@@ -79,6 +87,21 @@ class Query {
   }
 
   processResponse(response, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+    if (!response) {
+      throw new ApiResponseError('no response');
+    }
+    if (this.aggregates.length === 0) {
+      return {
+        ...response,
+        aggs: [],
+      };
+    }
+    if (!response.aggs) {
+      throw new ApiResponseError('no aggs');
+    }
+    if (response.aggs.length !== this.aggregates.length) {
+      throw new ApiResponseError('aggs length does not match with number of aggregates');
+    }
     return {
       ...response,
       aggs: response.aggs.map((agg, i) => {
