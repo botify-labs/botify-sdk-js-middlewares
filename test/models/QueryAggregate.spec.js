@@ -2,6 +2,7 @@ import chai from 'chai';
 import sinon from 'sinon';
 
 import QueryAggregate from '../../src/models/QueryAggregate';
+import ApiResponseError from '../../src/errors/ApiResponseError';
 
 
 describe('QueryAggregate', function() {
@@ -227,7 +228,7 @@ describe('QueryAggregate', function() {
   });
 
   describe('processResponse', function() {
-    it('should apply groupby redcers on keys', function() {
+    it('should apply groupby reducers on keys', function() {
       const queryAggregate = new QueryAggregate()
         .addTermGroupBy('http_code', [
           {
@@ -314,6 +315,73 @@ describe('QueryAggregate', function() {
       chai.expect(queryAggregate.groupBys[1].applyKeyReducers.getCall(0).args[0]).to.be.deep.equal({from: 0, to: 500});
       chai.expect(queryAggregate.groupBys[1].applyKeyReducers.getCall(1).args[0]).to.be.deep.equal({from: 500, to: 1000});
       chai.expect(queryAggregate.groupBys[1].applyKeyReducers.getCall(2).args[0]).to.be.deep.equal({from: 1000});
+    });
+
+    it('should not add a groups property if no groupby defined', function() {
+      const queryAggregate = new QueryAggregate()
+        .addMetric('avg', 'delay_last_byte');
+
+      const response = {
+        metrics: [
+          118.52380952380952,
+        ],
+      };
+
+      const expectedOutput = {
+        metrics: [
+          118.52380952380952,
+        ],
+      };
+
+      chai.expect(queryAggregate.processResponse(response)).to.deep.equal(expectedOutput);
+    });
+
+    it('should throw an error if no agg', function() {
+      const queryAggregate = new QueryAggregate();
+      const response = null;
+
+      chai.expect(queryAggregate.processResponse.bind(queryAggregate, response)).to.throw(ApiResponseError, 'missing agg');
+    });
+
+    it('should throw an error if no groups in response whereas groupby have been defined', function() {
+      const queryAggregate = new QueryAggregate().addTermGroupBy('http_code');
+      const queryAggregateNoGroupbys = new QueryAggregate();
+      const response = {
+        count: 37,
+      };
+
+      chai.expect(queryAggregate.processResponse.bind(queryAggregate, response)).to.throw(ApiResponseError, 'missing groups whereas groupby(s) have been defined');
+      chai.expect(queryAggregateNoGroupbys.processResponse.bind(queryAggregateNoGroupbys, response)).to.not.throw(ApiResponseError);
+    });
+  });
+
+  describe('_processGroupResponse', function() {
+    it('should throw an error if no group', function() {
+      const queryAggregate = new QueryAggregate();
+      const response = null;
+
+      chai.expect(queryAggregate._processGroupResponse.bind(queryAggregate, response, {})).to.throw(ApiResponseError, 'missing group');
+    });
+
+    it('should throw an error if no group key', function() {
+      const queryAggregate = new QueryAggregate();
+      const response = {
+        metrics: [0],
+      };
+
+      chai.expect(queryAggregate._processGroupResponse.bind(queryAggregate, response, {})).to.throw(ApiResponseError, 'missing group key');
+    });
+
+    it('should throw an error if group key length doesnt match with number of defined grupbys', function() {
+      const queryAggregate = new QueryAggregate().addTermGroupBy('http_code');
+      const queryAggregateNoGroupbys = new QueryAggregate();
+      const response = {
+        key: [],
+        metrics: [0],
+      };
+
+      chai.expect(queryAggregate._processGroupResponse.bind(queryAggregate, response, {})).to.throw(ApiResponseError, 'missing group key items');
+      chai.expect(queryAggregateNoGroupbys._processGroupResponse.bind(queryAggregateNoGroupbys, response, {})).to.not.throw(ApiResponseError);
     });
   });
 });

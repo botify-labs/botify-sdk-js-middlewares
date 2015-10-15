@@ -1,7 +1,8 @@
 import chai from 'chai';
 
-import Query, { ApiResponseError } from '../../src/models/Query';
+import Query from '../../src/models/Query';
 import QueryAggregate from '../../src/models/QueryAggregate';
+import ApiResponseError from '../../src/errors/ApiResponseError';
 
 
 describe('Query', function() {
@@ -290,14 +291,13 @@ describe('Query', function() {
       chai.expect(query.processResponse(response)).to.deep.equal(expectedOutput);
     });
 
-    it('should return empty aggs array if no aggregate defined', function() {
+    it('should not add a aggs property if no aggregate defined', function() {
       const query = new Query();
       const response = {
         count: 37,
       };
       const expectedOutput = {
         count: 37,
-        aggs: [],
       };
 
       chai.expect(query.processResponse(response)).to.deep.equal(expectedOutput);
@@ -310,22 +310,24 @@ describe('Query', function() {
         );
       const response = null;
 
-      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'no response');
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'missing response');
     });
 
-    it('should throw an error if no aggs in response whereas aggregate have been defined', function() {
+    it('should throw an error if no aggs in response whereas aggregates have been defined', function() {
       const query = new Query()
         .addAggregate(
           new QueryAggregate().addMetric('avg', 'delay')
         );
+      const queryNoAggs = new Query();
       const response = {
         count: 37,
       };
 
-      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'no aggs');
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'missing aggs whereas aggregate(s) have been defined');
+      chai.expect(queryNoAggs.processResponse.bind(queryNoAggs, response)).to.not.throw(ApiResponseError);
     });
 
-    it('should throw an error if aggs in response whereas aggregate have been defined', function() {
+    it('should throw an error if aggs length doesnt match with number of defined aggregates', function() {
       const query = new Query()
         .addAggregate(
           new QueryAggregate().addMetric('avg', 'delay')
@@ -335,7 +337,7 @@ describe('Query', function() {
         aggs: [],
       };
 
-      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'aggs length does not match with number of aggregates');
+      chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'missing agg items');
     });
   });
 });

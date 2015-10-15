@@ -85,7 +85,6 @@ describe('getQueryAggregateMiddleware', () => {
             metrics: [
               118.52380952380952,
             ],
-            groups: undefined,
           },
         ],
       },
