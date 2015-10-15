@@ -1,4 +1,4 @@
-const Query = class Query {}; // TODO: Replace by real class
+import Query from '../models/Query';
 
 
 const GET_QUERY_AGGREGATES_OPERATION_ID = 'getQueryAggregate';

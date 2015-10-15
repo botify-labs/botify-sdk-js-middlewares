@@ -7,7 +7,6 @@ import QueryAggregate from './QueryAggregate';
 
 
 class Query {
-
   /**
    * @param  {?String} name
    */
@@ -79,6 +78,18 @@ class Query {
     throw new Error('Not implemented yet');
   }
 
+  processResponse(response, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+    return {
+      ...response,
+      aggs: response.aggs.map((agg, i) => {
+        return this.aggregates[i].processResponse(agg, {
+          transformTermKeys,
+          injectMetadata,
+          normalizeBoolean,
+        });
+      }),
+    };
+  }
 }
 
 export default Query;
