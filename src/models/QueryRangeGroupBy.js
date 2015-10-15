@@ -1,3 +1,4 @@
+import find from 'lodash.find';
 import isArray from 'lodash.isarray';
 import isUndefined from 'lodash.isundefined';
 import omit from 'lodash.omit';
@@ -25,6 +26,26 @@ class QueryRangeGroupBy {
           to: range.to,
         }, isUndefined)),
       },
+    };
+  }
+
+  processKeyResponse(keyItem, {injectMetadata = true}) {
+    let key = keyItem;
+
+    if (injectMetadata) {
+      key = this._injectMetadata(key);
+    }
+
+    return key;
+  }
+
+  _injectMetadata(key) {
+    const relatedRange = find(this.ranges, range => {
+      return range.to === key.to && range.from === key.from;
+    });
+    return {
+      ...key,
+      metadata: relatedRange && relatedRange.metadata || {},
     };
   }
 }

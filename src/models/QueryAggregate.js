@@ -1,4 +1,3 @@
-import find from 'lodash.find';
 import isEmpty from 'lodash.isempty';
 import isUndefined from 'lodash.isundefined';
 import omit from 'lodash.omit';
@@ -118,8 +117,8 @@ class QueryAggregate {
       groups: response.groups.map(({metrics, key}) => {
         return {
           metrics,
-          key: key.map((k, i) => {
-            return this._applyResponseKeyReduceurs(k, this.groupBys[i], {
+          key: key.map((keyItem, i) => {
+            return this.groupBys[i].processKeyResponse(keyItem, {
               transformTermKeys,
               injectMetadata,
               normalizeBoolean,
@@ -128,58 +127,6 @@ class QueryAggregate {
         };
       }),
     };
-  }
-
-  _applyResponseKeyReduceurs(key, groupBy, {transformTermKeys, injectMetadata, normalizeBoolean}) {
-    const isTermGroupBy = groupBy instanceof QueryTermGroupBy;
-    let keyItem = key;
-
-    if (transformTermKeys && isTermGroupBy) {
-      keyItem = this._transformTermKeys(keyItem);
-    }
-    if (injectMetadata && isTermGroupBy && transformTermKeys) {
-      keyItem = this._injectTermMetadata(keyItem, groupBy);
-    }
-    if (injectMetadata && !isTermGroupBy) {
-      keyItem = this._injectRangeMetadata(keyItem, groupBy);
-    }
-    if (normalizeBoolean && isTermGroupBy) {
-      keyItem = this._normalizeBoolean(keyItem);
-    }
-
-    return keyItem;
-  }
-
-  _transformTermKeys(key) {
-    return {
-      value: key,
-    };
-  }
-
-  _injectTermMetadata(key, groupBy) {
-    const relatedTerm = find(groupBy.terms, term => {
-      return term.value === key.value;
-    });
-    return {
-      ...key,
-      metadata: relatedTerm && relatedTerm.metadata || {},
-    };
-  }
-
-  _injectRangeMetadata(key, groupBy) {
-    const relatedRange = find(groupBy.ranges, range => {
-      return range.to === key.to && range.from === key.from;
-    });
-    return {
-      ...key,
-      metadata: relatedRange && relatedRange.metadata || {},
-    };
-  }
-
-  _normalizeBoolean(key) {
-    return key === 'T' ? true
-         : key === 'F' ? false
-         : key;
   }
 }
 
