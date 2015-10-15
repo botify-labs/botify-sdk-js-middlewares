@@ -1,6 +1,6 @@
 {
   "name": "botify-sdk-middlewares",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Botify JS SDK middlewares",
   "author": "Botify <labs@botify.com>",
   "main": "lib/index.js",
