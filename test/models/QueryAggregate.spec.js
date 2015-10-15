@@ -1,4 +1,5 @@
 import chai from 'chai';
+import sinon from 'sinon';
 
 import QueryAggregate from '../../src/models/QueryAggregate';
 
@@ -222,6 +223,97 @@ describe('QueryAggregate', function() {
       };
 
       chai.expect(queryAggregate.toJsonAPI()).to.deep.equal(json);
+    });
+  });
+
+  describe('processResponse', function() {
+    it('should apply groupby redcers on keys', function() {
+      const queryAggregate = new QueryAggregate()
+        .addTermGroupBy('http_code', [
+          {
+            value: 301,
+            metadata: { label: 'Redirections' },
+          },
+          {
+            value: 404,
+            metadata: { label: 'Page Not Found' },
+          },
+        ])
+        .addRangeGroupBy('delay_last_byte', [
+          {
+            from: 0,
+            to: 500,
+            metadata: { label: 'Fast' },
+          },
+          {
+            from: 500,
+            to: 1000,
+            metadata: { label: 'Quite slow' },
+          },
+          {
+            from: 1000,
+          },
+        ])
+        .addMetric('count')
+        .addMetric('avg', 'delay_last_byte');
+
+      const response = {
+        groups: [
+          {
+            key: [
+              200,
+              {
+                from: 0,
+                to: 500,
+              },
+            ],
+            metrics: [
+              4,
+              157.25,
+            ],
+          },
+          {
+            key: [
+              200,
+              {
+                from: 500,
+                to: 1000,
+              },
+            ],
+            metrics: [
+              28,
+              751.25,
+            ],
+          },
+          {
+            key: [
+              301,
+              {
+                from: 1000,
+              },
+            ],
+            metrics: [
+              5,
+              1809.8,
+            ],
+          },
+        ],
+      };
+
+      sinon.spy(queryAggregate.groupBys[0], 'applyKeyReducers');
+      sinon.spy(queryAggregate.groupBys[1], 'applyKeyReducers');
+
+      queryAggregate.processResponse(response);
+
+      chai.expect(queryAggregate.groupBys[0].applyKeyReducers.callCount).to.be.equal(3);
+      chai.expect(queryAggregate.groupBys[0].applyKeyReducers.getCall(0).args[0]).to.be.deep.equal(200);
+      chai.expect(queryAggregate.groupBys[0].applyKeyReducers.getCall(1).args[0]).to.be.deep.equal(200);
+      chai.expect(queryAggregate.groupBys[0].applyKeyReducers.getCall(2).args[0]).to.be.deep.equal(301);
+
+      chai.expect(queryAggregate.groupBys[1].applyKeyReducers.callCount).to.be.equal(3);
+      chai.expect(queryAggregate.groupBys[1].applyKeyReducers.getCall(0).args[0]).to.be.deep.equal({from: 0, to: 500});
+      chai.expect(queryAggregate.groupBys[1].applyKeyReducers.getCall(1).args[0]).to.be.deep.equal({from: 500, to: 1000});
+      chai.expect(queryAggregate.groupBys[1].applyKeyReducers.getCall(2).args[0]).to.be.deep.equal({from: 1000});
     });
   });
 });
