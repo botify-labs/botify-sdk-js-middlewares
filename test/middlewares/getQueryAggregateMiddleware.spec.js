@@ -2,7 +2,7 @@ import chai from 'chai';
 import sinon from 'sinon';
 
 import getQueryAggregateMiddleware from '../../src/middlewares/getQueryAggregateMiddleware';
-import Query from '../../src/models/Query';
+import Query, { ApiResponseError } from '../../src/models/Query';
 import QueryAggregate from '../../src/models/QueryAggregate';
 
 
@@ -171,6 +171,34 @@ describe('getQueryAggregateMiddleware', () => {
     correctInput.forEach(input => {
       chai.expect(nextHandler(getQueryAggregate).bind(null, input)).to.not.throw(expectedError);
     });
+  });
+
+  it('must return an error in the callback in api result processing failed', () => {
+    const apiResult = [
+      {
+        count: 42,
+      },
+    ];
+    const getQueryAggregate = (params, callback) => callback(null, apiResult);
+
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const params = {
+      queries: [
+        new Query()
+          .addAggregate(
+            new QueryAggregate().addMetric('avg', 'delay')
+          ),
+      ],
+    };
+    const callback = sinon.spy();
+
+    nextHandler(getQueryAggregateSpy)(params, callback);
+
+    // Expect callback to be called with transformed result
+    chai.expect(callback.callCount).to.be.equal(1);
+    chai.expect(callback.getCall(0).args[0]).to.be.instanceof(ApiResponseError);
+    chai.expect(callback.getCall(0).args[0].message).to.be.equal('missing aggs whereas aggregate(s) have been defined');
+    chai.expect(callback.getCall(0).args[1]).to.be.undefined;
   });
 
   it('must NOT do anything on not batched operation', done => {

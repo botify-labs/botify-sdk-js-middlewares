@@ -42,13 +42,17 @@ export default function({
           if (error) {
             return callback(...arguments);
           }
-          callback(error, results.map((result, i) => {
-            return queries[i].processResponse(result, {
-              transformTermKeys,
-              injectMetadata,
-              normalizeBoolean,
-            });
-          }));
+          try {
+            callback(error, results.map((result, i) => {
+              return queries[i].processResponse(result, {
+                transformTermKeys,
+                injectMetadata,
+                normalizeBoolean,
+              });
+            }));
+          } catch (e) {
+            callback(e);
+          }
         },
         options
       );
