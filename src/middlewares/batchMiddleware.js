@@ -123,7 +123,7 @@ class Queue {
 const queues = {};
 
 /**
- * @param  {?Array<{controllerId, operationId, paramKeysCommon, paramKeyBatched}>} batchedOperations
+ * @param  {?Array<{controllerId, operationId, paramKeysCommon, paramKeyBatched, queueLimit}>} batchedOperations
  * @return {Middleware}
  */
 export default function(

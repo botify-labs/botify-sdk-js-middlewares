@@ -39,6 +39,7 @@
     "chai": "^3.0.0",
     "eslint": "^1.4.1",
     "eslint-config-airbnb": "^0.1.0",
+    "expect": "^1.6.0",
     "gulp": "^3.9.0",
     "gulp-bump": "^0.2.2",
     "gulp-shell": "^0.4.0",
