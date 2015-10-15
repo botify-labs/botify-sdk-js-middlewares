@@ -12,7 +12,7 @@ describe('batchMiddleware', () => {
   };
   const options = { thatOption: true };
 
-  const middlewareAPI = { controllerId: 'AnalysesController', operationId: 'getQueryAggregate' };
+  const middlewareAPI = { controllerId: 'AnalysisController', operationId: 'getQueryAggregate' };
   const nextHandler = batchMiddleware()(middlewareAPI);
 
   it('must call only once the operation but call every caller callbacks at the end', done => {
@@ -320,13 +320,12 @@ describe('batchMiddleware', () => {
   });
 
   it('must respect the queue limit', done => {
-    const limitedNextHandler = batchMiddleware({
-      ...DEFAULT_BATCHED_OPERATIONS,
-      getQueryAggregate: {
-        ...DEFAULT_BATCHED_OPERATIONS.getQueryAggregate,
+    const limitedNextHandler = batchMiddleware([
+      {
+        ...DEFAULT_BATCHED_OPERATIONS[0],
         queueLimit: 2,
       },
-    })(middlewareAPI);
+    ])(middlewareAPI);
     const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
       status: 200,
       data: v * 2,
