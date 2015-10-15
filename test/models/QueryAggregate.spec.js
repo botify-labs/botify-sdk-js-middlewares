@@ -1,8 +1,7 @@
 import chai from 'chai';
 import sinon from 'sinon';
 
-import QueryAggregate from '../../src/models/QueryAggregate';
-import ApiResponseError from '../../src/errors/ApiResponseError';
+import QueryAggregate, { ApiResponseError } from '../../src/models/QueryAggregate';
 
 
 describe('QueryAggregate', function() {

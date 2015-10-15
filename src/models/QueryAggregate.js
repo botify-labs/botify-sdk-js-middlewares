@@ -154,3 +154,6 @@ class QueryAggregate {
 }
 
 export default QueryAggregate;
+export {
+  ApiResponseError,
+};

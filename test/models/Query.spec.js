@@ -1,8 +1,7 @@
 import chai from 'chai';
 
-import Query from '../../src/models/Query';
+import Query, {ApiResponseError} from '../../src/models/Query';
 import QueryAggregate from '../../src/models/QueryAggregate';
-import ApiResponseError from '../../src/errors/ApiResponseError';
 
 
 describe('Query', function() {

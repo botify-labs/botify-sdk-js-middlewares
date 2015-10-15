@@ -1,15 +1,5 @@
-import ExtendableError from 'es6-error';
+import ApiError from '../errors/ApiError';
 
-
-export class ApiError extends ExtendableError {
-  constructor(body, statusCode) {
-    const message = `ApiError: [${statusCode}] - ${body}`;
-    super(message);
-    this.message = message;
-    this.statusCode = statusCode;
-    this.body = body;
-  }
-}
 
 export default function apiErrorMiddleware() {
   return next => function(params, callback, options) {
@@ -27,3 +17,7 @@ export default function apiErrorMiddleware() {
     );
   };
 }
+
+export {
+  ApiError,
+};
