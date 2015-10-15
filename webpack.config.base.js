@@ -9,7 +9,7 @@ module.exports = {
     }],
   },
   output: {
-    library: 'BotifySDK',
+    library: 'BotifySdkMiddlewares',
     libraryTarget: 'umd',
   },
   resolve: {

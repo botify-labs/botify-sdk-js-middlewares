@@ -13,6 +13,7 @@
     "build:lib": "babel src --out-dir lib",
     "build:umd": "webpack --config webpack.config.production.js",
     "build": "npm run clean && npm run build:lib && npm run build:umd",
+    "postinstall": "npm run build",
     "stats": "webpack --config webpack.config.stats.js && npm run clean"
   },
   "repository": {
