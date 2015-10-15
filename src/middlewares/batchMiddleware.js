@@ -1,3 +1,4 @@
+import find from 'lodash.find';
 import findIndex from 'lodash.findindex';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
@@ -7,13 +8,15 @@ import nextTick from 'next-tick';
 import objectHash from 'object-hash';
 
 
-export const DEFAULT_BATCHED_OPERATIONS = {
-  getQueryAggregate: {
+export const DEFAULT_BATCHED_OPERATIONS = [
+  {
+    controllerId: 'AnalysisController',
+    operationId: 'getQueryAggregate',
     paramKeysCommon: ['username', 'projectSlug', 'analysisSlug'],
     paramKeyBatched: 'queries',
     queueLimit: 20,
   },
-};
+];
 
 function apiErrorObject(message, status) {
   return {
@@ -120,15 +123,15 @@ class Queue {
 const queues = {};
 
 /**
- * @param  {Map<String, {paramKeysCommon: Array<String>, paramKeyBatched: String}>} batchedOperations indexed by operationId
+ * @param  {?Array<{controllerId, operationId, paramKeysCommon, paramKeyBatched, queueLimit}>} batchedOperations
  * @return {Middleware}
  */
 export default function(
   batchedOperations = DEFAULT_BATCHED_OPERATIONS
 ) {
-  return function batchMiddleware({operationId}) {
+  return function batchMiddleware({controllerId, operationId}) {
     return next => function(params, callback, options) {
-      const batchOperation = batchedOperations[operationId];
+      const batchOperation = find(batchedOperations, bo => bo.controllerId === controllerId && bo.operationId === operationId);
       if (!batchOperation) {
         return next(...arguments);
       }
