@@ -26,6 +26,9 @@ const sdk = applyMiddleware(
 ```
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
 
+### AMD or script tag old school way
+A bundle is available in `dist/botify-sdk-middlewares.min.js`. It exposes the global variable `BotifySdkMiddlewares`.
+
 
 ### RECOMMENDED setup
 ```JS
