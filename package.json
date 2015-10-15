@@ -10,9 +10,10 @@
     "test": "mocha --compilers js:babel/register --recursive",
     "test:watch": "npm test -- --watch",
     "check": "npm run lint && npm run test",
-    "build:lib": "rimraf lib && babel src --out-dir lib",
-    "build:umd": "rimraf dist && webpack src/index.js dist/botify-sdk.min.js --config webpack.config.production.js",
-    "build": "npm run build:lib && npm run build:umd"
+    "build:lib": "babel src --out-dir lib",
+    "build:umd": "webpack --config webpack.config.production.js",
+    "build": "npm run clean && npm run build:lib && npm run build:umd",
+    "stats": "webpack --config webpack.config.stats.js && npm run clean"
   },
   "repository": {
     "type": "git",
@@ -49,6 +50,7 @@
     "mock-local-storage": "^1.0.2",
     "rimraf": "^2.4.3",
     "sinon": "^1.17.1",
+    "stats-webpack-plugin": "^0.2.2",
     "webpack": "^1.9.5",
     "yargs": "^3.5.3"
   }
