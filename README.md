@@ -1,5 +1,7 @@
 # botify-sdk-middlewares
 
+[![Build Status](https://travis-ci.org/botify-labs/botify-sdk-js-middlewares.svg?branch=master)](https://travis-ci.org/botify-labs/botify-sdk-js-middlewares)
+
 This package contains multiple middlewares allowing to customize and optimize  Botify SDK's behaviour. Including local storage caching, request batching, api result post processing.
 
 
