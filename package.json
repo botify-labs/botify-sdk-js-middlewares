@@ -4,6 +4,7 @@
   "description": "Botify JS SDK middlewares",
   "author": "Botify <labs@botify.com>",
   "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
   "scripts": {
     "clean": "rimraf lib dist",
     "lint": "eslint .",
@@ -13,7 +14,6 @@
     "build:lib": "babel src --out-dir lib",
     "build:umd": "webpack --config webpack.config.production.js",
     "build": "npm run clean && npm run build:lib && npm run build:umd",
-    "postinstall": "npm run build",
     "stats": "webpack --config webpack.config.stats.js && npm run clean",
     "preversion": "npm run clean && npm run check",
     "version": "npm run build",
