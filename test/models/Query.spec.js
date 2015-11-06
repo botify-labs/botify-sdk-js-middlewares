@@ -9,7 +9,7 @@ describe('Query', function() {
     it('should create a basic object with empty fields, aggregates, filters and sort', function() {
       const query = new Query();
       chai.expect(query.name).to.equal('');
-      chai.expect(query.getFilters()).to.be.empty;
+      chai.expect(query.getFilters()).to.be.null;
       chai.expect(query.getAggregates()).to.be.empty;
     });
   });
