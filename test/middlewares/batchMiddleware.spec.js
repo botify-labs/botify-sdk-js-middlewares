@@ -118,7 +118,8 @@ describe('batchMiddleware', () => {
           UrlsAggsQuery: {queries: [3],
         }},
         callback: sinon.spy(),
-        result: [6]},
+        result: [6],
+      },
     ];
 
     requests.forEach(({input, callback}, i) => {
@@ -160,6 +161,96 @@ describe('batchMiddleware', () => {
       });
       done();
     }, 5);
+  });
+
+  it('must not batch when it is specify in option', done => {
+    const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
+      status: 200,
+      data: v * 2,
+    })));
+    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const notBatchOptions = {
+      ...options,
+      batch: false,
+    };
+    const requests = [
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.com',
+          analysisSlug: 'thatAnalysis',
+          queries: [1],
+        },
+        callback: sinon.spy(),
+        result: [2],
+      },
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.fr',
+          analysisSlug: 'thatAnalysis',
+          queries: [2],
+        },
+        callback: sinon.spy(),
+        result: [4],
+      },
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.com',
+          analysisSlug: 'thatAnalysis2',
+          queries: [3],
+        },
+        callback: sinon.spy(),
+        result: [6],
+      },
+    ];
+
+    const batchRequests = [
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.fr',
+          analysisSlug: 'thatAnalysis',
+          queries: [4],
+        },
+        callback: sinon.spy(),
+        options: notBatchOptions,
+        result: [8],
+      },
+      {
+        input: {
+          username: 'botify',
+          projectSlug: 'botify.com',
+          analysisSlug: 'thatAnalysis2',
+          queries: [5],
+        },
+        callback: sinon.spy(),
+        options: notBatchOptions,
+        result: [10],
+      },
+    ];
+
+    // Check if batch method was delay
+    requests.forEach(({input, callback}) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
+      chai.expect(callback.callCount).to.be.equal(0);
+    });
+
+    // Check if not batch method was directly called
+    batchRequests.forEach(({input, callback}) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, notBatchOptions);
+      chai.expect(callback.callCount).to.be.equal(1);
+    });
+
+    // Check if batch method was finally called
+    setImmediate(() => {
+      requests.forEach(({callback}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+      });
+
+      done();
+    });
   });
 
   it('must returns the operation error if given', done => {
