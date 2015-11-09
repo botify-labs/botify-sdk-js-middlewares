@@ -4,7 +4,7 @@ import Query from '../models/Query';
 
 
 const CONTROLLER_ID = 'AnalysisController';
-const OPERATION_ID = 'getQueryAggregate';
+const OPERATION_ID = 'getUrlsAggs';
 const QUERIES_PARAM_KEY = 'queries';
 
 /**
@@ -18,7 +18,7 @@ export default function({
   injectMetadata = true,
   normalizeBoolean = true,
 } = {}) {
-  return function getQueriesAggregateMiddleware({controllerId, operationId}) {
+  return function queryMiddleware({controllerId, operationId}) {
     return next => function(params, callback, options) {
       if (controllerId !== CONTROLLER_ID || operationId !== OPERATION_ID) {
         return next(...arguments);
