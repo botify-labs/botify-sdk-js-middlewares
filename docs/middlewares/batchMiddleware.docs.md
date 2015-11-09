@@ -16,6 +16,8 @@ none
 ## Operation options
 none
 
+**Warning:** This middleware do not propagate operation options. So it should be the last middleware in the chain.
+
 ## Usage
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';

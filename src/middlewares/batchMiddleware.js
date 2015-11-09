@@ -32,13 +32,11 @@ class Queue {
    * @param  {Func}   operation
    * @param  {Object} params
    * @param  {String || Array<String>} paramKeyBached
-   * @param  {Object} options
    */
-  constructor(operation, params, paramKeyBached, options, queueLimit = null) {
+  constructor(operation, params, paramKeyBached, queueLimit = null) {
     this.operation = operation;
     this.params = params;
     this.bachedKey = paramKeyBached;
-    this.options = options;
     this.queueLimit = queueLimit;
 
     this.resources = [];
@@ -113,7 +111,6 @@ class Queue {
           return callback(null, itemsResults.map(itemResult => itemResult.data));
         });
       },
-      this.options
     );
   }
 
@@ -127,6 +124,7 @@ const queues = {};
 /**
  * @param  {?Array<{controllerId, operationId, commonKeys, batchedKeyPath, queueLimit}>} batchedOperations
  * @return {Middleware}
+ * @warning This middleware do not propagate operation options
  */
 export default function(
   batchedOperations = DEFAULT_BATCHED_OPERATIONS
@@ -140,7 +138,6 @@ export default function(
 
       const hash = objectHash({
         commonParams: pick(params, batchOperation.commonKeys),
-        options,
         operationId,
       });
 
@@ -150,7 +147,6 @@ export default function(
           next,
           params,
           batchOperation.batchedKeyPath,
-          options,
           batchOperation.queueLimit
         );
         queues[hash].addOnRequestListener(() => queues[hash] = null);
