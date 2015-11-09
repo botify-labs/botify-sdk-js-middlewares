@@ -31,7 +31,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setTimeout(() => {
+    setImmediate(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -46,7 +46,7 @@ describe('batchMiddleware', () => {
         UrlsAggsQuery: {queries: [1, 2, 3]},
       });
       done();
-    }, 5);
+    });
   });
 
   it('must handle calls with multiple queries', done => {
@@ -65,7 +65,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setTimeout(() => {
+    setImmediate(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -80,7 +80,7 @@ describe('batchMiddleware', () => {
         UrlsAggsQuery: {queries: [1, 2, 3, 4, 5, 6]},
       });
       done();
-    }, 5);
+    });
   });
 
   it('must batch what can be batch together', done => {
@@ -126,7 +126,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setTimeout(() => {
+    setImmediate(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -160,10 +160,10 @@ describe('batchMiddleware', () => {
         UrlsAggsQuery: {queries: [3]},
       });
       done();
-    }, 5);
+    });
   });
 
-  it('must not batch when it is specify in option', done => {
+  it('must not batch when it is specified in option', done => {
     const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
       status: 200,
       data: v * 2,
@@ -173,12 +173,10 @@ describe('batchMiddleware', () => {
       ...options,
       batch: false,
     };
-    const requests = [
+    const batchRequests = [
       {
         input: {
-          username: 'botify',
-          projectSlug: 'botify.com',
-          analysisSlug: 'thatAnalysis',
+          ...analysisParams,
           queries: [1],
         },
         callback: sinon.spy(),
@@ -186,9 +184,7 @@ describe('batchMiddleware', () => {
       },
       {
         input: {
-          username: 'botify',
-          projectSlug: 'botify.fr',
-          analysisSlug: 'thatAnalysis',
+          ...analysisParams,
           queries: [2],
         },
         callback: sinon.spy(),
@@ -196,9 +192,7 @@ describe('batchMiddleware', () => {
       },
       {
         input: {
-          username: 'botify',
-          projectSlug: 'botify.com',
-          analysisSlug: 'thatAnalysis2',
+          ...analysisParams,
           queries: [3],
         },
         callback: sinon.spy(),
@@ -206,12 +200,10 @@ describe('batchMiddleware', () => {
       },
     ];
 
-    const batchRequests = [
+    const notBatchRequests = [
       {
         input: {
-          username: 'botify',
-          projectSlug: 'botify.fr',
-          analysisSlug: 'thatAnalysis',
+          ...analysisParams,
           queries: [4],
         },
         callback: sinon.spy(),
@@ -220,9 +212,7 @@ describe('batchMiddleware', () => {
       },
       {
         input: {
-          username: 'botify',
-          projectSlug: 'botify.com',
-          analysisSlug: 'thatAnalysis2',
+          ...analysisParams,
           queries: [5],
         },
         callback: sinon.spy(),
@@ -231,24 +221,20 @@ describe('batchMiddleware', () => {
       },
     ];
 
-    // Check if batch method was delay
-    requests.forEach(({input, callback}) => {
-      nextHandler(getQueryAggregateSpy)(input, callback, options);
-      chai.expect(callback.callCount).to.be.equal(0);
-    });
-
-    // Check if not batch method was directly called
-    batchRequests.forEach(({input, callback}) => {
+    notBatchRequests.forEach(({input, callback}) => {
       nextHandler(getQueryAggregateSpy)(input, callback, notBatchOptions);
-      chai.expect(callback.callCount).to.be.equal(1);
+    });
+    // If not batch getQueryAggregateSpy should be called 2 times
+    chai.expect(getQueryAggregateSpy.callCount).to.equal(2);
+
+    batchRequests.forEach(({input, callback}) => {
+      nextHandler(getQueryAggregateSpy)(input, callback, options);
     });
 
-    // Check if batch method was finally called
+    // Batched request are called on next tick so wait it
     setImmediate(() => {
-      requests.forEach(({callback}) => {
-        chai.expect(callback.callCount).to.be.equal(1);
-      });
-
+    // If batched, getQueryAggregateSpy should be called 1 times
+      chai.expect(getQueryAggregateSpy.callCount).to.equal(3);
       done();
     });
   });
@@ -267,7 +253,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setTimeout(() => {
+    setImmediate(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -275,7 +261,7 @@ describe('batchMiddleware', () => {
         chai.expect(callback.getCall(0).args[1]).to.be.undefined; // eslint-disable-line no-unused-expressions
       });
       done();
-    }, 5);
+    });
   });
 
   it('must returns an error if API returns an empty body', done => {
@@ -291,7 +277,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setTimeout(() => {
+    setImmediate(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -302,7 +288,7 @@ describe('batchMiddleware', () => {
         });
       });
       done();
-    }, 5);
+    });
   });
 
   it('must returns an error if specific resource failed', done => {
@@ -348,7 +334,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setTimeout(() => {
+    setImmediate(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, middlewareOutput}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -356,7 +342,7 @@ describe('batchMiddleware', () => {
       });
 
       done();
-    }, 5);
+    });
   });
 
   it('must returns an error if specific item failed', done => {
@@ -398,7 +384,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setTimeout(() => {
+    setImmediate(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, middlewareOutput}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -406,7 +392,7 @@ describe('batchMiddleware', () => {
       });
 
       done();
-    }, 5);
+    });
   });
 
   it('must respect the queue limit', done => {
@@ -431,7 +417,7 @@ describe('batchMiddleware', () => {
       limitedNextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setTimeout(() => {
+    setImmediate(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -452,7 +438,7 @@ describe('batchMiddleware', () => {
         UrlsAggsQuery: {queries: [3]},
       });
       done();
-    }, 5);
+    });
   });
 
   it('must NOT do anything on not batched operation', done => {
