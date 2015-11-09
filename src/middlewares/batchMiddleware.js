@@ -11,10 +11,10 @@ import objectHash from 'object-hash';
 export const DEFAULT_BATCHED_OPERATIONS = [
   {
     controllerId: 'AnalysisController',
-    operationId: 'getQueryAggregate',
+    operationId: 'getUrlsAggs',
     paramKeysCommon: ['username', 'projectSlug', 'analysisSlug'],
     paramKeyBatched: 'queries',
-    queueLimit: 20,
+    queueLimit: 15,
   },
 ];
 
