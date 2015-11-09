@@ -2,7 +2,7 @@ import applyMiddleware from './applyMiddleware';
 
 import apiErrorMiddleware from './middlewares/apiErrorMiddleware';
 import batchMiddleware from './middlewares/batchMiddleware';
-import gueryMiddleware from './middlewares/gueryMiddleware';
+import queryMiddleware from './middlewares/queryMiddleware';
 import invalidateAnalysisMiddleware from './middlewares/invalidateAnalysisMiddleware';
 import lscacheMiddleware from './middlewares/lscacheMiddleware';
 
@@ -17,7 +17,7 @@ export {
   applyMiddleware,
   apiErrorMiddleware,
   batchMiddleware,
-  gueryMiddleware,
+  queryMiddleware,
   invalidateAnalysisMiddleware,
   lscacheMiddleware,
   Query,
