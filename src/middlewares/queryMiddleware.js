@@ -1,3 +1,4 @@
+import get from 'lodash.get';
 import isArray from 'lodash.isarray';
 
 import Query from '../models/Query';
@@ -5,7 +6,7 @@ import Query from '../models/Query';
 
 const CONTROLLER_ID = 'AnalysisController';
 const OPERATION_ID = 'getUrlsAggs';
-const QUERIES_PARAM_KEY = 'queries';
+const QUERIES_KEY_PATH = ['UrlsAggsQuery', 'queries'];
 
 /**
  * @param  {Boolean?} options.transformTermKeys Turn term keys into objects: key -> { value: key }
@@ -24,19 +25,21 @@ export default function({
         return next(...arguments);
       }
 
-      const queriesError = !params
-                      || !isArray(params[QUERIES_PARAM_KEY])
-                      || !params[QUERIES_PARAM_KEY].every(query => query instanceof Query);
+      const queries = get(params, QUERIES_KEY_PATH);
+      const queriesError = !queries
+                      || !isArray(queries)
+                      || !queries.every(query => query instanceof Query);
 
       if (queriesError) {
         throw new Error('queries param must be an array of Query');
       }
 
-      const queries = params.queries;
       next(
         {
           ...params,
-          queries: queries.map(query => query.toJsonAPI()),
+          UrlsAggsQuery: {
+            queries: queries.map(query => query.toJsonAPI()),
+          },
         },
         function(error, results) {
           if (error) {

@@ -39,11 +39,10 @@ class QueryAggregate {
   }
 
   /**
-   * @deprecated
+   * Alias for addTermGroupBy
    * @param {String} field
    */
   addGroupBy(field) {
-    console.log('addGroupBy is deprecated: use addTermGroupBy(field) instead'); // eslint-disable-line no-console
     return this.addTermGroupBy(field);
   }
 
