@@ -1,9 +1,11 @@
+import get from 'lodash.get';
 import find from 'lodash.find';
 import findIndex from 'lodash.findindex';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
 import pluck from 'lodash.pluck';
+import set from 'lodash.set';
 import nextTick from 'next-tick';
 import objectHash from 'object-hash';
 
@@ -13,7 +15,7 @@ export const DEFAULT_BATCHED_OPERATIONS = [
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
     paramKeysCommon: ['username', 'projectSlug', 'analysisSlug'],
-    paramKeyBatched: 'queries',
+    paramKeyBatched: ['UrlsAggsQuery', 'queries'],
     queueLimit: 15,
   },
 ];
@@ -29,7 +31,7 @@ class Queue {
   /**
    * @param  {Func}   operation
    * @param  {Object} params
-   * @param  {String} paramKeyBached
+   * @param  {String || Array<String>} paramKeyBached
    * @param  {Object} options
    */
   constructor(operation, params, paramKeyBached, options, queueLimit = null) {
@@ -82,11 +84,10 @@ class Queue {
     this.sent = true;
     this._onRequest();
 
+    const params = set(this.params, this.bachedKey, flatten(pluck(this.resources, 'items')));
+
     this.operation(
-      {
-        ...this.params,
-        [this.bachedKey]: flatten(pluck(this.resources, 'items')),
-      },
+      params,
       (error, result) => {
         let resultIndex = 0;
         this.resources.forEach(({items, callback}) => {
@@ -154,7 +155,7 @@ export default function(
         queues[hash].addOnRequestListener(() => queues[hash] = null);
       }
 
-      queues[hash].addResource(params[batchOperation.paramKeyBatched], callback);
+      queues[hash].addResource(get(params, batchOperation.paramKeyBatched), callback);
 
       return false;
     };
