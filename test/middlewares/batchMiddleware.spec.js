@@ -95,8 +95,8 @@ describe('batchMiddleware', () => {
           username: 'botify',
           projectSlug: 'botify.com',
           analysisSlug: 'thatAnalysis',
-          UrlsAggsQuery: {queries: [1],
-        }},
+          UrlsAggsQuery: {queries: [1]},
+        },
         callback: sinon.spy(),
         result: [2],
       },
@@ -105,8 +105,8 @@ describe('batchMiddleware', () => {
           username: 'botify',
           projectSlug: 'botify.fr',
           analysisSlug: 'thatAnalysis',
-          UrlsAggsQuery: {queries: [2],
-        }},
+          UrlsAggsQuery: {queries: [2]},
+        },
         callback: sinon.spy(),
         result: [4],
       },
@@ -115,8 +115,8 @@ describe('batchMiddleware', () => {
           username: 'botify',
           projectSlug: 'botify.com',
           analysisSlug: 'thatAnalysis2',
-          UrlsAggsQuery: {queries: [3],
-        }},
+          UrlsAggsQuery: {queries: [3]},
+        },
         callback: sinon.spy(),
         result: [6],
       },
@@ -164,7 +164,7 @@ describe('batchMiddleware', () => {
   });
 
   it('must not batch when it is specified in option', done => {
-    const getQueryAggregate = ({queries}, callback) => callback(null, queries.map(v => ({
+    const getQueryAggregate = ({UrlsAggsQuery: {queries}}, callback) => callback(null, queries.map(v => ({
       status: 200,
       data: v * 2,
     })));
@@ -178,7 +178,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          queries: [1],
+          UrlsAggsQuery: {queries: [1]},
         },
         callback: sinon.spy(),
         result: [2],
@@ -186,7 +186,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          queries: [2],
+          UrlsAggsQuery: {queries: [2]},
         },
         callback: sinon.spy(),
         result: [4],
@@ -194,7 +194,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          queries: [3],
+          UrlsAggsQuery: {queries: [3]},
         },
         callback: sinon.spy(),
         result: [6],
@@ -205,7 +205,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          queries: [4],
+          UrlsAggsQuery: {queries: [4]},
         },
         callback: sinon.spy(),
         options: notBatchOptions,
@@ -214,7 +214,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          queries: [5],
+          UrlsAggsQuery: {queries: [5]},
         },
         callback: sinon.spy(),
         options: notBatchOptions,
