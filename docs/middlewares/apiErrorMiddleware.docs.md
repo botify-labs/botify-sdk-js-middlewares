@@ -23,6 +23,7 @@ sdk.ProjectController.getProjets(userId, (error, result) => {
   if (error && error instanceof ApiError) {
     const { message, statusCode, message } = error;
     //Handle api error
+    return;
   }
   //Handle api success
 }, {cache: true});

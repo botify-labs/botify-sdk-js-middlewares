@@ -51,7 +51,7 @@ export default function someMiddleware() {
 export default function someMiddleware() {
   return next => function(params, callback, options) {
     next(
-      newParams,
+      params,
       function(error, result) {
         if (!error) {
           result = _.indexBy(result, 'id');
