@@ -20,11 +20,11 @@ export const DEFAULT_BATCHED_OPERATIONS = [
   },
 ];
 
-function apiErrorObject({message, status, response}) {
+function apiErrorObject({errorMessage, errorCode, errorResponse}) {
   return {
-    errorMessage: message,
-    errorCode: status,
-    errorResponse: response,
+    errorMessage,
+    errorCode,
+    errorResponse,
   };
 }
 
@@ -95,7 +95,7 @@ class Queue {
             return callback(error);
           }
           if (!result) {
-            return callback(apiErrorObject({message: 'API returned an empty body'}));
+            return callback(apiErrorObject({errorMessage: 'API returned an empty body'}));
           }
           const itemsResults = items.map(item => result[resultIndex++]);
           const resourceErrorIndex = findIndex(itemsResults, itemResult => !!itemResult.error);
@@ -104,7 +104,6 @@ class Queue {
             return callback(
               apiErrorObject({
                 ...resourceError.error,
-                error_resource_index: resourceErrorIndex,
               },
               resourceError.status
             ));

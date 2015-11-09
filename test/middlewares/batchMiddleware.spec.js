@@ -205,8 +205,9 @@ describe('batchMiddleware', () => {
       requests.forEach(({callback}) => {
         chai.expect(callback.callCount).to.be.equal(1);
         chai.expect(callback.getCall(0).args[0]).to.be.deep.equal({
-          ErrorMessage: 'API returned an empty body',
-          ErrorCode: undefined,
+          errorMessage: 'API returned an empty body',
+          errorCode: undefined,
+          errorResponse: undefined,
         });
       });
       done();
@@ -224,11 +225,9 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, UrlsAggsQuery: {queries: [1]}},
         callback: sinon.spy(),
         middlewareOutput: [{
-          ErrorMessage: {
-            error_resource_index: 0,
-            message: 'Server error',
-          },
-          ErrorCode: 500,
+          errorMessage: 'Server error',
+          errorCode: 500,
+          errorResponse: undefined,
         }],
       },
       {
@@ -240,7 +239,8 @@ describe('batchMiddleware', () => {
     const apiResult = [
       {status: 200, data: 2},
       {status: 500, error: {
-        message: 'Server error',
+        errorMessage: 'Server error',
+        errorCode: 500,
       }},
       {status: 200, data: 6},
     ];
@@ -271,12 +271,9 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, UrlsAggsQuery: {queries: [0, 2]}},
         callback: sinon.spy(),
         middlewareOutput: [{
-          ErrorMessage: {
-            error_code: 34,
-            error_resource_index: 1,
-            message: 'Query is not valid',
-          },
-          ErrorCode: 500,
+          errorMessage: 'Query is not valid',
+          errorCode: 500,
+          errorResponse: undefined,
         }],
       },
       {
@@ -288,8 +285,8 @@ describe('batchMiddleware', () => {
     const apiResult = [
       {status: 200, data: 2},
       {status: 500, error: {
-        error_code: 34,
-        message: 'Query is not valid',
+        errorCode: 500,
+        errorMessage: 'Query is not valid',
       }},
       {status: 200, data: 6},
     ];

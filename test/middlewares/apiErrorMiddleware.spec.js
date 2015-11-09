@@ -8,14 +8,13 @@ describe('apiErrorMiddleware', () => {
 
   it('must change callback\'s first argument from Object to an ApiError', done => {
     const func = (x, callback) => callback({
-      ErrorMessage: 'That 301',
-      ErrorCode: 301,
+      errorMessage: 'That 301',
+      errorCode: 301,
     });
     nextHandler(func)(1, (error, result) => {
       chai.expect(error).to.be.an.instanceof(ApiError);
       chai.expect(error.message).to.be.equal('ApiError: [301] - That 301');
       chai.expect(error.statusCode).to.be.equal(301);
-      chai.expect(error.body).to.be.equal('That 301');
       done();
     });
   });
