@@ -168,7 +168,8 @@ describe('batchMiddleware', () => {
       status: 200,
       data: v * 2,
     })));
-    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const getQueryAggregateSpyBatch = sinon.spy(getQueryAggregate);
+    const getQueryAggregateSpyNotBatch = sinon.spy(getQueryAggregate);
     const notBatchOptions = {
       ...options,
       batch: false,
@@ -222,19 +223,19 @@ describe('batchMiddleware', () => {
     ];
 
     notBatchRequests.forEach(({input, callback}) => {
-      nextHandler(getQueryAggregateSpy)(input, callback, notBatchOptions);
+      nextHandler(getQueryAggregateSpyNotBatch)(input, callback, notBatchOptions);
     });
     // If not batch getQueryAggregateSpy should be called 2 times
-    chai.expect(getQueryAggregateSpy.callCount).to.equal(2);
+    chai.expect(getQueryAggregateSpyNotBatch.callCount).to.equal(2);
 
     batchRequests.forEach(({input, callback}) => {
-      nextHandler(getQueryAggregateSpy)(input, callback, options);
+      nextHandler(getQueryAggregateSpyBatch)(input, callback, options);
     });
 
     // Batched request are called on next tick so wait it
     setImmediate(() => {
     // If batched, getQueryAggregateSpy should be called 1 times
-      chai.expect(getQueryAggregateSpy.callCount).to.equal(3);
+      chai.expect(getQueryAggregateSpyBatch.callCount).to.equal(1);
       done();
     });
   });
