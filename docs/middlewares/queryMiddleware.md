@@ -1,6 +1,6 @@
-# [GetQueryAggregate middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/getQueryAggregateMiddleware.js)
+# [Query middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/queryMiddleware.js)
 
-This middleware makes it easy to use the operation `getQueryAggregate` which allows you to perform complex queries on Botify database (read paragraph *Query Aggregate Request Process* for details).
+This middleware makes it easy to use the operation `getUrlsAggs` which allows you to perform complex queries on Botify database (read paragraph *Query Aggregate Request Process* for details).
 
 Indeed, it enables you to use the [Query](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/models/Query.js) class to define aggregations you want to perform. Plus, it transforms the response to make it easier to process (transformations can be configured).
 
@@ -18,11 +18,11 @@ none
 ## Usage
 ```JS
 import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-const { getQueryAggregateMiddleware, batchMiddleware } = middlewares;
+const { queryMiddleware, batchMiddleware } = middlewares;
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
-  getQueryAggregateMiddleware(),
+  queryMiddleware(),
   batchMiddleware()
 )(baseSdk);
 

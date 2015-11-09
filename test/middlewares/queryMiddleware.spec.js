@@ -1,19 +1,19 @@
 import chai from 'chai';
 import sinon from 'sinon';
 
-import getQueryAggregateMiddleware from '../../src/middlewares/getQueryAggregateMiddleware';
+import queryMiddleware from '../../src/middlewares/queryMiddleware';
 import Query, { ApiResponseError } from '../../src/models/Query';
 import QueryAggregate from '../../src/models/QueryAggregate';
 
 
-describe('getQueryAggregateMiddleware', () => {
+describe('queryMiddleware', () => {
   const options = { thatOption: true };
 
-  const middlewareAPI = { controllerId: 'AnalysisController', operationId: 'getQueryAggregate' };
-  const nextHandler = getQueryAggregateMiddleware()(middlewareAPI);
+  const middlewareAPI = { controllerId: 'AnalysisController', operationId: 'getUrlsAggs' };
+  const nextHandler = queryMiddleware()(middlewareAPI);
 
   it('must transform input Query instances to API compliant JSON', () => {
-    const getQueryAggregateSpy = sinon.spy();
+    const getUrlsAggsSpy = sinon.spy();
     const callback = sinon.spy();
     const params = {
       queries: [
@@ -29,14 +29,14 @@ describe('getQueryAggregateMiddleware', () => {
       ],
     };
 
-    nextHandler(getQueryAggregateSpy)(params, callback, options);
+    nextHandler(getUrlsAggsSpy)(params, callback, options);
 
     // Expect operation to be called with transformed queries params
-    chai.expect(getQueryAggregateSpy.callCount).to.be.equal(1);
-    chai.expect(getQueryAggregateSpy.getCall(0).args[0]).to.be.deep.equal({
+    chai.expect(getUrlsAggsSpy.callCount).to.be.equal(1);
+    chai.expect(getUrlsAggsSpy.getCall(0).args[0]).to.be.deep.equal({
       queries: params.queries.map(query => query.toJsonAPI()),
     });
-    chai.expect(getQueryAggregateSpy.getCall(0).args[2]).to.be.equal(options);
+    chai.expect(getUrlsAggsSpy.getCall(0).args[2]).to.be.equal(options);
   });
 
   it('must transform output according to input Query instances', () => {
@@ -120,9 +120,9 @@ describe('getQueryAggregateMiddleware', () => {
         ],
       },
     ];
-    const getQueryAggregate = (params, callback) => callback(null, apiResult);
+    const getUrlsAggs = (params, callback) => callback(null, apiResult);
 
-    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const params = {
       queries: [
         new Query()
@@ -138,7 +138,7 @@ describe('getQueryAggregateMiddleware', () => {
     };
     const callback = sinon.spy();
 
-    nextHandler(getQueryAggregateSpy)(params, callback, options);
+    nextHandler(getUrlsAggsSpy)(params, callback, options);
 
     // Expect callback to be called with transformed result
     chai.expect(callback.callCount).to.be.equal(1);
@@ -147,7 +147,7 @@ describe('getQueryAggregateMiddleware', () => {
   });
 
   it('must throw an error if all queries input are not Query instances', () => {
-    const getQueryAggregate = () => {};
+    const getUrlsAggs = () => {};
 
     const incorrectInput = [
       null,
@@ -166,10 +166,10 @@ describe('getQueryAggregateMiddleware', () => {
     const expectedError = 'queries param must be an array of Query';
 
     incorrectInput.forEach(input => {
-      chai.expect(nextHandler(getQueryAggregate).bind(null, input)).to.throw(expectedError);
+      chai.expect(nextHandler(getUrlsAggs).bind(null, input)).to.throw(expectedError);
     });
     correctInput.forEach(input => {
-      chai.expect(nextHandler(getQueryAggregate).bind(null, input)).to.not.throw(expectedError);
+      chai.expect(nextHandler(getUrlsAggs).bind(null, input)).to.not.throw(expectedError);
     });
   });
 
@@ -179,9 +179,9 @@ describe('getQueryAggregateMiddleware', () => {
         count: 42,
       },
     ];
-    const getQueryAggregate = (params, callback) => callback(null, apiResult);
+    const getUrlsAggs = (params, callback) => callback(null, apiResult);
 
-    const getQueryAggregateSpy = sinon.spy(getQueryAggregate);
+    const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const params = {
       queries: [
         new Query()
@@ -192,7 +192,7 @@ describe('getQueryAggregateMiddleware', () => {
     };
     const callback = sinon.spy();
 
-    nextHandler(getQueryAggregateSpy)(params, callback);
+    nextHandler(getUrlsAggsSpy)(params, callback);
 
     // Expect callback to be called with transformed result
     chai.expect(callback.callCount).to.be.equal(1);
@@ -202,7 +202,7 @@ describe('getQueryAggregateMiddleware', () => {
   });
 
   it('must NOT do anything on not batched operation', done => {
-    const otherHandler = getQueryAggregateMiddleware()({
+    const otherHandler = queryMiddleware()({
       controllerId: 'ProjectsController',
       operationId: 'getProject',
     });
