@@ -15,18 +15,20 @@ describe('queryMiddleware', () => {
   it('must transform input Query instances to API compliant JSON', () => {
     const getUrlsAggsSpy = sinon.spy();
     const callback = sinon.spy();
+
+    const queries = [
+      new Query()
+        .setFilters({field: 'http_code', value: 301})
+        .addAggregate(
+          new QueryAggregate().addMetric('avg', 'delay')
+        ),
+      new Query()
+        .addAggregate(
+          new QueryAggregate().addTermGroupBy('http_code')
+        ),
+    ];
     const params = {
-      queries: [
-        new Query()
-          .setFilters({field: 'http_code', value: 301})
-          .addAggregate(
-            new QueryAggregate().addMetric('avg', 'delay')
-          ),
-        new Query()
-          .addAggregate(
-            new QueryAggregate().addTermGroupBy('http_code')
-          ),
-      ],
+      UrlsAggsQuery: { queries },
     };
 
     nextHandler(getUrlsAggsSpy)(params, callback, options);
@@ -34,7 +36,9 @@ describe('queryMiddleware', () => {
     // Expect operation to be called with transformed queries params
     chai.expect(getUrlsAggsSpy.callCount).to.be.equal(1);
     chai.expect(getUrlsAggsSpy.getCall(0).args[0]).to.be.deep.equal({
-      queries: params.queries.map(query => query.toJsonAPI()),
+      UrlsAggsQuery: {
+        queries: queries.map(query => query.toJsonAPI()),
+      },
     });
     chai.expect(getUrlsAggsSpy.getCall(0).args[2]).to.be.equal(options);
   });
@@ -124,17 +128,19 @@ describe('queryMiddleware', () => {
 
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const params = {
-      queries: [
-        new Query()
-          .setFilters({field: 'http_code', value: 301})
-          .addAggregate(
-            new QueryAggregate().addMetric('avg', 'delay')
-          ),
-        new Query()
-          .addAggregate(
-            new QueryAggregate().addTermGroupBy('http_code')
-          ),
-      ],
+      UrlsAggsQuery: {
+        queries: [
+          new Query()
+            .setFilters({field: 'http_code', value: 301})
+            .addAggregate(
+              new QueryAggregate().addMetric('avg', 'delay')
+            ),
+          new Query()
+            .addAggregate(
+              new QueryAggregate().addTermGroupBy('http_code')
+            ),
+        ],
+      },
     };
     const callback = sinon.spy();
 
@@ -153,14 +159,14 @@ describe('queryMiddleware', () => {
       null,
       '',
       {},
-      { queries: {} },
-      { queries: ['a', 'b'] },
-      { queries: ['a', new Query()] },
-      { queries: [new Query(), 'b'] },
+      { UrlsAggsQuery: {queries: {} }},
+      { UrlsAggsQuery: {queries: ['a', 'b'] }},
+      { UrlsAggsQuery: {queries: ['a', new Query()] }},
+      { UrlsAggsQuery: {queries: [new Query(), 'b'] }},
     ];
     const correctInput = [
-      { queries: [new Query()] },
-      { queries: [new Query(), new Query()] },
+      { UrlsAggsQuery: {queries: [new Query()] }},
+      { UrlsAggsQuery: {queries: [new Query(), new Query()] }},
     ];
 
     const expectedError = 'queries param must be an array of Query';
@@ -183,12 +189,14 @@ describe('queryMiddleware', () => {
 
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const params = {
-      queries: [
-        new Query()
-          .addAggregate(
-            new QueryAggregate().addMetric('avg', 'delay')
-          ),
-      ],
+      UrlsAggsQuery: {
+        queries: [
+          new Query()
+            .addAggregate(
+              new QueryAggregate().addMetric('avg', 'delay')
+            ),
+        ],
+      },
     };
     const callback = sinon.spy();
 
