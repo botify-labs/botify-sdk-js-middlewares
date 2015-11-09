@@ -98,6 +98,25 @@ describe('applyMiddleware', () => {
     const sdk = applyMiddleware(add3ToInput, add3ToOutput)(baseSdk);
     expect(sdk.config).toEqual(baseSdk.config);
   });
+
+  it('must pass controllerId and operationId as argument to middleware', () => {
+    const fakeMiddleware = ({controllerId, operationId}) => {
+      return next => (params, callback, options) => next(params, callback, options);
+    };
+    const spiedMiddleware = sinon.spy(fakeMiddleware);
+    const fakeSDK = {
+      fakeController: {
+        fakeOperation: (_, callback) => callback(),
+      },
+    };
+
+    applyMiddleware(spiedMiddleware)(fakeSDK);
+
+    expect(spiedMiddleware.calledWith({
+      controllerId: 'fakeController',
+      operationId: 'fakeOperation',
+    })).toEqual(true);
+  });
 });
 
 
