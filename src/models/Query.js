@@ -39,7 +39,7 @@ class Query {
    * @param {Object} filters
    */
   setFilters(filters) {
-    if (!isPlainObject(filters)) {
+    if (filters && !isPlainObject(filters)) {
       throw new Error('filters must be an object');
     }
     this.filters = filters;
