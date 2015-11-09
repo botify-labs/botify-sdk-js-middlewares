@@ -84,7 +84,8 @@ class Queue {
     this.sent = true;
     this._onRequest();
 
-    const params = set(this.params, this.bachedKey, flatten(pluck(this.resources, 'items')));
+    const batchedItems = flatten(pluck(this.resources, 'items'));
+    const params = set(this.params, this.bachedKey, batchedItems);
 
     this.operation(
       params,
@@ -155,7 +156,8 @@ export default function(
         queues[hash].addOnRequestListener(() => queues[hash] = null);
       }
 
-      queues[hash].addResource(get(params, batchOperation.paramKeyBatched), callback);
+      const batchedItems = get(params, batchOperation.paramKeyBatched);
+      queues[hash].addResource(batchedItems, callback);
 
       return false;
     };
