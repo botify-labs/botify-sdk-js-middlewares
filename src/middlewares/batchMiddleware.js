@@ -14,8 +14,8 @@ export const DEFAULT_BATCHED_OPERATIONS = [
   {
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
-    paramKeysCommon: ['username', 'projectSlug', 'analysisSlug'],
-    paramKeyBatched: ['UrlsAggsQuery', 'queries'],
+    commonKeys: ['username', 'projectSlug', 'analysisSlug'],
+    batchedKeyPath: ['UrlsAggsQuery', 'queries'],
     queueLimit: 15,
   },
 ];
@@ -125,7 +125,7 @@ class Queue {
 const queues = {};
 
 /**
- * @param  {?Array<{controllerId, operationId, paramKeysCommon, paramKeyBatched, queueLimit}>} batchedOperations
+ * @param  {?Array<{controllerId, operationId, commonKeys, batchedKeyPath, queueLimit}>} batchedOperations
  * @return {Middleware}
  */
 export default function(
@@ -139,7 +139,7 @@ export default function(
       }
 
       const hash = objectHash({
-        commonParams: pick(params, batchOperation.paramKeysCommon),
+        commonParams: pick(params, batchOperation.commonKeys),
         options,
         operationId,
       });
@@ -149,14 +149,14 @@ export default function(
         queues[hash] = new Queue(
           next,
           params,
-          batchOperation.paramKeyBatched,
+          batchOperation.batchedKeyPath,
           options,
           batchOperation.queueLimit
         );
         queues[hash].addOnRequestListener(() => queues[hash] = null);
       }
 
-      const batchedItems = get(params, batchOperation.paramKeyBatched);
+      const batchedItems = get(params, batchOperation.batchedKeyPath);
       queues[hash].addResource(batchedItems, callback);
 
       return false;
