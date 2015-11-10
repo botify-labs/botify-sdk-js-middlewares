@@ -14,6 +14,10 @@ export function computeItemCacheKey(params) {
   return objectHash(params);
 }
 
+/**
+ * @param  {?Array<{controllerId, operationId}>} cachedOperations
+ * @return {Middleware}
+ */
 export default function(
   cachedOperations = []
 ) {
