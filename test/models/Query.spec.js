@@ -338,5 +338,27 @@ describe('Query', function() {
 
       chai.expect(query.processResponse.bind(query, response)).to.throw(ApiResponseError, 'missing agg items');
     });
+
+    it('should normalize aggs if result count equals 0 and aggs length doesnt match with number of defined aggregates', function() {
+      const query = new Query()
+        .addAggregate(
+          new QueryAggregate().addMetric('avg', 'delay')
+        );
+      const response = {
+        count: 0,
+        aggs: [],
+      };
+
+      const expectedOutput = {
+        count: 0,
+        aggs: [
+          {
+            groups: [],
+          },
+        ],
+      };
+
+      chai.expect(query.processResponse(response)).to.deep.equal(expectedOutput);
+    });
   });
 });
