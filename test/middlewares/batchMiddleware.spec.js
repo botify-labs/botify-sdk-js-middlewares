@@ -45,7 +45,6 @@ describe('batchMiddleware', () => {
         ...analysisParams,
         UrlsAggsQuery: {queries: [1, 2, 3]},
       });
-      chai.expect(getUrlsAggsSpy.getCall(0).args[2]).to.be.equal(options);
       done();
     }, 5);
   });
@@ -80,7 +79,6 @@ describe('batchMiddleware', () => {
         ...analysisParams,
         UrlsAggsQuery: {queries: [1, 2, 3, 4, 5, 6]},
       });
-      chai.expect(getUrlsAggsSpy.getCall(0).args[2]).to.be.equal(options);
       done();
     }, 5);
   });
@@ -144,7 +142,6 @@ describe('batchMiddleware', () => {
         analysisSlug: 'thatAnalysis',
         UrlsAggsQuery: {queries: [1]},
       });
-      chai.expect(getUrlsAggsSpy.getCall(0).args[2]).to.be.equal(options);
 
       // Second batch
       chai.expect(getUrlsAggsSpy.getCall(1).args[0]).to.be.deep.equal({
@@ -153,7 +150,6 @@ describe('batchMiddleware', () => {
         analysisSlug: 'thatAnalysis',
         UrlsAggsQuery: {queries: [2]},
       });
-      chai.expect(getUrlsAggsSpy.getCall(1).args[2]).to.be.equal(options);
 
       // Thrid batch
       chai.expect(getUrlsAggsSpy.getCall(2).args[0]).to.be.deep.equal({
@@ -162,7 +158,6 @@ describe('batchMiddleware', () => {
         analysisSlug: 'thatAnalysis2',
         UrlsAggsQuery: {queries: [3]},
       });
-      chai.expect(getUrlsAggsSpy.getCall(2).args[2]).to.be.equal(options);
       done();
     }, 5);
   });
@@ -356,13 +351,11 @@ describe('batchMiddleware', () => {
         ...analysisParams,
         UrlsAggsQuery: {queries: [1, 2]},
       });
-      chai.expect(getUrlsAggsSpy.getCall(0).args[2]).to.be.equal(options);
       // Second batch
       chai.expect(getUrlsAggsSpy.getCall(1).args[0]).to.be.deep.equal({
         ...analysisParams,
         UrlsAggsQuery: {queries: [3]},
       });
-      chai.expect(getUrlsAggsSpy.getCall(1).args[2]).to.be.equal(options);
       done();
     }, 5);
   });
