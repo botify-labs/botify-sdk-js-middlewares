@@ -99,8 +99,13 @@ class Queue {
           if (resourceErrorIndex >= 0) {
             const resourceError = itemsResults[resourceErrorIndex];
             return callback({
-              ...resourceError.error,
-              errorResourceIndex: resourceErrorIndex,
+              errorMessage: `Resource ${resourceErrorIndex} failed`,
+              errorCode: resourceError.status,
+              resourceError: {
+                message: resourceError.error.message,
+                errorCode: resourceError.error.error_code,
+                index: resourceErrorIndex,
+              },
             });
           }
           return callback(null, itemsResults.map(itemResult => itemResult.data));

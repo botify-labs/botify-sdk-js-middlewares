@@ -225,9 +225,13 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, UrlsAggsQuery: {queries: [1]}},
         callback: sinon.spy(),
         middlewareOutput: [{
-          errorMessage: 'Server error',
+          errorMessage: 'Resource 0 failed',
           errorCode: 500,
-          errorResourceIndex: 0,
+          resourceError: {
+            message: 'Server error',
+            errorCode: undefined,
+            index: 0,
+          },
         }],
       },
       {
@@ -239,8 +243,7 @@ describe('batchMiddleware', () => {
     const apiResult = [
       {status: 200, data: 2},
       {status: 500, error: {
-        errorMessage: 'Server error',
-        errorCode: 500,
+        message: 'Server error',
       }},
       {status: 200, data: 6},
     ];
@@ -271,9 +274,13 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, UrlsAggsQuery: {queries: [0, 2]}},
         callback: sinon.spy(),
         middlewareOutput: [{
-          errorMessage: 'Query is not valid',
-          errorCode: 500,
-          errorResourceIndex: 1,
+          errorMessage: 'Resource 1 failed',
+          errorCode: 400,
+          resourceError: {
+            message: 'Query is not valid',
+            errorCode: 34,
+            index: 1,
+          },
         }],
       },
       {
@@ -284,9 +291,9 @@ describe('batchMiddleware', () => {
     ];
     const apiResult = [
       {status: 200, data: 2},
-      {status: 500, error: {
-        errorCode: 500,
-        errorMessage: 'Query is not valid',
+      {status: 400, error: {
+        error_code: 34,
+        message: 'Query is not valid',
       }},
       {status: 200, data: 6},
     ];
