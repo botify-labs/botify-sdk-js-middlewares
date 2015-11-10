@@ -20,13 +20,6 @@ export const DEFAULT_BATCHED_OPERATIONS = [
   },
 ];
 
-function apiErrorObject({errorMessage, errorCode, errorResponse}) {
-  return {
-    errorMessage,
-    errorCode,
-    errorResponse,
-  };
-}
 
 class Queue {
   /**
