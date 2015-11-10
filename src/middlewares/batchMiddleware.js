@@ -131,7 +131,6 @@ export default function(
 ) {
   return function batchMiddleware({controllerId, operationId}) {
     return next => function(params, callback, {batch = true} = {}) {
-      const options = arguments[2];
       const batchOperation = batch && find(batchedOperations, bo => bo.controllerId === controllerId && bo.operationId === operationId);
 
       if (!batchOperation) {
