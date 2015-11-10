@@ -397,12 +397,14 @@ describe('batchMiddleware', () => {
   });
 
   it('must respect the queue limit', done => {
-    const limitedNextHandler = batchMiddleware([
-      {
-        ...DEFAULT_BATCHED_OPERATIONS[0],
-        queueLimit: 2,
-      },
-    ])(middlewareAPI);
+    const limitedNextHandler = batchMiddleware({
+      batchedOperations: [
+        {
+          ...DEFAULT_BATCHED_OPERATIONS[0],
+          queueLimit: 2,
+        },
+      ],
+    })(middlewareAPI);
     const getUrlsAggs = ({UrlsAggsQuery: {queries}}, callback) => callback(null, queries.map(v => ({
       status: 200,
       data: v * 2,

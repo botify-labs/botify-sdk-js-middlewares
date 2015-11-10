@@ -126,9 +126,9 @@ const queues = {};
  * @return {Middleware}
  * @warning This middleware do not propagate operation options
  */
-export default function(
-  batchedOperations = DEFAULT_BATCHED_OPERATIONS
-) {
+export default function({
+  batchedOperations = DEFAULT_BATCHED_OPERATIONS,
+} = {}) {
   return function batchMiddleware({controllerId, operationId}) {
     return next => function(params, callback, {batch = true} = {}) {
       const batchOperation = batch && find(batchedOperations, bo => bo.controllerId === controllerId && bo.operationId === operationId);
