@@ -95,18 +95,20 @@ class Queue {
             return callback(error);
           }
           if (!result) {
-            return callback(apiErrorObject({errorMessage: 'API returned an empty body'}));
+            return callback({
+              errorMessage: 'API returned an empty body',
+              errorCode: 200,
+              errorResponse: result,
+            });
           }
           const itemsResults = items.map(item => result[resultIndex++]);
           const resourceErrorIndex = findIndex(itemsResults, itemResult => !!itemResult.error);
           if (resourceErrorIndex >= 0) {
             const resourceError = itemsResults[resourceErrorIndex];
-            return callback(
-              apiErrorObject({
-                ...resourceError.error,
-              },
-              resourceError.status
-            ));
+            return callback({
+              ...resourceError.error,
+              errorResourceIndex: resourceErrorIndex,
+            });
           }
           return callback(null, itemsResults.map(itemResult => itemResult.data));
         });

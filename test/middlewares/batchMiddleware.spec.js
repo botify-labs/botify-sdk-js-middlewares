@@ -206,7 +206,7 @@ describe('batchMiddleware', () => {
         chai.expect(callback.callCount).to.be.equal(1);
         chai.expect(callback.getCall(0).args[0]).to.be.deep.equal({
           errorMessage: 'API returned an empty body',
-          errorCode: undefined,
+          errorCode: 200,
           errorResponse: undefined,
         });
       });
@@ -227,7 +227,7 @@ describe('batchMiddleware', () => {
         middlewareOutput: [{
           errorMessage: 'Server error',
           errorCode: 500,
-          errorResponse: undefined,
+          errorResourceIndex: 0,
         }],
       },
       {
@@ -273,7 +273,7 @@ describe('batchMiddleware', () => {
         middlewareOutput: [{
           errorMessage: 'Query is not valid',
           errorCode: 500,
-          errorResponse: undefined,
+          errorResourceIndex: 1,
         }],
       },
       {
