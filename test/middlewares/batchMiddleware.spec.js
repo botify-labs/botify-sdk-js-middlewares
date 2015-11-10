@@ -205,8 +205,9 @@ describe('batchMiddleware', () => {
       requests.forEach(({callback}) => {
         chai.expect(callback.callCount).to.be.equal(1);
         chai.expect(callback.getCall(0).args[0]).to.be.deep.equal({
-          ErrorMessage: 'API returned an empty body',
-          ErrorCode: undefined,
+          errorMessage: 'API returned an empty body',
+          errorCode: 200,
+          errorResponse: undefined,
         });
       });
       done();
@@ -224,11 +225,13 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, UrlsAggsQuery: {queries: [1]}},
         callback: sinon.spy(),
         middlewareOutput: [{
-          ErrorMessage: {
-            error_resource_index: 0,
+          errorMessage: 'Resource 0 failed',
+          errorCode: 500,
+          resourceError: {
             message: 'Server error',
+            errorCode: undefined,
+            index: 0,
           },
-          ErrorCode: 500,
         }],
       },
       {
@@ -271,12 +274,13 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, UrlsAggsQuery: {queries: [0, 2]}},
         callback: sinon.spy(),
         middlewareOutput: [{
-          ErrorMessage: {
-            error_code: 34,
-            error_resource_index: 1,
+          errorMessage: 'Resource 1 failed',
+          errorCode: 400,
+          resourceError: {
             message: 'Query is not valid',
+            errorCode: 34,
+            index: 1,
           },
-          ErrorCode: 500,
         }],
       },
       {
@@ -287,7 +291,7 @@ describe('batchMiddleware', () => {
     ];
     const apiResult = [
       {status: 200, data: 2},
-      {status: 500, error: {
+      {status: 400, error: {
         error_code: 34,
         message: 'Query is not valid',
       }},

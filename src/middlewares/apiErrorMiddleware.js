@@ -1,6 +1,5 @@
 import ApiError from '../errors/ApiError';
 
-
 export default function apiErrorMiddleware() {
   return next => function(params, callback, options) {
     next(
@@ -10,8 +9,8 @@ export default function apiErrorMiddleware() {
           callback(...arguments);
           return;
         }
-        const { ErrorMessage, ErrorCode } = error;
-        callback(new ApiError(ErrorMessage, ErrorCode));
+        const { errorMessage, errorCode, errorResponse, ...othersProps } = error;
+        callback(new ApiError(errorMessage, errorCode, errorResponse, othersProps));
       },
       options
     );

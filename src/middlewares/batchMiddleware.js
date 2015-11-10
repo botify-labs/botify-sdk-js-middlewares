@@ -20,12 +20,6 @@ export const DEFAULT_BATCHED_OPERATIONS = [
   },
 ];
 
-function apiErrorObject(message, status) {
-  return {
-    ErrorMessage: message,
-    ErrorCode: status,
-  };
-}
 
 class Queue {
   /**
@@ -94,19 +88,25 @@ class Queue {
             return callback(error);
           }
           if (!result) {
-            return callback(apiErrorObject('API returned an empty body'));
+            return callback({
+              errorMessage: 'API returned an empty body',
+              errorCode: 200,
+              errorResponse: result,
+            });
           }
           const itemsResults = items.map(item => result[resultIndex++]);
           const resourceErrorIndex = findIndex(itemsResults, itemResult => !!itemResult.error);
           if (resourceErrorIndex >= 0) {
             const resourceError = itemsResults[resourceErrorIndex];
-            return callback(
-              apiErrorObject({
-                ...resourceError.error,
-                error_resource_index: resourceErrorIndex,
+            return callback({
+              errorMessage: `Resource ${resourceErrorIndex} failed`,
+              errorCode: resourceError.status,
+              resourceError: {
+                message: resourceError.error.message,
+                errorCode: resourceError.error.error_code,
+                index: resourceErrorIndex,
               },
-              resourceError.status
-            ));
+            });
           }
           return callback(null, itemsResults.map(itemResult => itemResult.data));
         });
