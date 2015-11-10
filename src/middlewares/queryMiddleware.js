@@ -45,7 +45,7 @@ export default function({
           if (error) {
             return callback(...arguments);
           }
-          let processResponseError;
+          let processResponseError = null;
           let processedResponse;
           try {
             processedResponse = results.map((result, i) => {
