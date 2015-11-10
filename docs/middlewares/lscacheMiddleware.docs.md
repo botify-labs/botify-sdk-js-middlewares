@@ -20,8 +20,8 @@ import baseSdk from 'botify-sdk';
 const sdk = applyMiddleware(
   lscacheMiddleware([
     { // This operation will be cached by default
-      controllerId: 'Controller',
-      operationId: 'Operation',
+      controllerId: 'AnalysisController',
+      operationId: 'getUrls',
     }
   ])
 )(baseSdk);

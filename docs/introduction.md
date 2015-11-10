@@ -20,7 +20,7 @@ import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
-  lscacheMiddleware
+  lscacheMiddleware()
 )(baseSdk);
 ```
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
@@ -46,7 +46,7 @@ const sdk = applyMiddleware(
   apiErrorMiddleware,
   getUrlDetailEncodeMiddleware,
   invalidateAnalysisMiddleware,
-  lscacheMiddleware,
+  lscacheMiddleware(),
   queryMiddleware(),
   batchMiddleware(),
 )(baseSdk);

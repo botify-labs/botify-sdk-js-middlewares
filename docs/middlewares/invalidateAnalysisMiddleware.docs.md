@@ -17,7 +17,7 @@ import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   invalidateAnalysisMiddleware,
-  lscacheMiddleware
+  lscacheMiddleware()
 )(baseSdk);
 
 const params = {
