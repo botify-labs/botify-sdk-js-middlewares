@@ -10,11 +10,31 @@ describe('apiErrorMiddleware', () => {
     const func = (x, callback) => callback({
       errorMessage: 'That 301',
       errorCode: 301,
+      errorResponse: 'foo bar',
     });
     nextHandler(func)(1, (error, result) => {
       chai.expect(error).to.be.an.instanceof(ApiError);
       chai.expect(error.message).to.be.equal('ApiError: [301] - That 301');
-      chai.expect(error.statusCode).to.be.equal(301);
+      chai.expect(error.status).to.be.equal(301);
+      chai.expect(error.response).to.be.equal('foo bar');
+      done();
+    });
+  });
+
+  it('must store extra params in the meta key', done => {
+    const func = (x, callback) => callback({
+      errorMessage: 'That 404',
+      errorCode: 404,
+      foo: 'bar',
+      bul: 'bi',
+    });
+    nextHandler(func)(1, (error, result) => {
+      chai.expect(error).to.be.an.instanceof(ApiError);
+      chai.expect(error.message).to.be.equal('ApiError: [404] - That 404');
+      chai.expect(error.meta).to.deep.equal({
+        foo: 'bar',
+        bul: 'bi',
+      });
       done();
     });
   });

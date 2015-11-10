@@ -9,8 +9,8 @@ export default function apiErrorMiddleware() {
           callback(...arguments);
           return;
         }
-        const { errorMessage, errorCode, errorResponse } = error;
-        callback(new ApiError(errorMessage, errorCode, errorResponse));
+        const { errorMessage, errorCode, errorResponse, ...othersProps } = error;
+        callback(new ApiError(errorMessage, errorCode, errorResponse, othersProps));
       },
       options
     );
