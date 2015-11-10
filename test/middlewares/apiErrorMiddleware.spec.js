@@ -47,4 +47,13 @@ describe('apiErrorMiddleware', () => {
       done();
     });
   });
+
+  it('must not change error if callback already return one', done => {
+    const javascriptError = new Error('test');
+    const func = (params, callback) => callback(javascriptError);
+    nextHandler(func)(1, (error, result) => {
+      chai.expect(error).to.be.equal(javascriptError);
+      done();
+    });
+  });
 });
