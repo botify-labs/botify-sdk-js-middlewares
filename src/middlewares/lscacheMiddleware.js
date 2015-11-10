@@ -29,11 +29,12 @@ export default function(
      * @param  {Boolean?}  options.invalidate
      * @param  {String?}  options.bucketId
      */
-    return next => function(params, callback, {cache = false, invalidate = false, bucketId} = {}) {
+    return next => function(params, callback, {cache, invalidate = false, bucketId} = {}) {
       const cachedOperation = find(cachedOperations, co => co.controllerId === controllerId && co.operationId === operationId);
-      if (!cachedOperation && !cache) {
-        return next(...arguments);
-      }
+
+      if (cache !== undefined) {
+        if (!cache) return next(...arguments);
+      } else if (!cachedOperation) return next(...arguments);
 
       const bucket = bucketId ? lscache.createBucket(bucketId) : lscacheBucket;
       const itemKey = computeItemCacheKey(params);
