@@ -45,17 +45,20 @@ export default function({
           if (error) {
             return callback(...arguments);
           }
+          let processResponseError;
+          let processedResponse;
           try {
-            callback(error, results.map((result, i) => {
+            processedResponse = results.map((result, i) => {
               return queries[i].processResponse(result, {
                 transformTermKeys,
                 injectMetadata,
                 normalizeBoolean,
               });
-            }));
+            });
           } catch (e) {
-            callback(e);
+            processResponseError = e;
           }
+          callback(processResponseError, processedResponse);
         },
         options
       );
