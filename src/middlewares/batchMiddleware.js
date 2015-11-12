@@ -6,7 +6,6 @@ import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
 import pluck from 'lodash.pluck';
 import set from 'lodash.set';
-import nextTick from 'next-tick';
 import objectHash from 'object-hash';
 
 
@@ -27,11 +26,12 @@ class Queue {
    * @param  {Object} params
    * @param  {String || Array<String>} paramKeyBached
    */
-  constructor(operation, params, paramKeyBached, queueLimit = null) {
+  constructor(operation, params, paramKeyBached, queueLimit = null, timeout = 0) {
     this.operation = operation;
     this.params = params;
     this.bachedKey = paramKeyBached;
     this.queueLimit = queueLimit;
+    this.timeout = timeout;
 
     this.resources = [];
     this.onRequestListeners = [];
@@ -59,9 +59,9 @@ class Queue {
 
   _requestIfNeed() {
     if (this.resources.length === 1) {
-      nextTick(() => {
+      setTimeout(() => {
         this._request();
-      });
+      }, this.timeout);
     }
     if (this.queueLimit && this.resources.length >= this.queueLimit) {
       this._request();
@@ -123,12 +123,14 @@ const queues = {};
 
 /**
  * @param  {?Array<{controllerId, operationId, commonKeys, batchedKeyPath, queueLimit}>} batchedOperations
+ * @param  {Integer} timeout
  * @return {Middleware}
  * @warning This middleware do not propagate operation options
  */
-export default function(
-  batchedOperations = DEFAULT_BATCHED_OPERATIONS
-) {
+export default function({
+  batchedOperations = DEFAULT_BATCHED_OPERATIONS,
+  timeout = 0,
+} = {}) {
   return function batchMiddleware({controllerId, operationId}) {
     return next => function(params, callback, {batch = true} = {}) {
       const batchOperation = batch && find(batchedOperations, bo => bo.controllerId === controllerId && bo.operationId === operationId);
@@ -148,7 +150,8 @@ export default function(
           next,
           params,
           batchOperation.batchedKeyPath,
-          batchOperation.queueLimit
+          batchOperation.queueLimit,
+          timeout,
         );
         queues[hash].addOnRequestListener(() => queues[hash] = null);
       }

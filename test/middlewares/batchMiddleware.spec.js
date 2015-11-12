@@ -31,7 +31,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setImmediate(() => {
+    setTimeout(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -46,7 +46,7 @@ describe('batchMiddleware', () => {
         UrlsAggsQuery: {queries: [1, 2, 3]},
       });
       done();
-    });
+    }, 0);
   });
 
   it('must handle calls with multiple queries', done => {
@@ -65,7 +65,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setImmediate(() => {
+    setTimeout(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -80,7 +80,7 @@ describe('batchMiddleware', () => {
         UrlsAggsQuery: {queries: [1, 2, 3, 4, 5, 6]},
       });
       done();
-    });
+    }, 0);
   });
 
   it('must batch what can be batch together', done => {
@@ -126,7 +126,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setImmediate(() => {
+    setTimeout(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -160,7 +160,7 @@ describe('batchMiddleware', () => {
         UrlsAggsQuery: {queries: [3]},
       });
       done();
-    });
+    }, 0);
   });
 
   it('must not batch when it is specified in option', done => {
@@ -233,11 +233,11 @@ describe('batchMiddleware', () => {
     });
 
     // Batched request are called on next tick so wait it
-    setImmediate(() => {
+    setTimeout(() => {
     // If batched, getQueryAggregateSpy should be called 1 times
       chai.expect(getQueryAggregateSpyBatch.callCount).to.equal(1);
       done();
-    });
+    }, 0);
   });
 
   it('must returns the operation error if given', done => {
@@ -254,7 +254,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setImmediate(() => {
+    setTimeout(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -262,7 +262,7 @@ describe('batchMiddleware', () => {
         chai.expect(callback.getCall(0).args[1]).to.be.undefined; // eslint-disable-line no-unused-expressions
       });
       done();
-    });
+    }, 0);
   });
 
   it('must returns an error if API returns an empty body', done => {
@@ -278,7 +278,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setImmediate(() => {
+    setTimeout(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -289,7 +289,7 @@ describe('batchMiddleware', () => {
         });
       });
       done();
-    });
+    }, 0);
   });
 
   it('must returns an error if specific resource failed', done => {
@@ -335,7 +335,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setImmediate(() => {
+    setTimeout(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, middlewareOutput}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -343,7 +343,7 @@ describe('batchMiddleware', () => {
       });
 
       done();
-    });
+    }, 0);
   });
 
   it('must returns an error if specific item failed', done => {
@@ -385,7 +385,7 @@ describe('batchMiddleware', () => {
       nextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setImmediate(() => {
+    setTimeout(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, middlewareOutput}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -393,16 +393,18 @@ describe('batchMiddleware', () => {
       });
 
       done();
-    });
+    }, 0);
   });
 
   it('must respect the queue limit', done => {
-    const limitedNextHandler = batchMiddleware([
-      {
-        ...DEFAULT_BATCHED_OPERATIONS[0],
-        queueLimit: 2,
-      },
-    ])(middlewareAPI);
+    const limitedNextHandler = batchMiddleware({
+      batchedOperations: [
+        {
+          ...DEFAULT_BATCHED_OPERATIONS[0],
+          queueLimit: 2,
+        },
+      ],
+    })(middlewareAPI);
     const getUrlsAggs = ({UrlsAggsQuery: {queries}}, callback) => callback(null, queries.map(v => ({
       status: 200,
       data: v * 2,
@@ -418,7 +420,7 @@ describe('batchMiddleware', () => {
       limitedNextHandler(getUrlsAggsSpy)(input, callback, options);
     });
 
-    setImmediate(() => {
+    setTimeout(() => {
       // Expect each callback to be called with rights params
       requests.forEach(({callback, result}) => {
         chai.expect(callback.callCount).to.be.equal(1);
@@ -439,7 +441,7 @@ describe('batchMiddleware', () => {
         UrlsAggsQuery: {queries: [3]},
       });
       done();
-    });
+    }, 0);
   });
 
   it('must NOT do anything on not batched operation', done => {
@@ -460,5 +462,35 @@ describe('batchMiddleware', () => {
       chai.expect(result).to.be.equal(apiResult);
       done();
     });
+  });
+
+  it('must wait a specific amount of time before calling operation if specified in options', done => {
+    const delayedMiddleware = batchMiddleware({ timeout: 10 })(middlewareAPI);
+    const func = (params, callback) => callback(null, {});
+    const spiedFunc = sinon.spy(func);
+    const spiedCallback = sinon.spy();
+    const param = {...analysisParams, UrlsAggsQuery: {queries: []}};
+
+    delayedMiddleware(spiedFunc)(param, spiedCallback);
+    delayedMiddleware(spiedFunc)(param, spiedCallback);
+    delayedMiddleware(spiedFunc)(param, spiedCallback);
+    delayedMiddleware(spiedFunc)(param, spiedCallback);
+
+    // Must not been called just after
+    chai.expect(spiedFunc.callCount).to.be.equal(0);
+    chai.expect(spiedCallback.callCount).to.be.equal(0);
+
+    // Neither 5ms after
+    setTimeout(() => {
+      chai.expect(spiedFunc.callCount).to.be.equal(0);
+      chai.expect(spiedCallback.callCount).to.be.equal(0);
+    }, 5);
+
+    setTimeout(() => {
+      chai.expect(spiedFunc.callCount).to.be.equal(1);
+      chai.expect(spiedCallback.callCount).to.be.equal(4);
+
+      done();
+    }, 10);
   });
 });
