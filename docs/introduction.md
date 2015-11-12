@@ -36,14 +36,16 @@ import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
 const {
   apiErrorMiddleware,
   batchMiddleware,
-  queryMiddleware,
+  getUrlDetailEncodeMiddleware,
   invalidateAnalysisMiddleware,
   lscacheMiddleware,
+  queryMiddleware
 } = middlewares;
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
+  getUrlDetailEncodeMiddleware,
   invalidateAnalysisMiddleware,
   lscacheMiddleware,
   queryMiddleware(),
