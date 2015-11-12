@@ -6,6 +6,7 @@ import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
 import pluck from 'lodash.pluck';
 import set from 'lodash.set';
+import omit from 'lodash.omit';
 import objectHash from 'object-hash';
 
 
@@ -133,13 +134,13 @@ export default function({
 } = {}) {
   return function batchMiddleware({controllerId, operationId}) {
     return next => function(params, callback, {batch = true} = {}) {
+      const options = omit(arguments[2], ['batch']);
       const batchOperation = batch && find(batchedOperations, bo => bo.controllerId === controllerId && bo.operationId === operationId);
 
       if (!batchOperation) {
-        return next(...arguments);
+        return next(params, callback, options);
       }
 
-      const options = arguments[2];
       const hash = objectHash({
         commonParams: pick(params, batchOperation.commonKeys),
         options,

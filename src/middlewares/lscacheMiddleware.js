@@ -1,6 +1,7 @@
 import lscache from 'ls-cache';
 import objectHash from 'object-hash';
 import find from 'lodash.find';
+import omit from 'lodash.omit';
 
 import flushLocalStorageIfDataModelVersionChanged from '../utils/flushLocalStorage';
 
@@ -30,10 +31,11 @@ export default function({
      * @param  {String?}  options.bucketId
      */
     return next => function(params, callback, {cache, invalidate = false, bucketId} = {}) {
+      const options = omit(arguments[2], ['cache', 'invalidate', 'bucketId']);
       const cachedOperation = find(cachedOperations, co => co.controllerId === controllerId && co.operationId === operationId);
 
       if (!(typeof cache === 'undefined' ? cachedOperation : cache)) {
-        return next(...arguments);
+        return next(params, callback, options);
       }
 
       const bucket = bucketId ? lscache.createBucket(bucketId) : lscacheBucket;
@@ -46,7 +48,6 @@ export default function({
         }
       }
 
-      const options = arguments[2];
       next(
         params,
         function(error, result) {
