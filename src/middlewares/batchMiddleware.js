@@ -123,6 +123,7 @@ const queues = {};
 
 /**
  * @param  {?Array<{controllerId, operationId, commonKeys, batchedKeyPath, queueLimit}>} batchedOperations
+ * @param  {Integer} timeout
  * @return {Middleware}
  * @warning This middleware do not propagate operation options
  */

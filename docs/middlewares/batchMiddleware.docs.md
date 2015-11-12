@@ -12,9 +12,10 @@ none
 ## Middleware options
 - batchedOperations: Map of operations that can be batched
   - queueLimit: Max number of resource to call at a time
+- timeout: Modify timeout before a batch of requests are send, by default it's next tick
 
 ## Operation options
-none
+- batch : force an operation to be batch or not
 
 **Warning:** This middleware do not propagate operation options. So it should be the last middleware in the chain.
 
