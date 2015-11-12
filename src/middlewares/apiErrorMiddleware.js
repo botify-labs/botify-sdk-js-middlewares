@@ -5,7 +5,7 @@ export default function apiErrorMiddleware() {
     next(
       params,
       function(error) {
-        if (!error) {
+        if (!error || error instanceof Error) {
           callback(...arguments);
           return;
         }
