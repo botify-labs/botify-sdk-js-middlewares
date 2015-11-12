@@ -38,16 +38,18 @@ import {
   getUrlDetailEncodeMiddleware,
   invalidateAnalysisMiddleware,
   lscacheMiddleware,
-  queryMiddleware
+  queryMiddleware,
+  dedupleMiddleware,
 } from 'botify-sdk-js-middlewares';
 import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
   getUrlDetailEncodeMiddleware,
+  queryMiddleware(),
   invalidateAnalysisMiddleware,
   lscacheMiddleware(),
-  queryMiddleware(),
+  dedupleMiddleware,
   batchMiddleware(),
 )(baseSdk);
 ```
