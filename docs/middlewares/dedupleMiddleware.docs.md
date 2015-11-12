@@ -12,8 +12,7 @@ none
 
 ## Usage
 ``` javascript
-import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-const { dedupleMiddleware } = middlewares;
+import { applyMiddleware, dedupleMiddleware } from 'botify-sdk-middlewares';
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(

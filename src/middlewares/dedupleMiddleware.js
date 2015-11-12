@@ -1,8 +1,5 @@
 import objectHash from 'object-hash';
 
-/**
- * @return {Middleware}
- */
 export default function dedupleMiddleware({controllerId, operationId}) {
   const currentOperations = {};
 
