@@ -89,6 +89,8 @@ class Query {
     if (!response.aggs) {
       throw new ApiResponseError('missing aggs whereas aggregate(s) have been defined');
     }
+
+    response = this.normalizeAggs(response); // eslint-disable-line no-param-reassign
     if (response.aggs.length !== this.aggregates.length) {
       throw new ApiResponseError('missing agg items');
     }
@@ -100,6 +102,20 @@ class Query {
           injectMetadata,
           normalizeBoolean,
         });
+      }),
+    };
+  }
+
+  normalizeAggs(response) {
+    if (response.count !== 0 || response.aggs.length !== 0) {
+      return response;
+    }
+    return {
+      ...response,
+      aggs: this.aggregates.map(() => {
+        return {
+          groups: [],
+        };
       }),
     };
   }
