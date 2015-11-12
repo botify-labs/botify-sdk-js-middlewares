@@ -24,8 +24,7 @@ npm install --save botify-sdk
 Use `applyMiddleware` function to apply middlewares you need.
 
 ```JS
-import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-const { lscacheMiddleware, apiErrorMiddleware } = middlewares;
+import { applyMiddleware, apiErrorMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(

@@ -15,8 +15,7 @@ Use `applyMiddleware` function to apply middlewares you need.
 
 ### Initialize middlewares
 ```JS
-import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-const { lscacheMiddleware, apiErrorMiddleware } = middlewares;
+import { applyMiddleware, apiErrorMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
@@ -32,15 +31,15 @@ A bundle is available in `dist/botify-sdk-middlewares.min.js`. It exposes the gl
 
 ### RECOMMENDED setup
 ```JS
-import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-const {
+import {
+  applyMiddleware,
   apiErrorMiddleware,
   batchMiddleware,
   getUrlDetailEncodeMiddleware,
   invalidateAnalysisMiddleware,
   lscacheMiddleware,
   queryMiddleware
-} = middlewares;
+} from 'botify-sdk-middlewares';
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
@@ -59,8 +58,7 @@ Some middlewares takes options (read middleware's documentation **middlewares op
 
 Example:
 ```JS
-import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-const { batchMiddleware } = middlewares;
+import { applyMiddleware, batchMiddleware } from 'botify-sdk-middlewares';
 const { DEFAULT_BATCHED_OPERATIONS } = batchMiddleware;
 import baseSdk from 'botify-sdk';
 

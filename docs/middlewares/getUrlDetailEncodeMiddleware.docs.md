@@ -10,7 +10,7 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, getUrlDetailEncodeMiddleware } from 'botify-sdk';
+import { applyMiddleware, getUrlDetailEncodeMiddleware } from 'botify-sdk-middlewares';
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(

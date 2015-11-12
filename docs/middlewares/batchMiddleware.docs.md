@@ -20,8 +20,7 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, middlewares } from 'botify-sdk-middlewares';
-const { batchMiddleware } = middlewares;
+import { applyMiddleware, batchMiddleware } from 'botify-sdk-middlewares';
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
