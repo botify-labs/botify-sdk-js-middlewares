@@ -3,11 +3,13 @@ import objectHash from 'object-hash';
 /**
  * @return {Middleware}
  */
-export default function dedupleMiddleware() {
+export default function dedupleMiddleware({controllerId, operationId}) {
   const currentOperations = {};
 
   return next => function(params, callback, options) {
     const hash = objectHash({
+      controllerId,
+      operationId,
       params,
       options,
     });
@@ -20,7 +22,7 @@ export default function dedupleMiddleware() {
         params,
         (error, result) => {
           currentOperations[hash].forEach(cb => cb(error, result));
-          delete currentOperations[hash];
+          currentOperations[hash] = null;
         },
         options
       );

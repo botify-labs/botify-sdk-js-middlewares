@@ -2,7 +2,13 @@
 
 When possible, this middleware will merge operation if they have the same params, this permit to reduce the number of call made to the API.
 
-If a request is merged it don't continue the middleware chain, so be carefull with the order.
+Middlewares chain of duplicate operations are interrupted. So you might consider middlewares order carefully.
+
+## Middleware requirement
+none
+
+## Operation options
+none
 
 ## Usage
 ``` javascript
@@ -21,16 +27,10 @@ const params = {
 };
 
 // There is 2 same requests but with this middleware only one call will be made to the API
-sdk.AnalysesController.getQueryAggregate(
-  {...params, queries: Array<Query>},
-  (error, result) => {
-    //Handle Result
-  }
-);
-sdk.AnalysesController.getQueryAggregate(
-  {...params, queries: Array<Query>},
-  (error, result) => {
-    //Handle Result
-  }
-);
+sdk.AnalysesController.getAnalysisSummary(params, (error, result) => {
+   //Handle Result
+});
+sdk.AnalysesController.getAnalysisSummary(params, (error, result) => {
+   //Handle Result
+});
 ```

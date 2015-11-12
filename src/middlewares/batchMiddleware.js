@@ -139,8 +139,11 @@ export default function({
         return next(...arguments);
       }
 
+      const options = arguments[2];
       const hash = objectHash({
         commonParams: pick(params, batchOperation.commonKeys),
+        options,
+        controllerId,
         operationId,
       });
 
