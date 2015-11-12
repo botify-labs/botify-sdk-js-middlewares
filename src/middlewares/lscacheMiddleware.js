@@ -32,9 +32,9 @@ export default function(
     return next => function(params, callback, {cache, invalidate = false, bucketId} = {}) {
       const cachedOperation = find(cachedOperations, co => co.controllerId === controllerId && co.operationId === operationId);
 
-      if (cache !== undefined) {
-        if (!cache) return next(...arguments);
-      } else if (!cachedOperation) return next(...arguments);
+      if (!(typeof cache === 'undefined' ? cachedOperation : cache)) {
+        return next(...arguments);
+      }
 
       const bucket = bucketId ? lscache.createBucket(bucketId) : lscacheBucket;
       const itemKey = computeItemCacheKey(params);
