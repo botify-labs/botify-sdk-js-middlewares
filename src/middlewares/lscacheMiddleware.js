@@ -18,9 +18,9 @@ export function computeItemCacheKey(params) {
  * @param  {?Array<{controllerId, operationId}>} cachedOperations
  * @return {Middleware}
  */
-export default function(
-  cachedOperations = []
-) {
+export default function({
+  cachedOperations = [],
+} = {}) {
   return function lscacheMiddleware({controllerId, operationId} = {}) {
     /**
      * @param  {Object}   params

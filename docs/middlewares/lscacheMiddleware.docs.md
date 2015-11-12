@@ -18,12 +18,14 @@ import { applyMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
 import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
-  lscacheMiddleware([
-    { // This operation will be cached by default
-      controllerId: 'AnalysisController',
-      operationId: 'getUrls',
-    }
-  ])
+  lscacheMiddleware({
+    cachedOperations: [
+      { // This operation will be cached by default
+        controllerId: 'AnalysisController',
+        operationId: 'getUrls',
+      },
+    ],
+  })
 )(baseSdk);
 
 const callback = (error, result) => {

@@ -131,12 +131,14 @@ describe('lscacheMiddleware', () => {
   });
 
   it('must store value in cache if operation specified in middleware parameters', done => {
-    const nextHandlerWithDefault = lscacheMiddleware([
-      {
-        controllerId: 'fakeController',
-        operationId: 'fakeOperation',
-      },
-    ])({ controllerId: 'fakeController', operationId: 'fakeOperation' });
+    const nextHandlerWithDefault = lscacheMiddleware({
+      cachedOperations: [
+        {
+          controllerId: 'fakeController',
+          operationId: 'fakeOperation',
+        },
+      ],
+    })({ controllerId: 'fakeController', operationId: 'fakeOperation' });
     const params = 'foo';
     const itemValue = 1000;
     const itemKey = computeItemCacheKey(params);
@@ -157,12 +159,14 @@ describe('lscacheMiddleware', () => {
   });
 
   it('must retrive value from cache if available and operation specified in middleware parameters', done => {
-    const nextHandlerWithDefault = lscacheMiddleware([
-      {
-        controllerId: 'fakeController',
-        operationId: 'fakeOperation',
-      },
-    ])({ controllerId: 'fakeController', operationId: 'fakeOperation' });
+    const nextHandlerWithDefault = lscacheMiddleware({
+      cachedOperations: [
+        {
+          controllerId: 'fakeController',
+          operationId: 'fakeOperation',
+        },
+      ],
+    })({ controllerId: 'fakeController', operationId: 'fakeOperation' });
     const params = 'foo';
     const itemValue = 1000;
     const itemKey = computeItemCacheKey(params);
