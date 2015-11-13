@@ -12,12 +12,12 @@
     "test:watch": "npm test -- --watch",
     "check": "npm run lint && npm run test",
     "build:lib": "babel src --out-dir lib",
-    "build:umd": "webpack --config webpack.config.production.js",
-    "build": "npm run clean && npm run build:lib && npm run build:umd",
+    "build:dist": "webpack --config webpack.config.production.js",
+    "build": "npm run clean && npm run build:lib && npm run build:dist",
     "stats": "webpack --config webpack.config.stats.js && npm run clean",
     "preversion": "npm run clean && npm run check",
     "version": "npm run build",
-    "postversion": "git push && git push --tags && npm run clean"
+    "postversion": "git add -A lib dist && git push && git push --tags"
   },
   "repository": {
     "type": "git",
