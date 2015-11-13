@@ -6,6 +6,7 @@ import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
 import pluck from 'lodash.pluck';
 import set from 'lodash.set';
+import omit from 'lodash.omit';
 import objectHash from 'object-hash';
 
 
@@ -26,12 +27,13 @@ class Queue {
    * @param  {Object} params
    * @param  {String || Array<String>} paramKeyBached
    */
-  constructor(operation, params, paramKeyBached, queueLimit = null, timeout = 0) {
+  constructor(operation, params, paramKeyBached, queueLimit = null, timeout = 0, options = {}) {
     this.operation = operation;
     this.params = params;
     this.bachedKey = paramKeyBached;
     this.queueLimit = queueLimit;
     this.timeout = timeout;
+    this.options = options;
 
     this.resources = [];
     this.onRequestListeners = [];
@@ -111,6 +113,7 @@ class Queue {
           return callback(null, itemsResults.map(itemResult => itemResult.data));
         });
       },
+      this.options,
     );
   }
 
@@ -133,14 +136,17 @@ export default function({
 } = {}) {
   return function batchMiddleware({controllerId, operationId}) {
     return next => function(params, callback, {batch = true} = {}) {
+      const options = omit(arguments[2], ['batch']);
       const batchOperation = batch && find(batchedOperations, bo => bo.controllerId === controllerId && bo.operationId === operationId);
 
       if (!batchOperation) {
-        return next(...arguments);
+        return next(params, callback, options);
       }
 
       const hash = objectHash({
         commonParams: pick(params, batchOperation.commonKeys),
+        options,
+        controllerId,
         operationId,
       });
 
@@ -152,6 +158,7 @@ export default function({
           batchOperation.batchedKeyPath,
           batchOperation.queueLimit,
           timeout,
+          options,
         );
         queues[hash].addOnRequestListener(() => queues[hash] = null);
       }

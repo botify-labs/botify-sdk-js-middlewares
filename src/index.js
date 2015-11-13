@@ -6,6 +6,7 @@ import queryMiddleware from './middlewares/queryMiddleware';
 import getUrlDetailEncodeMiddleware from './middlewares/getUrlDetailEncodeMiddleware';
 import invalidateAnalysisMiddleware from './middlewares/invalidateAnalysisMiddleware';
 import lscacheMiddleware from './middlewares/lscacheMiddleware';
+import dedupleMiddleware from './middlewares/dedupleMiddleware.js';
 
 import Query from './models/Query';
 import QueryAggregate from './models/QueryAggregate';
@@ -22,6 +23,7 @@ export {
   queryMiddleware,
   invalidateAnalysisMiddleware,
   lscacheMiddleware,
+  dedupleMiddleware,
   Query,
   QueryAggregate,
   ApiError,

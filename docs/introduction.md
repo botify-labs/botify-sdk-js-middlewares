@@ -38,16 +38,18 @@ import {
   getUrlDetailEncodeMiddleware,
   invalidateAnalysisMiddleware,
   lscacheMiddleware,
-  queryMiddleware
+  queryMiddleware,
+  dedupleMiddleware,
 } from 'botify-sdk-js-middlewares';
 import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
   getUrlDetailEncodeMiddleware,
+  queryMiddleware(),
   invalidateAnalysisMiddleware,
   lscacheMiddleware(),
-  queryMiddleware(),
+  dedupleMiddleware,
   batchMiddleware(),
 )(baseSdk);
 ```
@@ -77,6 +79,8 @@ const sdk = applyMiddleware(
 
 ### Operations options
 Some middlewares use options on operations (read middleware's documentation **operation options section**)
+**Important** : Middlewares consume their options so you can't chain 2 same middlewares.
+
 ```JS
 SDK::Controller::operation(params: Object, callback: Func, options: Object?)
 ```
