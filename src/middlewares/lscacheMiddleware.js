@@ -1,5 +1,6 @@
 import lscache from 'ls-cache';
 import objectHash from 'object-hash';
+import find from 'lodash.find';
 
 import flushLocalStorageIfDataModelVersionChanged from '../utils/flushLocalStorage';
 
@@ -13,40 +14,50 @@ export function computeItemCacheKey(params) {
   return objectHash(params);
 }
 
-export default function lscacheMiddleware() {
-  /**
-   * @param  {Object}   params
-   * @param  {Function} callback
-   * @param  {Boolean?}  options.cache
-   * @param  {Boolean?}  options.invalidate
-   * @param  {String?}  options.bucketId
-   */
-  return next => function(params, callback, {cache = false, invalidate = false, bucketId} = {}) {
-    if (!cache) {
-      return next(...arguments);
-    }
+/**
+ * @param  {?Array<{controllerId, operationId}>} cachedOperations
+ * @return {Middleware}
+ */
+export default function({
+  cachedOperations = [],
+} = {}) {
+  return function lscacheMiddleware({controllerId, operationId} = {}) {
+    /**
+     * @param  {Object}   params
+     * @param  {Function} callback
+     * @param  {Boolean?}  options.cache
+     * @param  {Boolean?}  options.invalidate
+     * @param  {String?}  options.bucketId
+     */
+    return next => function(params, callback, {cache, invalidate = false, bucketId} = {}) {
+      const cachedOperation = find(cachedOperations, co => co.controllerId === controllerId && co.operationId === operationId);
 
-    const bucket = bucketId ? lscache.createBucket(bucketId) : lscacheBucket;
-    const itemKey = computeItemCacheKey(params);
-    if (!invalidate) {
-      const itemValue = bucket.get(itemKey);
-      if (itemValue) {
-        callback(null, itemValue);
-        return false;
+      if (!(typeof cache === 'undefined' ? cachedOperation : cache)) {
+        return next(...arguments);
       }
-    }
 
-    const options = arguments[2];
-    next(
-      params,
-      function(error, result) {
-        if (!error) {
-          bucket.set(itemKey, result, LSCACHE_EXPIRATION_MIN);
+      const bucket = bucketId ? lscache.createBucket(bucketId) : lscacheBucket;
+      const itemKey = computeItemCacheKey(params);
+      if (!invalidate) {
+        const itemValue = bucket.get(itemKey);
+        if (itemValue) {
+          callback(null, itemValue);
+          return false;
         }
-        callback(...arguments);
-      },
-      options
-    );
+      }
+
+      const options = arguments[2];
+      next(
+        params,
+        function(error, result) {
+          if (!error) {
+            bucket.set(itemKey, result, LSCACHE_EXPIRATION_MIN);
+          }
+          callback(...arguments);
+        },
+        options
+      );
+    };
   };
 }
 

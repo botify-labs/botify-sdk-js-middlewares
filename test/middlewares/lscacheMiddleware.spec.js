@@ -7,7 +7,7 @@ import lscacheMiddleware, {computeItemCacheKey, lscacheBucket} from '../../src/m
 
 
 describe('lscacheMiddleware', () => {
-  const nextHandler = lscacheMiddleware();
+  const nextHandler = lscacheMiddleware()();
 
   before(() => {
     localStorage.clear();
@@ -128,5 +128,64 @@ describe('lscacheMiddleware', () => {
       chai.expect(result).to.be.equal(itemValue);
       done();
     }, {cache: true, bucketId: specificBucketId});
+  });
+
+  it('must store value in cache if operation specified in middleware parameters', done => {
+    const nextHandlerWithDefault = lscacheMiddleware({
+      cachedOperations: [
+        {
+          controllerId: 'fakeController',
+          operationId: 'fakeOperation',
+        },
+      ],
+    })({ controllerId: 'fakeController', operationId: 'fakeOperation' });
+    const params = 'foo';
+    const itemValue = 1000;
+    const itemKey = computeItemCacheKey(params);
+
+    const fetchX = (x, callback) => callback(null, itemValue);
+    const spy = sinon.spy(fetchX);
+
+    nextHandlerWithDefault(spy)(params, (error, result) => {
+      // Expect cache
+      chai.expect(spy.callCount).to.be.equal(1);
+      chai.expect(lscacheBucket.get(itemKey)).to.be.equal(itemValue);
+
+      // Exect callback arguments
+      chai.expect(error).to.be.equal(null);
+      chai.expect(result).to.be.equal(itemValue);
+      done();
+    });
+  });
+
+  it('must retrive value from cache if available and operation specified in middleware parameters', done => {
+    const nextHandlerWithDefault = lscacheMiddleware({
+      cachedOperations: [
+        {
+          controllerId: 'fakeController',
+          operationId: 'fakeOperation',
+        },
+      ],
+    })({ controllerId: 'fakeController', operationId: 'fakeOperation' });
+    const params = 'foo';
+    const itemValue = 1000;
+    const itemKey = computeItemCacheKey(params);
+
+    const fetchX = (x, callback) => callback(null, itemValue);
+    const spy = sinon.spy(fetchX);
+
+    // Populate local storage
+    lscacheBucket.set(itemKey, itemValue);
+
+    nextHandlerWithDefault(spy)(params, (error, result) => {
+      // Expect cache
+      chai.expect(spy.callCount).to.be.equal(0);
+      chai.expect(lscacheBucket.get(itemKey)).to.be.equal(itemValue);
+
+      // Exect callback arguments
+      chai.expect(error).to.be.equal(null);
+      chai.expect(result).to.be.equal(itemValue);
+      done();
+    });
   });
 });
