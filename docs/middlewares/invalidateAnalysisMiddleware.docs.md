@@ -12,8 +12,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, invalidateAnalysisMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
-import baseSdk from 'botify-sdk';
+import { applyMiddleware, invalidateAnalysisMiddleware, lscacheMiddleware } from 'botify-sdk-js-middlewares';
+import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   invalidateAnalysisMiddleware,

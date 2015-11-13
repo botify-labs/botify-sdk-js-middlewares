@@ -17,8 +17,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, queryMiddleware, batchMiddleware } from 'botify-sdk-middlewares';
-import baseSdk from 'botify-sdk';
+import { applyMiddleware, queryMiddleware, batchMiddleware } from 'botify-sdk-js-middlewares';
+import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   queryMiddleware(),
@@ -56,7 +56,7 @@ An `Aggregate` can define some `metric` to compute and a set of `groupby`s to op
 
 #### 1.1. Using `Query` class
 ```JS
-import { models } from 'botify-sdk-middlewares';
+import { models } from 'botify-sdk-js-middlewares';
 const { Query, QueryAggregate } = models;
 
 let query = new Query();

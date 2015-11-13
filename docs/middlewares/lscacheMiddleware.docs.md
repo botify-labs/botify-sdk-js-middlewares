@@ -14,8 +14,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
-import baseSdk from 'botify-sdk';
+import { applyMiddleware, lscacheMiddleware } from 'botify-sdk-js-middlewares';
+import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   lscacheMiddleware({

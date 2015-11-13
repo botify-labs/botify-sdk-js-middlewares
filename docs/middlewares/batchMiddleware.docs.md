@@ -21,8 +21,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, batchMiddleware } from 'botify-sdk-middlewares';
-import baseSdk from 'botify-sdk';
+import { applyMiddleware, batchMiddleware } from 'botify-sdk-js-middlewares';
+import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   batchMiddleware()

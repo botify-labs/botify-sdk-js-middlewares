@@ -10,8 +10,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, apiErrorMiddleware } from 'botify-sdk-middlewares';
-import baseSdk from 'botify-sdk';
+import { applyMiddleware, apiErrorMiddleware } from 'botify-sdk-js-middlewares';
+import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,

@@ -1,5 +1,5 @@
 {
-  "name": "botify-sdk-middlewares",
+  "name": "botify-sdk-js-middlewares",
   "version": "0.1.0",
   "description": "Botify JS SDK middlewares",
   "author": "Botify <labs@botify.com>",
@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/botify-hq/botify-sdk-jsplus.git"
+    "url": "git://github.com/botify-hq/botify-sdk-js-middlewares.git"
   },
   "dependencies": {
     "es6-error": "^2.0.0",
@@ -56,7 +56,6 @@
     "rimraf": "^2.4.3",
     "sinon": "^1.17.1",
     "stats-webpack-plugin": "^0.2.2",
-    "webpack": "^1.9.5",
-    "yargs": "^3.5.3"
+    "webpack": "^1.9.5"
   }
 }

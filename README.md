@@ -1,4 +1,4 @@
-# botify-sdk-middlewares
+# botify-sdk-js-middlewares
 
 [![Build Status](https://travis-ci.org/botify-labs/botify-sdk-js-middlewares.svg?branch=master)](https://travis-ci.org/botify-labs/botify-sdk-js-middlewares)
 
@@ -12,20 +12,20 @@ The middleware pattern used in this package has been greatly influenced by [Redu
 
 ## Installation
 ```
-npm install --save botify-sdk-middlewares
+npm install --save botify-sdk-js-middlewares
 ```
 
 You’ll also need the Botify SDK (core).
 ```
-npm install --save botify-sdk
+npm install --save botify-sdk-js
 ```
 
 ## Usage
 Use `applyMiddleware` function to apply middlewares you need.
 
 ```JS
-import { applyMiddleware, apiErrorMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
-import baseSdk from 'botify-sdk';
+import { applyMiddleware, apiErrorMiddleware, lscacheMiddleware } from 'botify-sdk-js-middlewares';
+import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
@@ -35,7 +35,7 @@ const sdk = applyMiddleware(
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
 
 ### AMD or script tag old school way
-A bundle is available in `dist/botify-sdk-middlewares.min.js`. It exposes the global variable `BotifySdkMiddlewares`.
+A bundle is available in `dist/botify-sdk-js-middlewares.min.js`. It exposes the global variable `BotifySdkJsMiddlewares`.
 
 
 ## Documentation

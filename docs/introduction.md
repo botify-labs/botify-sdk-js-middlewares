@@ -1,4 +1,4 @@
-# botify-sdk-middlewares
+# botify-sdk-js-middlewares
 
 This package contains multiple middlewares allowing to customize and optimize  Botify SDK's behaviour. Including local storage caching, request batching, api result post processing.
 
@@ -15,8 +15,8 @@ Use `applyMiddleware` function to apply middlewares you need.
 
 ### Initialize middlewares
 ```JS
-import { applyMiddleware, apiErrorMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
-import baseSdk from 'botify-sdk';
+import { applyMiddleware, apiErrorMiddleware, lscacheMiddleware } from 'botify-sdk-js-middlewares';
+import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
@@ -26,7 +26,7 @@ const sdk = applyMiddleware(
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
 
 ### AMD or script tag old school way
-A bundle is available in `dist/botify-sdk-middlewares.min.js`. It exposes the global variable `BotifySdkMiddlewares`.
+A bundle is available in `dist/botify-sdk-js-middlewares.min.js`. It exposes the global variable `BotifySdkMiddlewares`.
 
 
 ### RECOMMENDED setup
@@ -39,8 +39,8 @@ import {
   invalidateAnalysisMiddleware,
   lscacheMiddleware,
   queryMiddleware
-} from 'botify-sdk-middlewares';
-import baseSdk from 'botify-sdk';
+} from 'botify-sdk-js-middlewares';
+import baseSdk from 'botify-sdk-js';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
@@ -58,9 +58,9 @@ Some middlewares takes options (read middleware's documentation **middlewares op
 
 Example:
 ```JS
-import { applyMiddleware, batchMiddleware } from 'botify-sdk-middlewares';
+import { applyMiddleware, batchMiddleware } from 'botify-sdk-js-middlewares';
 const { DEFAULT_BATCHED_OPERATIONS } = batchMiddleware;
-import baseSdk from 'botify-sdk';
+import baseSdk from 'botify-sdk-js';
 
 const batchMiddlewareOptions = {
   ...DEFAULT_BATCHED_OPERATIONS,
