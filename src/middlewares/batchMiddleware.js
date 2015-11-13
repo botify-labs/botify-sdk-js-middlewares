@@ -27,12 +27,13 @@ class Queue {
    * @param  {Object} params
    * @param  {String || Array<String>} paramKeyBached
    */
-  constructor(operation, params, paramKeyBached, queueLimit = null, timeout = 0) {
+  constructor(operation, params, paramKeyBached, queueLimit = null, timeout = 0, options = {}) {
     this.operation = operation;
     this.params = params;
     this.bachedKey = paramKeyBached;
     this.queueLimit = queueLimit;
     this.timeout = timeout;
+    this.options = options;
 
     this.resources = [];
     this.onRequestListeners = [];
@@ -112,6 +113,7 @@ class Queue {
           return callback(null, itemsResults.map(itemResult => itemResult.data));
         });
       },
+      this.options,
     );
   }
 
@@ -156,6 +158,7 @@ export default function({
           batchOperation.batchedKeyPath,
           batchOperation.queueLimit,
           timeout,
+          options,
         );
         queues[hash].addOnRequestListener(() => queues[hash] = null);
       }
