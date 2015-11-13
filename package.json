@@ -16,8 +16,8 @@
     "build": "npm run clean && npm run build:lib && npm run build:dist",
     "stats": "webpack --config webpack.config.stats.js && npm run clean",
     "preversion": "npm run clean && npm run check",
-    "version": "npm run build",
-    "postversion": "git add -A lib dist && git push && git push --tags"
+    "version": "npm run build && git add -A lib dist",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
