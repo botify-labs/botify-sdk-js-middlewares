@@ -69,4 +69,30 @@ describe('apiErrorMiddleware', () => {
       done();
     });
   });
+
+  it('must not failed if errorResponse is already an object', done => {
+    const func = (params, callback) => callback({
+      errorMessage: 'error',
+      errorCode: '500',
+      errorResponse: { error: 'error' },
+    });
+
+    nextHandler(func)({}, (error, result) => {
+      chai.expect(error.response).to.deep.equal({ error: 'error' });
+      done();
+    });
+  });
+
+  it('must not failed if errorResponse is a string', done => {
+    const func = (params, callback) => callback({
+      errorMessage: 'error',
+      errorCode: '500',
+      errorResponse: 'error',
+    });
+
+    nextHandler(func)({}, (error, result) => {
+      chai.expect(error.response).to.equal('error');
+      done();
+    });
+  });
 });
