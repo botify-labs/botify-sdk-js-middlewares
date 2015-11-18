@@ -480,17 +480,17 @@ describe('batchMiddleware', () => {
     chai.expect(spiedFunc.callCount).to.be.equal(0);
     chai.expect(spiedCallback.callCount).to.be.equal(0);
 
-    // Neither 5ms after
-    setTimeout(() => {
+    // Neither at the end of event loop
+    setImmediate(() => {
       chai.expect(spiedFunc.callCount).to.be.equal(0);
       chai.expect(spiedCallback.callCount).to.be.equal(0);
-    }, 5);
+    });
 
     setTimeout(() => {
       chai.expect(spiedFunc.callCount).to.be.equal(1);
       chai.expect(spiedCallback.callCount).to.be.equal(4);
 
       done();
-    }, 10);
+    }, 20);
   });
 });
