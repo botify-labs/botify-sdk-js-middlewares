@@ -10,7 +10,14 @@ export default function apiErrorMiddleware() {
           return;
         }
         const { errorMessage, errorCode, errorResponse, ...othersProps } = error;
-        callback(new ApiError(errorMessage, errorCode, errorResponse, othersProps));
+        let parsedErrorResponse;
+        try {
+          parsedErrorResponse = JSON.parse(errorResponse);
+        } catch (err) {
+          parsedErrorResponse = errorResponse;
+        } finally {
+          callback(new ApiError(errorMessage, errorCode, parsedErrorResponse, othersProps));
+        }
       },
       options
     );
