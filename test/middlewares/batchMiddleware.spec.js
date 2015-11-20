@@ -491,6 +491,6 @@ describe('batchMiddleware', () => {
       chai.expect(spiedCallback.callCount).to.be.equal(4);
 
       done();
-    }, 20);
+    }, 10);
   });
 });
