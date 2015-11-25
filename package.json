@@ -55,7 +55,6 @@
     "rimraf": "^2.4.3",
     "sinon": "^1.17.1",
     "stats-webpack-plugin": "^0.2.2",
-    "webpack": "^1.9.5",
-    "escope": "3.2.0"
+    "webpack": "^1.9.5"
   }
 }
