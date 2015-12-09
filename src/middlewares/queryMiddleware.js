@@ -6,7 +6,7 @@ import Query from '../models/Query';
 
 const CONTROLLER_ID = 'AnalysisController';
 const OPERATION_ID = 'getUrlsAggs';
-const QUERIES_KEY_PATH = ['UrlsAggsQuery', 'queries'];
+const QUERIES_KEY_PATH = ['urlsAggsQueries'];
 
 /**
  * @param  {Boolean?} options.transformTermKeys Turn term keys into objects: key -> { value: key }
@@ -37,9 +37,7 @@ export default function({
       next(
         {
           ...params,
-          UrlsAggsQuery: {
-            queries: queries.map(query => query.toJsonAPI()),
-          },
+          urlsAggsQueries: queries.map(query => query.toJsonAPI()),
         },
         function(error, results) {
           if (error) {

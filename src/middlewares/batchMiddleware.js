@@ -15,7 +15,7 @@ export const DEFAULT_BATCHED_OPERATIONS = [
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
     commonKeys: ['username', 'projectSlug', 'analysisSlug'],
-    batchedKeyPath: ['UrlsAggsQuery', 'queries'],
+    batchedKeyPath: ['urlsAggsQueries'],
     queueLimit: 15,
   },
 ];
