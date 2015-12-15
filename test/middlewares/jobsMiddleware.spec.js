@@ -4,13 +4,12 @@ import sinon from 'sinon';
 import jobsMiddleware from '../../src/middlewares/jobsMiddleware';
 
 describe('jobsMiddleware', () => {
-
   const middlewareConfig = {
     jobs: [
       {
         create: { controllerId: 'controller', operationId: 'create' },
         poll: { controllerId: 'controller', operationId: 'poll', jobIdKey: 'jobIdKey' },
-      }
+      },
     ],
     pollInterval: 10,
   };
@@ -63,9 +62,6 @@ describe('jobsMiddleware', () => {
   });
 
   it('should returns an error if job creation failed', done => {
-    const jobId = 3564;
-    const jobResult = { koo: 'fit' };
-
     // Create Opeation that returns an error.
     const createOperation = (params, callback) => callback({ errorMessage: 'it bugs somewhere' });
     const spiedCreateOperation = sinon.spy(createOperation);
@@ -89,7 +85,6 @@ describe('jobsMiddleware', () => {
 
   it('should returns an error if poll failed', done => {
     const jobId = 3564;
-    const jobResult = { koo: 'fit' };
 
     // Create Opeation that just return the job id.
     const createOperation = (params, callback) => callback(null, { job_id: jobId });
@@ -139,6 +134,4 @@ describe('jobsMiddleware', () => {
     chai.expect(spiedGetSomeCoffee.callCount).to.be.equal(1);
     chai.expect(spiedGetSomeCoffee.getCall(0).args).to.deep.equal([params, callback, options]);
   });
-
-
 });
