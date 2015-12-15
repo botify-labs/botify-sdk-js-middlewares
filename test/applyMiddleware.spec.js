@@ -115,6 +115,7 @@ describe('applyMiddleware', () => {
     expect(spiedMiddleware.calledWith({
       controllerId: 'fakeController',
       operationId: 'fakeOperation',
+      baseSdk: fakeSDK,
     })).toEqual(true);
   });
 });
