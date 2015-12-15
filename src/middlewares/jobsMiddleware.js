@@ -23,7 +23,7 @@ export default function({
 } = {}) {
   return function jobsMiddleware({ controllerId, operationId, baseSdk }) {
     return next => function(params, callback, options) {
-      const job = find(JOBS, ({create}) => create.controllerId === controllerId && create.operationId === operationId);
+      const job = find(jobs, ({create}) => create.controllerId === controllerId && create.operationId === operationId);
       if (!job) {
         return next(...arguments);
       }
@@ -34,7 +34,7 @@ export default function({
           if (error) {
             return callback({
               ...error,
-              errorMessage: 'Error while creating PDF',
+              errorMessage: 'Error while creating job',
             });
           }
 
@@ -50,7 +50,7 @@ export default function({
                 clearInterval(interval);
                 return callback({
                   ...err,
-                  errorMessage: 'Error while retriving PDF',
+                  errorMessage: 'Error while polling result',
                 });
               }
 
