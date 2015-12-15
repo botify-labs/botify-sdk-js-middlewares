@@ -35,11 +35,12 @@ import {
   applyMiddleware,
   apiErrorMiddleware,
   batchMiddleware,
+  dedupleMiddleware,
   getUrlDetailEncodeMiddleware,
   invalidateAnalysisMiddleware,
+  jobsMiddleware,
   lscacheMiddleware,
   queryMiddleware,
-  dedupleMiddleware,
 } from 'botify-sdk-js-middlewares';
 import baseSdk from 'botify-sdk-js';
 
@@ -50,6 +51,7 @@ const sdk = applyMiddleware(
   invalidateAnalysisMiddleware,
   lscacheMiddleware(),
   dedupleMiddleware,
+  jobsMiddleware(),
   batchMiddleware(),
 )(baseSdk);
 ```
