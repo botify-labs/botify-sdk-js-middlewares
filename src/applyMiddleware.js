@@ -5,11 +5,12 @@ import applyMiddlewareAsync from './utils/applyMiddlewareAsync';
 
 
 export function applyMiddlewareController(...middlewares) {
-  return (controller, controllerId) => {
+  return (controller, controllerId, baseSdk) => {
     return mapValues(controller, (operation, operationId) => {
       const middlewareAPI = {
         controllerId,
         operationId,
+        baseSdk,
       };
       return applyMiddlewareAsync(...middlewares.concat(middlewareAPI))(operation);
     });
@@ -26,7 +27,7 @@ export default function applyMiddleware(...middlewares) {
   return sdk => {
     return mapValues(sdk, (value, key) => {
       const isController = endsWith(key, 'Controller');
-      return isController ? applyMiddlewareController(...middlewares)(value, key) : value;
+      return isController ? applyMiddlewareController(...middlewares)(value, key, sdk) : value;
     });
   };
 }
