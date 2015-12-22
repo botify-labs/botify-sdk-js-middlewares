@@ -8,7 +8,7 @@ const JOBS = [
     poll: { controllerId: 'AnalysisController', operationId: 'getUrlsExportStatus', jobIdKey: 'urlExportId' },
   },
   {
-    create: { controllerId: 'AnalysisController', operationId: 'createPDFExport' },
+    create: { controllerId: 'AnalysisController', operationId: 'createPdfExport' },
     poll: { controllerId: 'AnalysisController', operationId: 'getPdfExportStatus', jobIdKey: 'pdfExportId' },
   },
   {
