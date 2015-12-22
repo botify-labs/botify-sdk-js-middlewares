@@ -4,8 +4,8 @@ import isUndefined from 'lodash.isundefined';
 
 const JOBS = [
   {
-    create: { controllerId: 'AnalysisController', operationId: 'createUrlExport' },
-    poll: { controllerId: 'AnalysisController', operationId: 'getUrlExportStatus', jobIdKey: 'urlExportId' },
+    create: { controllerId: 'AnalysisController', operationId: 'createUrlsExport' },
+    poll: { controllerId: 'AnalysisController', operationId: 'getUrlsExportStatus', jobIdKey: 'urlExportId' },
   },
   {
     create: { controllerId: 'AnalysisController', operationId: 'createPDFExport' },
