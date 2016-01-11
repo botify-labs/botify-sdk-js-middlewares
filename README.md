@@ -1,6 +1,6 @@
 # botify-sdk-middlewares
 
-![NPM Version](https://img.shields.io/npm/v/botify-sdk-middlewares.svg?style=flat)](https://www.npmjs.com/package/botify-sdk-middlewares)
+[![NPM Version](https://img.shields.io/npm/v/botify-sdk-middlewares.svg?style=flat)](https://www.npmjs.com/package/botify-sdk-middlewares)
 [![Build Status](https://travis-ci.org/botify-labs/botify-sdk-js-middlewares.svg?branch=master)](https://travis-ci.org/botify-labs/botify-sdk-js-middlewares)
 
 This package contains multiple middlewares allowing to customize and optimize Botify SDK's behaviour. Including local storage caching, request dedupling, api result post processing.
