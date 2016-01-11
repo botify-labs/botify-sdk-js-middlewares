@@ -1,4 +1,4 @@
-# [InvalidateAnalysis middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/invalidateAnalysisMiddleware.js)
+# [InvalidateAnalysis middleware](../../src/middlewares/invalidateAnalysisMiddleware.js)
 
 The middleware automatically invalidate Analysis cache when needed.
 
@@ -12,8 +12,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, invalidateAnalysisMiddleware, lscacheMiddleware } from 'botify-sdk-js-middlewares';
-import baseSdk from 'botify-sdk-js';
+import { applyMiddleware, invalidateAnalysisMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
+import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   invalidateAnalysisMiddleware,

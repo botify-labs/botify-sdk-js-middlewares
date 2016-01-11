@@ -5,7 +5,7 @@ Middlewares are functions that perform tasks before and after an operation (that
 They can be used to modify parameters given to the operation, modify data received by the API, stop an operation call, cache data on the fly, batch requests, etc.
 
 ## Examples
-Example middlewares can be found at: https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/src/middlewares; you should read them first as they provide simple examples of what you can achieve with this project.
+Example middlewares can be found at [there](../src/middlewares); you should read them first as they provide simple examples of what you can achieve with this project.
 
 ## Structure
 ```JS

@@ -1,4 +1,4 @@
-# [Deduple middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/dedupleMiddleware.js)
+# [Deduple middleware](../../src/middlewares/dedupleMiddleware.js)
 
 When possible, this middleware will merge operation if they have the same params, this permit to reduce the number of call made to the API.
 

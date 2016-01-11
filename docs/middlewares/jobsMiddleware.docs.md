@@ -1,4 +1,4 @@
-# [Jobs middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/jobsMiddleware.js)
+# [Jobs middleware](../../src/middlewares/jobsMiddleware.js)
 
 Some operations like creating a pdf or exporting a list of url as a csv need to be done asynchronously because they can take more time than common timeouts can accept. "Asynchronous" operations needed to be initiate by calling their create endpoint and then keeping calling the poll endpoint till the operation is finished.
 

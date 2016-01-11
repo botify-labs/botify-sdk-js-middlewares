@@ -1,4 +1,4 @@
-# [getUrlDetail middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/getUrlDetailEncodeMiddleware.js)
+# [getUrlDetail middleware](../../src/middlewares/getUrlDetailEncodeMiddleware.js)
 
 The middleware encode url param given to getUrlDetail operation
 
@@ -10,8 +10,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, getUrlDetailEncodeMiddleware } from 'botify-sdk-js-middlewares';
-import baseSdk from 'botify-sdk-js';
+import { applyMiddleware, getUrlDetailEncodeMiddleware } from 'botify-sdk-middlewares';
+import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   getUrlDetailEncodeMiddleware,
