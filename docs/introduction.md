@@ -116,5 +116,5 @@ sdk.AnalysesController.getAnalysis(params, (error, result) => {
 
 ## Go deeper
 
-- [How to write your own middleware](./docs/howToWriteYourOwnMiddleware.md)
-- [Middlewares docs](./docs/middlewares)
+- [How to write your own middleware](./howToWriteYourOwnMiddleware.md)
+- [Middlewares docs](./middlewares)
