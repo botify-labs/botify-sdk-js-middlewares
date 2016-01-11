@@ -22,6 +22,8 @@ export function computeItemCacheKey(params) {
 export default function({
   cachedOperations = [],
 } = {}) {
+  flushLocalStorageIfDataModelVersionChanged(DATA_MODEL_VERSION);
+
   return function lscacheMiddleware({controllerId, operationId} = {}) {
     /**
      * @param  {Object}   params
@@ -61,5 +63,3 @@ export default function({
     };
   };
 }
-
-flushLocalStorageIfDataModelVersionChanged(DATA_MODEL_VERSION);
