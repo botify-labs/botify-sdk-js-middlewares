@@ -5,11 +5,6 @@
 This package contains multiple middlewares allowing to customize and optimize  Botify SDK's behaviour. Including local storage caching, request batching, api result post processing.
 
 
-## Influences
-
-The middleware pattern used in this package has been greatly influenced by [Redux](https://github.com/rackt/redux) middlewares.
-
-
 ## Installation
 ```
 npm install --save botify-sdk-js-middlewares
@@ -51,3 +46,7 @@ Note: examples are written with ES6 syntax but nothing prevents you to use this 
 - `npm run lint`: lint sources and tests using ESlint.
 - `npm test`: launch tests
 - `npm run test:watch`: watch files and execute the tests whenever sources or tests change.
+
+## Influences
+
+The middleware pattern used in this package has been greatly inspired by [Redux](https://github.com/rackt/redux) middlewares.
