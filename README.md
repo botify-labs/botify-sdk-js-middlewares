@@ -16,8 +16,12 @@ npm install --save botify-sdk
 ```
 
 ### UMD bundle
-An UMD bundle is available in `dist/botify-sdk-middlewares.min.js`. It means you can use the lib with any module loader, including Browserify.
+An UMD bundle is available in `dist/botify-sdk-middlewares.min.js`. It means you can use the lib with any module loader, including Browserify and RequireJS.
 It exposes the global variable `BotifySDKMiddlewares`.
+
+```HTML
+<script src="/node_modules/botify-sdk-middlewares/dist/botify-sdk-middlewares.min.js"></script>
+```
 
 
 ## Usage

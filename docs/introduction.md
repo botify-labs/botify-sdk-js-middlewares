@@ -23,6 +23,10 @@ npm install --save botify-sdk
 An UMD bundle is available in `dist/botify-sdk-middlewares.min.js`. It means you can use the lib with any module loader, including Browserify.
 It exposes the global variable `BotifySDKMiddlewares`.
 
+```HTML
+<script src="/node_modules/botify-sdk-middlewares/dist/botify-sdk-middlewares.min.js"></script>
+```
+
 
 ## Usage
 Use `applyMiddleware` function to apply middlewares you need.
@@ -40,7 +44,7 @@ const sdk = applyMiddleware(
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
 
 
-### RECOMMENDED setup
+### RECOMMENDED setup to use every middlewares
 ```JS
 import {
   applyMiddleware,
