@@ -1,4 +1,4 @@
-# [Lscache middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/lscacheMiddleware.js)
+# [Lscache middleware](../../src/middlewares/lscacheMiddleware.js)
 
 The middleware enable api calls to be cached in the browser's local storage.
 
@@ -14,8 +14,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, lscacheMiddleware } from 'botify-sdk-js-middlewares';
-import baseSdk from 'botify-sdk-js';
+import { applyMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
+import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   lscacheMiddleware({

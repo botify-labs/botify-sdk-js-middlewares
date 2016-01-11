@@ -1,4 +1,4 @@
-# [Batch middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/batchMiddleware.js)
+# [Batch middleware](../../src/middlewares/batchMiddleware.js)
 
 Whenever possible, the middleware automatically batches operations called in the **same tick**. [read about JS ticks](http://blog.carbonfive.com/2013/10/27/the-javascript-event-loop-explained)
 
@@ -21,8 +21,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, batchMiddleware } from 'botify-sdk-js-middlewares';
-import baseSdk from 'botify-sdk-js';
+import { applyMiddleware, batchMiddleware } from 'botify-sdk-middlewares';
+import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   batchMiddleware()

@@ -1,4 +1,4 @@
-# botify-sdk-js-middlewares
+# botify-sdk-middlewares
 
 This package contains multiple middlewares allowing to customize and optimize  Botify SDK's behaviour. Including local storage caching, request batching, api result post processing.
 
@@ -9,14 +9,28 @@ This package contains multiple middlewares allowing to customize and optimize  B
 - **Operation:** function that is specifically designed to call ONE API endpoint. *ie. getProjectDatasets*
 - **Controller:** Set of operations. *ie. AnalysisController, ProjectController*
 
+## Installation
+```SH
+npm install --save botify-sdk-middlewares
+```
+
+You’ll also need the Botify SDK (core).
+```SH
+npm install --save botify-sdk
+```
+
+### UMD bundle
+An UMD bundle is available in `dist/botify-sdk-middlewares.min.js`. It means you can use the lib with any module loader, including Browserify.
+It exposes the global variable `BotifySDKMiddlewares`.
+
 
 ## Usage
 Use `applyMiddleware` function to apply middlewares you need.
 
 ### Initialize middlewares
 ```JS
-import { applyMiddleware, apiErrorMiddleware, lscacheMiddleware } from 'botify-sdk-js-middlewares';
-import baseSdk from 'botify-sdk-js';
+import { applyMiddleware, apiErrorMiddleware, lscacheMiddleware } from 'botify-sdk-middlewares';
+import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
@@ -24,9 +38,6 @@ const sdk = applyMiddleware(
 )(baseSdk);
 ```
 **<!> Becareful: order maters.** (read middleware's documentation **requirement section**).
-
-### AMD or script tag old school way
-A bundle is available in `dist/botify-sdk-js-middlewares.min.js`. It exposes the global variable `BotifySdkMiddlewares`.
 
 
 ### RECOMMENDED setup
@@ -41,8 +52,8 @@ import {
   jobsMiddleware,
   lscacheMiddleware,
   queryMiddleware,
-} from 'botify-sdk-js-middlewares';
-import baseSdk from 'botify-sdk-js';
+} from 'botify-sdk-middlewares';
+import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,
@@ -62,9 +73,9 @@ Some middlewares takes options (read middleware's documentation **middlewares op
 
 Example:
 ```JS
-import { applyMiddleware, batchMiddleware } from 'botify-sdk-js-middlewares';
+import { applyMiddleware, batchMiddleware } from 'botify-sdk-middlewares';
 const { DEFAULT_BATCHED_OPERATIONS } = batchMiddleware;
-import baseSdk from 'botify-sdk-js';
+import baseSdk from 'botify-sdk';
 
 const batchMiddlewareOptions = {
   ...DEFAULT_BATCHED_OPERATIONS,
@@ -105,5 +116,5 @@ sdk.AnalysesController.getAnalysis(params, (error, result) => {
 
 ## Go deeper
 
-- [How to write your own middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/docs/howToWriteYourOwnMiddleware.md)
-- [Middlewares docs](https://github.com/botify-labs/botify-sdk-js-middlewares/tree/master/docs/middlewares)
+- [How to write your own middleware](./docs/howToWriteYourOwnMiddleware.md)
+- [Middlewares docs](./docs/middlewares)

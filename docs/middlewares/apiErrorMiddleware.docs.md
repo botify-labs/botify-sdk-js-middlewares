@@ -1,4 +1,4 @@
-# [ApiError middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/apiErrorMiddleware.js)
+# [ApiError middleware](../../src/middlewares/apiErrorMiddleware.js)
 
 The middleware transform callback error (if exists) from an Error Payload to a Javascript Error
 
@@ -10,8 +10,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, apiErrorMiddleware } from 'botify-sdk-js-middlewares';
-import baseSdk from 'botify-sdk-js';
+import { applyMiddleware, apiErrorMiddleware } from 'botify-sdk-middlewares';
+import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   apiErrorMiddleware,

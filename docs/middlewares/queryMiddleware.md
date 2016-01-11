@@ -1,8 +1,8 @@
-# [Query middleware](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/middlewares/queryMiddleware.js)
+# [Query middleware](../../src/middlewares/queryMiddleware.js)
 
 This middleware makes it easy to use the operation `getUrlsAggs` which allows you to perform complex queries on Botify database (read paragraph *Query Aggregate Request Process* for details).
 
-Indeed, it enables you to use the [Query](https://github.com/botify-labs/botify-sdk-js-middlewares/blob/master/src/models/Query.js) class to define aggregations you want to perform. Plus, it transforms the response to make it easier to process (transformations can be configured).
+Indeed, it enables you to use the [Query](https://github.com/botify-labs/botify-sdk-middlewares/blob/master/src/models/Query.js) class to define aggregations you want to perform. Plus, it transforms the response to make it easier to process (transformations can be configured).
 
 ## Middleware requirement
 - batchMiddleware (after)
@@ -17,8 +17,8 @@ none
 
 ## Usage
 ```JS
-import { applyMiddleware, queryMiddleware, batchMiddleware } from 'botify-sdk-js-middlewares';
-import baseSdk from 'botify-sdk-js';
+import { applyMiddleware, queryMiddleware, batchMiddleware } from 'botify-sdk-middlewares';
+import baseSdk from 'botify-sdk';
 
 const sdk = applyMiddleware(
   queryMiddleware(),
@@ -56,7 +56,7 @@ An `Aggregate` can define some `metric` to compute and a set of `groupby`s to op
 
 #### 1.1. Using `Query` class
 ```JS
-import { models } from 'botify-sdk-js-middlewares';
+import { models } from 'botify-sdk-middlewares';
 const { Query, QueryAggregate } = models;
 
 let query = new Query();
