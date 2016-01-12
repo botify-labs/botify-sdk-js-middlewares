@@ -8,7 +8,7 @@ Indeed, it enables you to use the [Query](../../src/models/Query.js) class to de
 none
 
 ## Middleware options
-- **processResponse:** Enable response post processing. If true, every `urlsAggsQueries` must be instance of `Query`.
+- **processResponse:** Enable response post processing. If true, every `urlsAggsQueries` must be instance of `Query.
 - **transformTermKeys:** Turn term keys into objects: key -> { value: key }
 - **injectMetadata:** Inject metadata in groups keys
 
@@ -195,7 +195,7 @@ let query = new Query();
 });
 ```
 
-### 2. Query Sent by the SDK to the API
+### 2. Query sent by the SDK to the API
 ```JSON
 {
   "aggs": [
@@ -237,7 +237,7 @@ let query = new Query();
 }
 ```
 
-#### 3. API Response
+### 3. API Response
 ```JSON
 {
   "count": 37,
