@@ -135,13 +135,13 @@ let query = new Query();
               {
                 from: 1000,
               }
-            ],
+            ]
           }
         }
       ],
       metrics: [
         {
-          count: null,
+          count: null
         },
         {
           avg: 'delay_last_byte'
@@ -217,7 +217,7 @@ let query = new Query();
           "metrics": [
             4,
             157.25
-          ],
+          ]
         },
         {
           "key": [
@@ -230,7 +230,7 @@ let query = new Query();
           "metrics": [
             28,
             751.25
-          ],
+          ]
         },
         {
           "key": [
@@ -242,7 +242,7 @@ let query = new Query();
           "metrics": [
             5,
             1809.8
-          ],
+          ]
         }
       ]
     }
@@ -265,8 +265,8 @@ The sdk process the response by:
         {
           key: [
             {
-              value: 200,
-            }
+              value: 200
+            },
             {
               to: 500,
               from: 0,
@@ -276,13 +276,13 @@ The sdk process the response by:
           metrics: [
             4,
             157.25
-          ],
+          ]
         },
         {
           key: [
             {
-              value: 200,
-            }
+              value: 200
+            },
             {
               to: 1000,
               from: 500,
@@ -292,14 +292,14 @@ The sdk process the response by:
           metrics: [
             28,
             751.25
-          ],
+          ]
         },
         {
           key: [
             {
               value: 301,
               metadata: { label: 'Redirections' }
-            }
+            },
             {
               from: 1000
             }
@@ -307,10 +307,10 @@ The sdk process the response by:
           metrics: [
             5,
             1809.8
-          ],
+          ]
         }
       ]
     }
-  ],
+  ]
 }
 ```
