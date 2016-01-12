@@ -8,7 +8,7 @@ Indeed, it enables you to use the [Query](../../src/models/Query.js) class to de
 none
 
 ## Middleware options
-- **processResponse:** Enable response post processing. If true, every `urlsAggsQueries` must be instance of `Query.
+- **processResponse:** Enable response post processing. If true, every `urlsAggsQueries` must be instance of `Query`.
 - **transformTermKeys:** Turn term keys into objects: key -> { value: key }
 - **injectMetadata:** Inject metadata in groups keys
 
