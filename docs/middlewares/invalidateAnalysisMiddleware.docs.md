@@ -5,7 +5,7 @@ The middleware automatically invalidate Analysis cache when needed.
 When requesting analysis's main info, the API returns (amongst other things) the date last modified. Leading that if this date changes, any data cached for this analysis need to be invalidated as they might have changed.
 
 ## Middleware requirement
-- lscache (after)
+- **lscache** (after)
 
 ## Operation options
 none

@@ -5,12 +5,12 @@ This middleware makes it easy to use the operation `getUrlsAggs` which allows yo
 Indeed, it enables you to use the [Query](../../src/models/Query.js) class to define aggregations you want to perform. Plus, it can optionaly transform the response to make it easier to process (transformations can be configured).
 
 ## Middleware requirement
-- batchMiddleware (after)
+none
 
 ## Middleware options
-- processResponse   Enable response post processing. If true, every urlsAggsQueries must be instance of Query.
-- transformTermKeys Turn term keys into objects: key -> { value: key }
-- injectMetadata    Inject metadata in groups keys
+- **processResponse:** Enable response post processing. If true, every `urlsAggsQueries` must be instance of `Query.
+- **transformTermKeys:** Turn term keys into objects: key -> { value: key }
+- **injectMetadata:** Inject metadata in groups keys
 
 ## Operation options
 none
