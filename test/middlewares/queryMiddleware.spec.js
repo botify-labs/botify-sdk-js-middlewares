@@ -8,11 +8,10 @@ import QueryAggregate from '../../src/models/QueryAggregate';
 
 describe('queryMiddleware', () => {
   const options = { thatOption: true };
-
   const middlewareAPI = { controllerId: 'AnalysisController', operationId: 'getUrlsAggs' };
-  const nextHandler = queryMiddleware()(middlewareAPI);
 
   it('must transform input Query instances to API compliant JSON', () => {
+    const middleware = queryMiddleware()(middlewareAPI);
     const getUrlsAggsSpy = sinon.spy();
     const callback = sinon.spy();
 
@@ -22,26 +21,62 @@ describe('queryMiddleware', () => {
         .addAggregate(
           new QueryAggregate().addMetric('avg', 'delay')
         ),
-      new Query()
-        .addAggregate(
-          new QueryAggregate().addTermGroupBy('http_code')
-        ),
+      {
+        aggs: [
+          {
+            group_by: [
+              'http_code',
+            ],
+          },
+        ],
+      },
     ];
     const params = {
       urlsAggsQueries: queries,
     };
 
-    nextHandler(getUrlsAggsSpy)(params, callback, options);
+    middleware(getUrlsAggsSpy)(params, callback, options);
 
     // Expect operation to be called with transformed queries params
     chai.expect(getUrlsAggsSpy.callCount).to.be.equal(1);
     chai.expect(getUrlsAggsSpy.getCall(0).args[0]).to.be.deep.equal({
-      urlsAggsQueries: queries.map(query => query.toJsonAPI()),
+      urlsAggsQueries: [
+        {
+          aggs: [
+            {
+              metrics: [
+                {
+                  avg: 'delay',
+                },
+              ],
+            },
+          ],
+          filters: {
+            field: 'http_code',
+            value: 301,
+          },
+        },
+        {
+          aggs: [
+            {
+              group_by: [
+                'http_code',
+              ],
+            },
+          ],
+        },
+      ],
     });
     chai.expect(getUrlsAggsSpy.getCall(0).args[2]).to.be.equal(options);
   });
 
   it('must transform output according to input Query instances', () => {
+    const middleware = queryMiddleware({
+      processResponse: true,
+      transformTermKeys: true,
+      injectMetadata: true,
+      normalizeBoolean: true,
+    })(middlewareAPI);
     const apiResult = [
       {
         count: 42,
@@ -140,7 +175,7 @@ describe('queryMiddleware', () => {
     };
     const callback = sinon.spy();
 
-    nextHandler(getUrlsAggsSpy)(params, callback, options);
+    middleware(getUrlsAggsSpy)(params, callback, options);
 
     // Expect callback to be called with transformed result
     chai.expect(callback.callCount).to.be.equal(1);
@@ -148,14 +183,106 @@ describe('queryMiddleware', () => {
     chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(middlewareResult);
   });
 
-  it('must throw an error if all queries input are not Query instances', () => {
+  it('must transform output if not said so', () => {
+    const middleware = queryMiddleware()(middlewareAPI);
+    const apiResult = [
+      {
+        count: 42,
+        aggs: [
+          {
+            metrics: [
+              118.52380952380952,
+            ],
+          },
+        ],
+      },
+      {
+        count: 42,
+        aggs: [
+          {
+            groups: [
+              {
+                metrics: [
+                  42,
+                ],
+                key: [
+                  200,
+                ],
+              },
+              {
+                metrics: [
+                  0,
+                ],
+                key: [
+                  301,
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const expectMiddlewareResult = apiResult;
+    const getUrlsAggs = (params, callback) => callback(null, apiResult);
+
+    const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
+    const params = {
+      urlsAggsQueries: [
+        new Query()
+          .setFilters({field: 'http_code', value: 301})
+          .addAggregate(
+            new QueryAggregate().addMetric('avg', 'delay')
+          ),
+        {
+          aggs: [
+            {
+              group_by: [
+                'http_code',
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const callback = sinon.spy();
+
+    middleware(getUrlsAggsSpy)(params, callback, options);
+
+    // Expect callback to be called with transformed result
+    chai.expect(callback.callCount).to.be.equal(1);
+    chai.expect(callback.getCall(0).args[0]).to.be.equal(null);
+    chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(expectMiddlewareResult);
+  });
+
+  it('must throw an error if urlsAggsQueries is not an array', () => {
+    const middleware = queryMiddleware()(middlewareAPI);
     const getUrlsAggs = () => {};
 
     const incorrectInput = [
-      null,
-      '',
-      {},
+      { urlsAggsQueries: null },
+      { urlsAggsQueries: 1 },
+      { urlsAggsQueries: '' },
       { urlsAggsQueries: {} },
+    ];
+    const correctInput = [
+      { urlsAggsQueries: [] },
+    ];
+
+    const expectedError = 'urlsAggsQueries param must be an array';
+
+    incorrectInput.forEach(input => {
+      chai.expect(middleware(getUrlsAggs).bind(null, input)).to.throw(expectedError);
+    });
+    correctInput.forEach(input => {
+      chai.expect(middleware(getUrlsAggs).bind(null, input)).to.not.throw(expectedError);
+    });
+  });
+
+  it('must throw an error if all queries input are not Query instances if processResponse enabled', () => {
+    const middleware = queryMiddleware({ processResponse: true })(middlewareAPI);
+    const getUrlsAggs = () => {};
+
+    const incorrectInput = [
       { urlsAggsQueries: ['a', 'b'] },
       { urlsAggsQueries: ['a', new Query()] },
       { urlsAggsQueries: [new Query(), 'b'] },
@@ -165,17 +292,18 @@ describe('queryMiddleware', () => {
       { urlsAggsQueries: [new Query(), new Query()] },
     ];
 
-    const expectedError = 'queries param must be an array of Query';
+    const expectedError = 'urlsAggsQueries param must be an array of instance of Query';
 
     incorrectInput.forEach(input => {
-      chai.expect(nextHandler(getUrlsAggs).bind(null, input)).to.throw(expectedError);
+      chai.expect(middleware(getUrlsAggs).bind(null, input)).to.throw(expectedError);
     });
     correctInput.forEach(input => {
-      chai.expect(nextHandler(getUrlsAggs).bind(null, input)).to.not.throw(expectedError);
+      chai.expect(middleware(getUrlsAggs).bind(null, input)).to.not.throw(expectedError);
     });
   });
 
   it('must return an error in the callback in api result processing failed', () => {
+    const middleware = queryMiddleware({ processResponse: true })(middlewareAPI);
     const apiResult = [
       {
         count: 42,
@@ -194,7 +322,7 @@ describe('queryMiddleware', () => {
     };
     const callback = sinon.spy();
 
-    nextHandler(getUrlsAggsSpy)(params, callback);
+    middleware(getUrlsAggsSpy)(params, callback);
 
     // Expect callback to be called with transformed result
     chai.expect(callback.callCount).to.be.equal(1);

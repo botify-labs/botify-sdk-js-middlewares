@@ -1,16 +1,16 @@
 # [Query middleware](../../src/middlewares/queryMiddleware.js)
 
-This middleware makes it easy to use the operation `getUrlsAggs` which allows you to perform complex queries on Botify database (read paragraph *Query Aggregate Request Process* for details).
+This middleware makes it easy to use the operation `getUrlsAggs` which allows you to perform complex queries on Botify database.
 
-Indeed, it enables you to use the [Query](../../src/models/Query.js) class to define aggregations you want to perform. Plus, it transforms the response to make it easier to process (transformations can be configured).
+Indeed, it enables you to use the [Query](../../src/models/Query.js) class to define aggregations you want to perform. Plus, it can optionaly transform the response to make it easier to process (transformations can be configured).
 
 ## Middleware requirement
-- batchMiddleware (after)
+none
 
 ## Middleware options
-- {Boolean} transformTermKeys Turn term keys into objects: key -> { value: key }
-- {Boolean} injectMetadata    Inject metadata in groups keys
-- {Boolean} normalizeBoolean  Transform keys 'T' and 'F' to true and false
+- **processResponse:** Enable response post processing. If true, every `urlsAggsQueries` must be instance of `Query`.
+- **transformTermKeys:** Turn term keys into objects: key -> { value: key }
+- **injectMetadata:** Inject metadata in groups keys
 
 ## Operation options
 none
@@ -39,22 +39,120 @@ sdk.AnalysesController.getQueryAggregate(
 );
 ```
 
-## Query Aggregate Request Process
+
+## Query Aggregate using Query Model
+
+### Explanation
+
+To define a query you have 2 ways, either using the `Query` class or using a JS plain Object. We will focus on the first way, the second is documented in the Botify Rest API documentation.
+
+A `Query` is composed of `Filters` and a set of `QueryAggregate`.
+
+A `QueryAggregate` can define some `metrics` to compute and a set of `group-bys`s to operate on:
+- `group-by` is defined by:
+  - `field` on which the group by is performed.
+  - some optional `ranges` that define buckets for the group-by operation.
+- `metric` defines the operation to compute. Available metrics are: `count`, `sum`, `avg`, `min`, `max`. Execpt for count, a field on which compute the sum for instance, must be provided. The default metric is `count`.
+
+### Example
+
+The following `Query` filters the dataset on compliant URLs and groups URLs by their HTTP code and their response time on 2 ranges (fast and slow URLs). We request the number of URLs and average response time for each group.
+
+#### Request
+
+```JS
+import { models } from 'botify-sdk-middlewares';
+const { Query, QueryAggregate } = models;
+
+let query = new Query();
+  .addAggregate(
+    new QueryAggregate()
+      .addGroupBy('http_code')
+      .addRangeGroupBy('delay_last_byte', [
+        {
+          from: 0,
+          to: 1000,
+        },
+        {
+          from: 1000,
+        }
+      ])
+      .addMetric('count')
+      .addMetric('avg', 'delay_last_byte')
+  )
+  .setFilters({
+    field: 'strategic.is_strategic',
+    predicate: 'eq',
+    value: true
+  });
+```
+
+#### Response
+
+The response could be the following. More details on the general Botify API documentation.
+
+```JSON
+[
+  {
+    "count": 25,
+    "aggs": [
+      {
+        "groups": [
+          {
+            "key": [
+              200,
+              {
+                "from": 0,
+                "to": 1000
+              }
+            ],
+            "metrics": [
+              4,
+              157.25
+            ]
+          },
+          {
+            "key": [
+              200,
+              {
+                "from": 1000
+              }
+            ],
+            "metrics": [
+              19,
+              1200.25
+            ]
+          },
+          {
+            "key": [
+              201,
+              {
+                "from": 1000
+              }
+            ],
+            "metrics": [
+              2,
+              1854.32
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+
+
+## Advanced usage: response post processing
+
+The middleware has a few options allowing to transform API result in order to make easier to perform on. It includes:
+- Add metadata on both `term` and `range` group-bys.
+- Turn `term` response groups keys into objects.
+- Inject metadata into response groups keys.
 
 The following explain the query aggregate request process from the query preparation to the result given by the SDK through the middleware request and response transformations. To do so, the same example is use from the beginning to the end.
 
-### 1. Query Prepartion
-To define a query you have to ways, either using the `Query` class or using a JS plain Object.
-
-A `Query` is composed of `Filters` (see Filters documentation) and a set of `Aggregate`s.
-
-An `Aggregate` can define some `metric` to compute and a set of `groupby`s to operate on:
-- `groupby`: Can be either a `term` or `range` group by. A `groupby` is defined by:
-  - `field` on which the group by is performed.
-  - buckets (`terms` or `ranges`). It's possible to attach metadata for each bucket that will be injected into the response. Note: define `ranges` is a **mandatory** for `range groupby`.
-- `metric`: define the operation to compute. Available metrics are: `count`, `sum`, `avg`, `min`, `max`. Execpt for count, a field on which compute the sum for instance, must be provided. The default metric is `count`.
-
-#### 1.1. Using `Query` class
+### 1. `Query` preparation
 ```JS
 import { models } from 'botify-sdk-middlewares';
 const { Query, QueryAggregate } = models;
@@ -97,67 +195,7 @@ let query = new Query();
 });
 ```
 
-#### 1.2. Using a JS plain Object
-```JS
-{
-  aggs: [
-    {
-      group_by: [
-        {
-          term: {
-            field: 'http_code',
-            terms: [
-              {
-                value: 301,
-                metadata: { label: 'Redirections' }
-              },
-              {
-                value: 404,
-                metadata: { label: 'Page Not Found' }
-              }
-            ]
-          }
-        },
-        {
-          range: {
-            field: 'delay_last_byte',
-            ranges: [
-              {
-                from: 0,
-                to: 500,
-                metadata: { label: 'Fast' }
-              },
-              {
-                from: 500,
-                to: 1000,
-                metadata: { label: 'Quite slow' }
-              },
-              {
-                from: 1000,
-              }
-            ],
-          }
-        }
-      ],
-      metrics: [
-        {
-          count: null,
-        },
-        {
-          avg: 'delay_last_byte'
-        }
-      ]
-    }
-  ],
-  filters: {
-  	field: 'strategic.is_strategic',
-  	predicate: 'eq',
-  	value: true
-  }
-}
-```
-
-### 2. Query Sent by the SDK to the API
+### 2. Query sent by the SDK to the API
 ```JSON
 {
   "aggs": [
@@ -199,7 +237,7 @@ let query = new Query();
 }
 ```
 
-#### 3. API Response
+### 3. API Response
 ```JSON
 {
   "count": 37,
@@ -217,7 +255,7 @@ let query = new Query();
           "metrics": [
             4,
             157.25
-          ],
+          ]
         },
         {
           "key": [
@@ -230,7 +268,7 @@ let query = new Query();
           "metrics": [
             28,
             751.25
-          ],
+          ]
         },
         {
           "key": [
@@ -242,7 +280,7 @@ let query = new Query();
           "metrics": [
             5,
             1809.8
-          ],
+          ]
         }
       ]
     }
@@ -254,7 +292,6 @@ let query = new Query();
 The sdk process the response by:
 - turning `term` keys into objects
 - injecting metadata (for both `term` and `range` keys)
-- normalizing boolean keys: for boolean fields, the API returns `'T'` and `'F'` keys which are transform to `true` and `false`
 
 ```JS
 {
@@ -265,8 +302,8 @@ The sdk process the response by:
         {
           key: [
             {
-              value: 200,
-            }
+              value: 200
+            },
             {
               to: 500,
               from: 0,
@@ -276,13 +313,13 @@ The sdk process the response by:
           metrics: [
             4,
             157.25
-          ],
+          ]
         },
         {
           key: [
             {
-              value: 200,
-            }
+              value: 200
+            },
             {
               to: 1000,
               from: 500,
@@ -292,14 +329,14 @@ The sdk process the response by:
           metrics: [
             28,
             751.25
-          ],
+          ]
         },
         {
           key: [
             {
               value: 301,
               metadata: { label: 'Redirections' }
-            }
+            },
             {
               from: 1000
             }
@@ -307,10 +344,10 @@ The sdk process the response by:
           metrics: [
             5,
             1809.8
-          ],
+          ]
         }
       ]
     }
-  ],
+  ]
 }
 ```

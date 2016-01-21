@@ -9,15 +9,17 @@ const OPERATION_ID = 'getUrlsAggs';
 const QUERIES_KEY_PATH = ['urlsAggsQueries'];
 
 /**
+ * @param  {Boolean?} options.processResponse   Enable response post processing. If true, every urlsAggsQueries must be instance of Query.
  * @param  {Boolean?} options.transformTermKeys Turn term keys into objects: key -> { value: key }
  * @param  {Boolean?} options.injectMetadata    Inject metadata in groups keys
  * @param  {Boolean?} options.normalizeBoolean  Transform keys 'T' and 'F' to true and false
  * @return {Middleware}
  */
 export default function({
-  transformTermKeys = true,
-  injectMetadata = true,
-  normalizeBoolean = true,
+  processResponse = false,
+  transformTermKeys = false,
+  injectMetadata = false,
+  normalizeBoolean = false,
 } = {}) {
   return function queryMiddleware({controllerId, operationId}) {
     return next => function(params, callback, options) {
@@ -26,21 +28,25 @@ export default function({
       }
 
       const queries = get(params, QUERIES_KEY_PATH);
-      const queriesError = !queries
-                      || !isArray(queries)
-                      || !queries.every(query => query instanceof Query);
+      if (!queries || !isArray(queries)) {
+        throw new Error('urlsAggsQueries param must be an array');
+      }
 
-      if (queriesError) {
-        throw new Error('queries param must be an array of Query');
+      if (processResponse) {
+        if (!queries.every(query => query instanceof Query)) {
+          throw new Error('urlsAggsQueries param must be an array of instance of Query');
+        }
       }
 
       next(
         {
           ...params,
-          urlsAggsQueries: queries.map(query => query.toJsonAPI()),
+          urlsAggsQueries: queries.map(query => {
+            return query instanceof Query ? query.toJsonAPI() : query;
+          }),
         },
         function(error, results) {
-          if (error) {
+          if (error || !processResponse) {
             return callback(...arguments);
           }
           let processResponseError = null;

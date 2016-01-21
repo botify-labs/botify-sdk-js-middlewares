@@ -8,8 +8,8 @@ This middleware abstract this logic in a way that you just have to call the crea
 
 
 ## Middleware requirement
-- jobs: List of jobs to work on.
-- pollInterval: Number of milliseconds between each poll.
+- **jobs:** List of jobs to work on.
+- **pollInterval:** Number of milliseconds between each poll.
 
 ## Operation options
 none

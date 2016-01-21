@@ -10,9 +10,9 @@ Some operation like `AnalysesController.getQueryAggregate` accepts that multiple
 none
 
 ## Middleware options
-- batchedOperations: Map of operations that can be batched
-  - queueLimit: Max number of resource to call at a time
-- timeout: Modify timeout before a batch of requests are send, by default it's next tick
+- **batchedOperations:** Map of operations that can be batched
+  - **queueLimit:** Max number of resource to call at a time
+- **timeout:** Modify timeout before a batch of requests are send, by default it's next tick
 
 ## Operation options
 - batch : force an operation to be batch or not
