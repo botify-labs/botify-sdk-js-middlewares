@@ -26,7 +26,7 @@ describe('invalidateAnalysisMiddleware', () => {
     analysisSlug: 'thatAnalysis',
   };
 
-  const middlewareAPI = { controllerId: 'AnalysesController', operationId: 'getAnalysis' };
+  const middlewareAPI = { controllerId: 'AnalysisController', operationId: 'getAnalysisSummary' };
   const nextHandler = invalidateAnalysisMiddleware(middlewareAPI);
 
   it('must flush analysis cache if date last modified not stored', done => {
