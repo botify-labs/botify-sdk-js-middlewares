@@ -2,8 +2,8 @@ import lscache from 'ls-cache';
 import objectHash from 'object-hash';
 
 
-const ANALYSES_CONTROLLER_ID = 'AnalysesController';
-const GET_ANALYSIS_OPERATION_ID = 'getAnalysis';
+const ANALYSES_CONTROLLER_ID = 'AnalysisController';
+const GET_ANALYSIS_OPERATION_ID = 'getAnalysisSummary';
 const DATE_LAST_MODIFIED_KEY = 'date_last_modified';
 
 const LSCACHE_EXPIRATION_MIN = 60 * 24 * 365; // In Minutes
