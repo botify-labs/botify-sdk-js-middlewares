@@ -70,7 +70,7 @@ sdk.AnalysesController.getQueryAggregate(
       status: 400,  //Second request failed
       error: {
         message: 'Query is not valid',
-        code: 34,
+        error_code: 34,
       },
     });
   }
@@ -78,7 +78,7 @@ sdk.AnalysesController.getQueryAggregate(
 ```
 
 ### With the middleware
-When every query succeeds, you can expect the following. As you can see, the response is much more straightforward and easier to use.
+When every query succeeds, you can expect the following: result are the content of the data keys which should be more straightforward and easier to use.
 ```JS
 sdk = applyMiddleware(
   batchMiddleware()
@@ -112,11 +112,14 @@ sdk.AnalysesController.getQueryAggregate(
   {...params, queries: [someQuery, someIncorrectQuery]},
   (error, result) => {
     assert(error).to.be.equal({
-      ErrorCode: 400,
-      ErrorMessage: {
-        error_code: 34,
-        error_resource_index: 1, //Index (0-based) of the resource in error.
-        message: 'Query is not valid',
+      errorCode: 400,
+      errorMessage: 'Resource 1 failed',
+      errorResponse: {
+        error: {
+          error_code: 34,
+          resource_index: 1, //Index (0-based) of the resource in error.
+          message: 'Query is not valid',
+        },
       },
     });
     assert(result).to.be.undefined;

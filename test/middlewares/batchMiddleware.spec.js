@@ -305,10 +305,12 @@ describe('batchMiddleware', () => {
         middlewareOutput: [{
           errorMessage: 'Resource 0 failed',
           errorCode: 500,
-          resourceError: {
-            message: 'Server error',
-            errorCode: undefined,
-            index: 0,
+          errorResponse: {
+            status: 500,
+            error: {
+              message: 'Server error',
+              resource_index: 0,
+            },
           },
         }],
       },
@@ -354,10 +356,13 @@ describe('batchMiddleware', () => {
         middlewareOutput: [{
           errorMessage: 'Resource 1 failed',
           errorCode: 400,
-          resourceError: {
-            message: 'Query is not valid',
-            errorCode: 34,
-            index: 1,
+          errorResponse: {
+            status: 400,
+            error: {
+              message: 'Query is not valid',
+              error_code: 34,
+              resource_index: 1,
+            },
           },
         }],
       },
