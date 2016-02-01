@@ -16,11 +16,14 @@ describe('jobsMiddleware', () => {
 
   it('should poll API', done => {
     const jobId = 3564;
-    const jobResult = {
+    const jobDoneResult = {
       job_status: 'DONE',
       results: {
         koo: 'fit',
       },
+    };
+    const jobProcessingResult = {
+      job_status: 'PROCESSING',
     };
 
     // Create Opeation that just return the job id.
@@ -31,10 +34,7 @@ describe('jobsMiddleware', () => {
     let pollCallCount = 0;
     const pollOperation = (params, callback) => {
       pollCallCount++;
-      callback(null, {
-        job_status: pollCallCount > 2 ? 'DONE' : 'IN_PROGRESS',
-        results: pollCallCount > 2 && jobResult.results,
-      });
+      callback(null, pollCallCount > 2 ? jobDoneResult : jobProcessingResult);
     };
     const spiedPollOperation = sinon.spy(pollOperation);
 
@@ -61,7 +61,7 @@ describe('jobsMiddleware', () => {
       chai.expect(spiedPollOperation.getCall(0).args[0]).to.deep.equal({ ...params, jobIdKey: jobId });
 
       chai.expect(err).to.be.null;
-      chai.expect(result).to.deep.equal(jobResult);
+      chai.expect(result).to.deep.equal(jobDoneResult);
       done();
     }, options);
   });
