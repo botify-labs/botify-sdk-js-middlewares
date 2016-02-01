@@ -56,7 +56,7 @@ export default function({
 
               if (pollResponse.job_status === 'DONE') {
                 clearInterval(interval);
-                callback(null, pollResponse.results);
+                callback(null, pollResponse);
               }
             });
           }, pollInterval);
