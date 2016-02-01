@@ -14,7 +14,7 @@ describe('apiErrorMiddleware', () => {
     });
     nextHandler(func)(1, (error, result) => {
       chai.expect(error).to.be.an.instanceof(ApiError);
-      chai.expect(error.message).to.be.equal('ApiError: [301] - That 301');
+      chai.expect(error.message).to.be.equal('That 301');
       chai.expect(error.status).to.be.equal(301);
       chai.expect(error.response).to.be.equal('foo bar');
       done();
@@ -30,7 +30,7 @@ describe('apiErrorMiddleware', () => {
     });
     nextHandler(func)(1, (error, result) => {
       chai.expect(error).to.be.an.instanceof(ApiError);
-      chai.expect(error.message).to.be.equal('ApiError: [404] - That 404');
+      chai.expect(error.message).to.be.equal('That 404');
       chai.expect(error.meta).to.deep.equal({
         foo: 'bar',
         bul: 'bi',
