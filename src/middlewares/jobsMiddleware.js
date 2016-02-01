@@ -13,7 +13,7 @@ const JOBS = [
   },
   {
     create: { controllerId: 'SegmentController', operationId: 'createDryRun' },
-    poll: { controllerId: 'SegmentController', operationId: 'getDryRunSegmentStatus', jobIdKey: 'dryRunId' },
+    poll: { controllerId: 'SegmentController', operationId: 'getDryRunStatus', jobIdKey: 'dryRunId' },
   },
 ];
 
@@ -56,7 +56,7 @@ export default function({
 
               if (pollResponse.job_status === 'DONE') {
                 clearInterval(interval);
-                callback(null, pollResponse.results);
+                callback(null, pollResponse);
               }
             });
           }, pollInterval);
