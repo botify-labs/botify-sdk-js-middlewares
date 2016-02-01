@@ -13,7 +13,7 @@ const JOBS = [
   },
   {
     create: { controllerId: 'SegmentController', operationId: 'createDryRun' },
-    poll: { controllerId: 'SegmentController', operationId: 'getDryRunSegmentStatus', jobIdKey: 'dryRunId' },
+    poll: { controllerId: 'SegmentController', operationId: 'getDryRunStatus', jobIdKey: 'dryRunId' },
   },
 ];
 
