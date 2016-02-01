@@ -16,7 +16,12 @@ describe('jobsMiddleware', () => {
 
   it('should poll API', done => {
     const jobId = 3564;
-    const jobResult = { koo: 'fit' };
+    const jobResult = {
+      job_status: 'DONE',
+      results: {
+        koo: 'fit',
+      },
+    };
 
     // Create Opeation that just return the job id.
     const createOperation = (params, callback) => callback(null, { job_id: jobId });
@@ -28,7 +33,7 @@ describe('jobsMiddleware', () => {
       pollCallCount++;
       callback(null, {
         job_status: pollCallCount > 2 ? 'DONE' : 'IN_PROGRESS',
-        results: pollCallCount > 2 && jobResult,
+        results: pollCallCount > 2 && jobResult.results,
       });
     };
     const spiedPollOperation = sinon.spy(pollOperation);
