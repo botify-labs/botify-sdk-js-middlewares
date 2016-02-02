@@ -103,10 +103,12 @@ class Queue {
             return callback({
               errorMessage: `Resource ${resourceErrorIndex} failed`,
               errorCode: resourceError.status,
-              resourceError: {
-                message: resourceError.error.message,
-                errorCode: resourceError.error.error_code,
-                index: resourceErrorIndex,
+              errorResponse: {
+                ...resourceError,
+                error: {
+                  ...resourceError.error,
+                  resource_index: resourceErrorIndex,
+                },
               },
             });
           }

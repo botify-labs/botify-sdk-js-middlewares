@@ -32,8 +32,8 @@ Without the middleware:
 ```JS
 sdk.ProjectController.getProjets(userId, (error, result) => {
   if (error) {
-     const { ErrorMessage, ErrorCode } = error;
-     if (ErrorMessage && ErrorCode) {
+     const { errorMessage, errorCode } = error;
+     if (errorMessage && errorCode) {
         //Handle api error
      }
      return;
