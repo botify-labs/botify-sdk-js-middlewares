@@ -141,7 +141,7 @@ describe('Query', function() {
   });
 
   describe('processResponse', function() {
-    it('should return JSON object', function() {
+    it('should return JSON object (with transformations)', function() {
       const queryAggregate = new QueryAggregate()
         .addTermGroupBy('http_code', [
           {
@@ -275,6 +275,140 @@ describe('Query', function() {
                   {
                     from: 1000,
                     metadata: {},
+                  },
+                ],
+                metrics: [
+                  5,
+                  1809.8,
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const options = { transformTermKeys: true, injectMetadata: true, normalizeBoolean: true };
+      chai.expect(query.processResponse(response, options)).to.deep.equal(expectedOutput);
+    });
+
+    it('should return JSON object (without transformations)', function() {
+      const queryAggregate = new QueryAggregate()
+        .addTermGroupBy('http_code', [
+          {
+            value: 301,
+          },
+          {
+            value: 404,
+          },
+        ])
+        .addRangeGroupBy('delay_last_byte', [
+          {
+            from: 0,
+            to: 500,
+          },
+          {
+            from: 500,
+            to: 1000,
+          },
+          {
+            from: 1000,
+          },
+        ])
+        .addMetric('count')
+        .addMetric('avg', 'delay_last_byte');
+
+      const query = new Query()
+        .addAggregate(queryAggregate)
+        .setFilters({
+          field: 'strategic.is_strategic',
+          predicate: 'eq',
+          value: true,
+        });
+
+      const response = {
+        count: 37,
+        aggs: [
+          {
+            groups: [
+              {
+                key: [
+                  200,
+                  {
+                    from: 0,
+                    to: 500,
+                  },
+                ],
+                metrics: [
+                  4,
+                  157.25,
+                ],
+              },
+              {
+                key: [
+                  200,
+                  {
+                    from: 500,
+                    to: 1000,
+                  },
+                ],
+                metrics: [
+                  28,
+                  751.25,
+                ],
+              },
+              {
+                key: [
+                  301,
+                  {
+                    from: 1000,
+                  },
+                ],
+                metrics: [
+                  5,
+                  1809.8,
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const expectedOutput = {
+        count: 37,
+        aggs: [
+          {
+            groups: [
+              {
+                key: [
+                  200,
+                  {
+                    from: 0,
+                    to: 500,
+                  },
+                ],
+                metrics: [
+                  4,
+                  157.25,
+                ],
+              },
+              {
+                key: [
+                  200,
+                  {
+                    from: 500,
+                    to: 1000,
+                  },
+                ],
+                metrics: [
+                  28,
+                  751.25,
+                ],
+              },
+              {
+                key: [
+                  301,
+                  {
+                    from: 1000,
                   },
                 ],
                 metrics: [

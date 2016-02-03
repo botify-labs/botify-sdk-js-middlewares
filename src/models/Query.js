@@ -79,7 +79,7 @@ class Query {
     throw new Error('Not implemented yet');
   }
 
-  processResponse(response, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+  processResponse(response, {transformTermKeys, injectMetadata, normalizeBoolean} = {}) {
     if (!response) {
       throw new ApiResponseError('missing response');
     }

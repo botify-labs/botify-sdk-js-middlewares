@@ -112,7 +112,7 @@ class QueryAggregate {
     }, v => isUndefined(v) || isEmpty(v));
   }
 
-  processResponse(aggResponse, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+  processResponse(aggResponse, {transformTermKeys, injectMetadata, normalizeBoolean} = {}) {
     if (!aggResponse) {
       throw new ApiResponseError('missing agg');
     }
@@ -125,7 +125,13 @@ class QueryAggregate {
 
     return {
       ...aggResponse,
-      groups: aggResponse.groups.map(this._processGroupResponse.bind(this)),
+      groups: aggResponse.groups.map(group => {
+        return this._processGroupResponse(group, {
+          transformTermKeys,
+          injectMetadata,
+          normalizeBoolean,
+        });
+      }),
     };
   }
 

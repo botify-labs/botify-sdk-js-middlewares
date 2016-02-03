@@ -20,7 +20,7 @@ class QueryTermGroupBy {
     return this.field;
   }
 
-  applyKeyReducers(keyItem, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+  applyKeyReducers(keyItem, {transformTermKeys, injectMetadata, normalizeBoolean} = {}) {
     let key = keyItem;
 
     if (normalizeBoolean) {
