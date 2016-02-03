@@ -12,14 +12,12 @@ const QUERIES_KEY_PATH = ['urlsAggsQueries'];
  * @param  {Boolean?} options.processResponse   Enable response post processing. If true, every urlsAggsQueries must be instance of Query.
  * @param  {Boolean?} options.transformTermKeys Turn term keys into objects: key -> { value: key }
  * @param  {Boolean?} options.injectMetadata    Inject metadata in groups keys
- * @param  {Boolean?} options.normalizeBoolean  Transform keys 'T' and 'F' to true and false
  * @return {Middleware}
  */
 export default function({
   processResponse = false,
   transformTermKeys = false,
   injectMetadata = false,
-  normalizeBoolean = false,
 } = {}) {
   return function queryMiddleware({controllerId, operationId}) {
     return next => function(params, callback, options) {
@@ -56,7 +54,6 @@ export default function({
               return queries[i].processResponse(result, {
                 transformTermKeys,
                 injectMetadata,
-                normalizeBoolean,
               });
             });
           } catch (e) {

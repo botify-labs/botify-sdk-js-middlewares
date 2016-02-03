@@ -112,7 +112,7 @@ class QueryAggregate {
     }, v => isUndefined(v) || isEmpty(v));
   }
 
-  processResponse(aggResponse, {transformTermKeys, injectMetadata, normalizeBoolean} = {}) {
+  processResponse(aggResponse, {transformTermKeys, injectMetadata} = {}) {
     if (!aggResponse) {
       throw new ApiResponseError('missing agg');
     }
@@ -129,13 +129,12 @@ class QueryAggregate {
         return this._processGroupResponse(group, {
           transformTermKeys,
           injectMetadata,
-          normalizeBoolean,
         });
       }),
     };
   }
 
-  _processGroupResponse(groupResponse, {transformTermKeys, injectMetadata, normalizeBoolean}) {
+  _processGroupResponse(groupResponse, {transformTermKeys, injectMetadata}) {
     if (!groupResponse) {
       throw new ApiResponseError('missing group');
     }
@@ -151,7 +150,6 @@ class QueryAggregate {
         return this.groupBys[i].applyKeyReducers(keyItem, {
           transformTermKeys,
           injectMetadata,
-          normalizeBoolean,
         });
       }),
     };

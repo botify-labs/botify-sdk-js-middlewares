@@ -59,28 +59,16 @@ describe('QueryTermGroupBy', function() {
   });
 
   describe('applyKeyReducers', function() {
-    it('should not transform keys, inject metadata and normalizeBoolean by default', function() {
+    it('should not transform keys and inject metadata by default', function() {
       const field = 'delay_last_byte';
       const ranges = [];
       const queryTermGroupBy = new QueryTermGroupBy(field, ranges);
-      sinon.spy(queryTermGroupBy, '_normalizeBoolean');
       sinon.spy(queryTermGroupBy, '_transformTermKeys');
       sinon.spy(queryTermGroupBy, '_injectMetadata');
 
       queryTermGroupBy.applyKeyReducers({});
-      chai.expect(queryTermGroupBy._normalizeBoolean.callCount).to.be.equal(0);
       chai.expect(queryTermGroupBy._transformTermKeys.callCount).to.be.equal(0);
       chai.expect(queryTermGroupBy._injectMetadata.callCount).to.be.equal(0);
-    });
-
-    it('should normalize boolean if specified', function() {
-      const field = 'delay_last_byte';
-      const ranges = [];
-      const queryTermGroupBy = new QueryTermGroupBy(field, ranges);
-      sinon.spy(queryTermGroupBy, '_normalizeBoolean');
-
-      queryTermGroupBy.applyKeyReducers({}, {normalizeBoolean: true});
-      chai.expect(queryTermGroupBy._normalizeBoolean.callCount).to.be.equal(1);
     });
 
     it('should transform keys if specified', function() {
@@ -102,22 +90,6 @@ describe('QueryTermGroupBy', function() {
       queryTermGroupBy.applyKeyReducers({}, {injectMetadata: true});
       queryTermGroupBy.applyKeyReducers({}, {transformTermKeys: true, injectMetadata: true});
       chai.expect(queryTermGroupBy._injectMetadata.callCount).to.be.equal(1);
-    });
-  });
-
-  describe('_normalizeBoolean', function() {
-    it('should normalize boolean', function() {
-      const queryTermGroupBy = new QueryTermGroupBy('', []);
-
-      chai.expect(queryTermGroupBy._normalizeBoolean('T')).to.deep.equal(true);
-      chai.expect(queryTermGroupBy._normalizeBoolean('F')).to.deep.equal(false);
-      chai.expect(queryTermGroupBy._normalizeBoolean('foo')).to.deep.equal('foo');
-    });
-
-    it('should not transform key if no a boolean', function() {
-      const queryTermGroupBy = new QueryTermGroupBy('', []);
-
-      chai.expect(queryTermGroupBy._normalizeBoolean('foo')).to.deep.equal('foo');
     });
   });
 

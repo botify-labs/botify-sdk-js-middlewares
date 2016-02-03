@@ -287,7 +287,7 @@ describe('Query', function() {
         ],
       };
 
-      const options = { transformTermKeys: true, injectMetadata: true, normalizeBoolean: true };
+      const options = { transformTermKeys: true, injectMetadata: true };
       chai.expect(query.processResponse(response, options)).to.deep.equal(expectedOutput);
     });
 
