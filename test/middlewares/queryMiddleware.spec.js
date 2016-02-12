@@ -75,7 +75,6 @@ describe('queryMiddleware', () => {
       processResponse: true,
       transformTermKeys: true,
       injectMetadata: true,
-      normalizeBoolean: true,
     })(middlewareAPI);
     const apiResult = [
       {

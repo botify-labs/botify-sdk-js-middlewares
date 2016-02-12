@@ -79,7 +79,7 @@ class Query {
     throw new Error('Not implemented yet');
   }
 
-  processResponse(response, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+  processResponse(response, {transformTermKeys, injectMetadata} = {}) {
     if (!response) {
       throw new ApiResponseError('missing response');
     }
@@ -100,7 +100,6 @@ class Query {
         return this.aggregates[i].processResponse(agg, {
           transformTermKeys,
           injectMetadata,
-          normalizeBoolean,
         });
       }),
     };

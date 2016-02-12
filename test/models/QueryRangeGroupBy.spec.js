@@ -88,24 +88,24 @@ describe('QueryRangeGroupBy', function() {
   });
 
   describe('applyKeyReducers', function() {
-    it('should inject metadata by default', function() {
+    it('should not inject metadata by default', function() {
       const field = 'delay_last_byte';
       const ranges = [];
       const queryRangeGroupBy = new QueryRangeGroupBy(field, ranges);
       sinon.spy(queryRangeGroupBy, '_injectMetadata');
 
       queryRangeGroupBy.applyKeyReducers({});
-      chai.expect(queryRangeGroupBy._injectMetadata.callCount).to.be.equal(1);
+      chai.expect(queryRangeGroupBy._injectMetadata.callCount).to.be.equal(0);
     });
 
-    it('should not inject metadata if specified', function() {
+    it('should inject metadata if specified', function() {
       const field = 'delay_last_byte';
       const ranges = [];
       const queryRangeGroupBy = new QueryRangeGroupBy(field, ranges);
       sinon.spy(queryRangeGroupBy, '_injectMetadata');
 
-      queryRangeGroupBy.applyKeyReducers({}, {injectMetadata: false});
-      chai.expect(queryRangeGroupBy._injectMetadata.callCount).to.be.equal(0);
+      queryRangeGroupBy.applyKeyReducers({}, {injectMetadata: true});
+      chai.expect(queryRangeGroupBy._injectMetadata.callCount).to.be.equal(1);
     });
   });
 

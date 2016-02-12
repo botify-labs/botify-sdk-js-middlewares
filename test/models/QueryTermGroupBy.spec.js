@@ -59,65 +59,37 @@ describe('QueryTermGroupBy', function() {
   });
 
   describe('applyKeyReducers', function() {
-    it('should inject transform keys, inject metadata and normalizeBoolean by default', function() {
+    it('should not transform keys and inject metadata by default', function() {
       const field = 'delay_last_byte';
       const ranges = [];
       const queryTermGroupBy = new QueryTermGroupBy(field, ranges);
-      sinon.spy(queryTermGroupBy, '_normalizeBoolean');
       sinon.spy(queryTermGroupBy, '_transformTermKeys');
       sinon.spy(queryTermGroupBy, '_injectMetadata');
 
       queryTermGroupBy.applyKeyReducers({});
-      chai.expect(queryTermGroupBy._normalizeBoolean.callCount).to.be.equal(1);
-      chai.expect(queryTermGroupBy._transformTermKeys.callCount).to.be.equal(1);
-      chai.expect(queryTermGroupBy._injectMetadata.callCount).to.be.equal(1);
+      chai.expect(queryTermGroupBy._transformTermKeys.callCount).to.be.equal(0);
+      chai.expect(queryTermGroupBy._injectMetadata.callCount).to.be.equal(0);
     });
 
-    it('should not normalize boolean if specified', function() {
-      const field = 'delay_last_byte';
-      const ranges = [];
-      const queryTermGroupBy = new QueryTermGroupBy(field, ranges);
-      sinon.spy(queryTermGroupBy, '_normalizeBoolean');
-
-      queryTermGroupBy.applyKeyReducers({}, {normalizeBoolean: false});
-      chai.expect(queryTermGroupBy._normalizeBoolean.callCount).to.be.equal(0);
-    });
-
-    it('should not transform keys if specified', function() {
+    it('should transform keys if specified', function() {
       const field = 'delay_last_byte';
       const ranges = [];
       const queryTermGroupBy = new QueryTermGroupBy(field, ranges);
       sinon.spy(queryTermGroupBy, '_transformTermKeys');
 
-      queryTermGroupBy.applyKeyReducers({}, {transformTermKeys: false});
-      chai.expect(queryTermGroupBy._transformTermKeys.callCount).to.be.equal(0);
+      queryTermGroupBy.applyKeyReducers({}, {transformTermKeys: true});
+      chai.expect(queryTermGroupBy._transformTermKeys.callCount).to.be.equal(1);
     });
 
-    it('should not inject metadata if specified or if keys are not transformed', function() {
+    it('should inject metadata if specified and if keys are requested to be transformed', function() {
       const field = 'delay_last_byte';
       const ranges = [];
       const queryTermGroupBy = new QueryTermGroupBy(field, ranges);
       sinon.spy(queryTermGroupBy, '_injectMetadata');
 
-      queryTermGroupBy.applyKeyReducers({}, {injectMetadata: false});
-      queryTermGroupBy.applyKeyReducers({}, {transformTermKeys: false, injectMetadata: true});
-      chai.expect(queryTermGroupBy._injectMetadata.callCount).to.be.equal(0);
-    });
-  });
-
-  describe('_normalizeBoolean', function() {
-    it('should normalize boolean', function() {
-      const queryTermGroupBy = new QueryTermGroupBy('', []);
-
-      chai.expect(queryTermGroupBy._normalizeBoolean('T')).to.deep.equal(true);
-      chai.expect(queryTermGroupBy._normalizeBoolean('F')).to.deep.equal(false);
-      chai.expect(queryTermGroupBy._normalizeBoolean('foo')).to.deep.equal('foo');
-    });
-
-    it('should not transform key if no a boolean', function() {
-      const queryTermGroupBy = new QueryTermGroupBy('', []);
-
-      chai.expect(queryTermGroupBy._normalizeBoolean('foo')).to.deep.equal('foo');
+      queryTermGroupBy.applyKeyReducers({}, {injectMetadata: true});
+      queryTermGroupBy.applyKeyReducers({}, {transformTermKeys: true, injectMetadata: true});
+      chai.expect(queryTermGroupBy._injectMetadata.callCount).to.be.equal(1);
     });
   });
 

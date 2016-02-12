@@ -20,12 +20,9 @@ class QueryTermGroupBy {
     return this.field;
   }
 
-  applyKeyReducers(keyItem, {transformTermKeys = true, injectMetadata = true, normalizeBoolean = true} = {}) {
+  applyKeyReducers(keyItem, {transformTermKeys, injectMetadata} = {}) {
     let key = keyItem;
 
-    if (normalizeBoolean) {
-      key = this._normalizeBoolean(key);
-    }
     if (transformTermKeys) {
       key = this._transformTermKeys(key);
     }
@@ -34,12 +31,6 @@ class QueryTermGroupBy {
     }
 
     return key;
-  }
-
-  _normalizeBoolean(key) {
-    return key === 'T' ? true
-         : key === 'F' ? false
-         : key;
   }
 
   _transformTermKeys(key) {

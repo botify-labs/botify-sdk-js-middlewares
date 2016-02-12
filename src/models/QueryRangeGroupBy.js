@@ -29,7 +29,7 @@ class QueryRangeGroupBy {
     };
   }
 
-  applyKeyReducers(keyItem, {injectMetadata = true} = {}) {
+  applyKeyReducers(keyItem, {injectMetadata} = {}) {
     let key = keyItem;
 
     if (injectMetadata) {
