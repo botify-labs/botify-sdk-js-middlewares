@@ -81,7 +81,7 @@ let query = new Query();
       .addMetric('avg', 'delay_last_byte')
   )
   .setFilters({
-    field: 'strategic.is_strategic',
+    field: 'compliant.is_compliant',
     predicate: 'eq',
     value: true
   });
@@ -189,7 +189,7 @@ let query = new Query();
     .addMetric('avg', 'delay_last_byte')
 )
 .setFilters({
-	field: 'strategic.is_strategic',
+	field: 'compliant.is_compliant',
 	predicate: 'eq',
 	value: true
 });
@@ -230,7 +230,7 @@ let query = new Query();
     }
   ],
   "filters": {
-  	"field": "strategic.is_strategic",
+  	"field": "compliant.is_compliant",
   	"predicate": "eq",
   	"value": true
   }
