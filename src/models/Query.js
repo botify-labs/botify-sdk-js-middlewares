@@ -1,3 +1,4 @@
+import isArray from 'lodash.isarray';
 import isEmpty from 'lodash.isempty';
 import isPlainObject from 'lodash.isplainobject';
 import isUndefined from 'lodash.isundefined';
@@ -14,8 +15,11 @@ class Query {
   constructor(name = '') {
     this.aggregates = [];
     this.filters = null;
+    this.fields = [];
+    this.sorts = [];
     this.name = name;
   }
+
 
   /**
    * @param {QueryAggregate} aggregate
@@ -35,6 +39,7 @@ class Query {
     return this.aggregates;
   }
 
+
   /**
    * @param {Object} filters
    */
@@ -53,12 +58,76 @@ class Query {
     return this.filters;
   }
 
+
+  /**
+   * @param {Array<string>} fieldId
+   */
+  setFields(fields) {
+    if (!isArray(fields)) {
+      throw new Error('fields must be an array of string');
+    }
+    this.fields = [];
+    fields.forEach(field => this.addField(field));
+    return this;
+  }
+
+  /**
+   * @param {string} field
+   */
+  addField(field) {
+    if (typeof field !== 'string') {
+      throw new Error('field must be a string');
+    }
+    this.fields = this.fields.concat(field);
+    return this;
+  }
+
+  getFields() {
+    return this.fields;
+  }
+
+
+  /**
+   * @param {Array<Sort>} sorts with Sort => {field: string, order: string}
+   */
+  setSorts(sorts) {
+    if (!isArray(sorts)) {
+      throw new Error('sorts must be an array of {field: string, order: string}');
+    }
+    this.sorts = [];
+    sorts.forEach(sort => this.addSort(sort.field, sort.order));
+    return this;
+  }
+
+  /**
+   * @param {string} field
+   */
+  addSort(field, order = 'desc') {
+    if (typeof field !== 'string') {
+      throw new Error('field must be a string');
+    }
+    if (order !== 'desc' && order !== 'asc') {
+      throw new Error(`order must be either 'desc' or 'asc'`);
+    }
+    this.sorts = this.sorts.concat({
+      field,
+      order,
+    });
+    return this;
+  }
+
+  getSorts() {
+    return this.sorts;
+  }
+
+
   /**
    * @return {String}
    */
   getName() {
     return this.name;
   }
+
 
   /**
    * Generates the JSON object needed to call the API
@@ -68,16 +137,21 @@ class Query {
     return omit({
       aggs: this.aggregates.map(agg => agg.toJsonAPI()),
       filters: this.filters,
+      fields: this.fields,
+      sort: this.sorts.map(sort => ({
+        [sort.field]: { order: [sort.order] },
+      })),
     }, v => isUndefined(v) || isEmpty(v));
   }
 
   /**
-   * @param  {Object} object
+   * @param  {Object} def
    * @return {}
    */
-  fromObject(object) {
+  static fromObject(def) {
     throw new Error('Not implemented yet');
   }
+
 
   processResponse(response, {transformTermKeys, injectMetadata} = {}) {
     if (!response) {
