@@ -130,17 +130,27 @@ class Query {
 
 
   /**
-   * Generates the JSON object needed to call the API
+   * Generates the BQLQuery JSON object
    * @return {Object}
    */
-  toJsonAPI() {
+  toBQLQuery() {
     return omit({
-      aggs: this.aggregates.map(agg => agg.toJsonAPI()),
       filters: this.filters,
       fields: this.fields,
       sort: this.sorts.map(sort => ({
         [sort.field]: { order: [sort.order] },
       })),
+    }, v => isUndefined(v) || isEmpty(v));
+  }
+
+  /**
+   * Generates the toBQLAggsQuery JSON object
+   * @return {Object}
+   */
+  toBQLAggsQuery() {
+    return omit({
+      aggs: this.aggregates.map(agg => agg.toJsonAPI()),
+      filters: this.filters,
     }, v => isUndefined(v) || isEmpty(v));
   }
 

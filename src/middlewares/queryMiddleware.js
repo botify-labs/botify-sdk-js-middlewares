@@ -40,7 +40,7 @@ export default function({
         {
           ...params,
           urlsAggsQueries: queries.map(query => {
-            return query instanceof Query ? query.toJsonAPI() : query;
+            return query instanceof Query ? query.toBQLAggsQuery() : query;
           }),
         },
         function(error, results) {
