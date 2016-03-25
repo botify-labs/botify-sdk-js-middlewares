@@ -3,7 +3,6 @@ import find from 'lodash.find';
 import findIndex from 'lodash.findindex';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
-import isPlainObject from 'lodash.isplainobject';
 import pick from 'lodash.pick';
 import pluck from 'lodash.pluck';
 import set from 'lodash.set';
@@ -114,12 +113,19 @@ class Queue {
             });
           }
           return callback(null, itemsResults.map(itemResult => {
-            return isPlainObject(itemResult) ? itemResult.data : itemResult;
+            return isArray(itemResult) ? itemResult.map(this._formatResponse) : this._formatResponse(itemResult);
           }));
         });
       },
       this.options,
     );
+  }
+
+  _formatResponse(result) {
+    return {
+      ...omit(result, ['error', 'data']),
+      ...result.data,
+    };
   }
 
   _onRequest() {

@@ -61,6 +61,12 @@ export default function({
           let processedResponse;
           try {
             processedResponse = results.map((result, i) => {
+              if (isArray(result)) {
+                return result.map(res => queries[i].processResponse(res, {
+                  transformTermKeys,
+                  injectMetadata,
+                }));
+              }
               return queries[i].processResponse(result, {
                 transformTermKeys,
                 injectMetadata,
