@@ -1,12 +1,21 @@
+import find from 'lodash.find';
 import get from 'lodash.get';
 import isArray from 'lodash.isarray';
 
 import Query from '../models/Query';
 
 
-const CONTROLLER_ID = 'AnalysisController';
-const OPERATION_ID = 'getUrlsAggs';
-const QUERIES_KEY_PATH = ['urlsAggsQueries'];
+export const QUERY_OPERATIONS = [
+  {
+    controllerId: 'AnalysisController',
+    operationId: 'getUrlsAggs',
+  },
+  {
+    controllerId: 'ProjectController',
+    operationId: 'getProjectUrlsAggs',
+  },
+];
+
 
 /**
  * @param  {Boolean?} options.processResponse   Enable response post processing. If true, every urlsAggsQueries must be instance of Query.
@@ -21,11 +30,12 @@ export default function({
 } = {}) {
   return function queryMiddleware({controllerId, operationId}) {
     return next => function(params, callback, options) {
-      if (controllerId !== CONTROLLER_ID || operationId !== OPERATION_ID) {
+      const queryOperation = find(QUERY_OPERATIONS, op => op.controllerId === controllerId && op.operationId === operationId);
+      if (!queryOperation) {
         return next(...arguments);
       }
 
-      const queries = get(params, QUERIES_KEY_PATH);
+      const queries = get(params, 'urlsAggsQueries');
       if (!queries || !isArray(queries)) {
         throw new Error('urlsAggsQueries param must be an array');
       }
