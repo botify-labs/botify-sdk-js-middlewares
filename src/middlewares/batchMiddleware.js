@@ -3,6 +3,7 @@ import find from 'lodash.find';
 import findIndex from 'lodash.findindex';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
+import isPlainObject from 'lodash.isplainobject';
 import pick from 'lodash.pick';
 import pluck from 'lodash.pluck';
 import set from 'lodash.set';
@@ -14,14 +15,7 @@ export const DEFAULT_BATCHED_OPERATIONS = [
   {
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
-    commonKeys: ['username', 'projectSlug', 'analysisSlug'],
-    batchedKeyPath: ['urlsAggsQueries'],
-    queueLimit: 15,
-  },
-  {
-    controllerId: 'ProjectController',
-    operationId: 'getProjectUrlsAggs',
-    commonKeys: ['username', 'projectSlug', 'lastAnalysisSlug', 'nbAnalyses'],
+    commonKeys: ['username', 'projectSlug', 'analysisSlug', 'area'],
     batchedKeyPath: ['urlsAggsQueries'],
     queueLimit: 15,
   },
@@ -119,7 +113,9 @@ class Queue {
               },
             });
           }
-          return callback(null, itemsResults.map(itemResult => itemResult.data));
+          return callback(null, itemsResults.map(itemResult => {
+            return isPlainObject(itemResult) ? itemResult.data : itemResult;
+          }));
         });
       },
       this.options,
