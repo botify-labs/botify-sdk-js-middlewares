@@ -64,7 +64,7 @@ The following `Query` filters the dataset on compliant URLs and groups URLs by t
 import { models } from 'botify-sdk-middlewares';
 const { Query, QueryAggregate } = models;
 
-let query = new Query();
+let query = new Query()
   .addAggregate(
     new QueryAggregate()
       .addGroupBy('http_code')
