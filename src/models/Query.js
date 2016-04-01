@@ -138,7 +138,7 @@ class Query {
       filters: this.filters,
       fields: this.fields,
       sort: this.sorts.map(sort => ({
-        [sort.field]: { order: [sort.order] },
+        [sort.field]: { order: sort.order },
       })),
     }, v => isUndefined(v) || isEmpty(v));
   }
