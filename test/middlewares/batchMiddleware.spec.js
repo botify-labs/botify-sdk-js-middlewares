@@ -18,13 +18,25 @@ describe('batchMiddleware', () => {
   it('must call only once the operation but call every caller callbacks at the end', done => {
     const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
       status: 200,
-      data: v * 2,
+      data: { count: v * 2 },
     })));
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
-      {input: {...analysisParams, urlsAggsQueries: [1]}, callback: sinon.spy(), result: [2]},
-      {input: {...analysisParams, urlsAggsQueries: [2]}, callback: sinon.spy(), result: [4]},
-      {input: {...analysisParams, urlsAggsQueries: [3]}, callback: sinon.spy(), result: [6]},
+      {
+        input: {...analysisParams, urlsAggsQueries: [1]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 2 }],
+      },
+      {
+        input: {...analysisParams, urlsAggsQueries: [2]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 4 }],
+      },
+      {
+        input: {...analysisParams, urlsAggsQueries: [3]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 6 }],
+      },
     ];
 
     requests.forEach(({input, callback}) => {
@@ -52,13 +64,25 @@ describe('batchMiddleware', () => {
   it('must handle calls with multiple queries', done => {
     const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
       status: 200,
-      data: v * 2,
+      data: { count: v * 2 },
     })));
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
-      {input: {...analysisParams, urlsAggsQueries: [1, 2]}, callback: sinon.spy(), result: [2, 4]},
-      {input: {...analysisParams, urlsAggsQueries: [3, 4]}, callback: sinon.spy(), result: [6, 8]},
-      {input: {...analysisParams, urlsAggsQueries: [5, 6]}, callback: sinon.spy(), result: [10, 12]},
+      {
+        input: {...analysisParams, urlsAggsQueries: [1, 2]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 2 }, { status: 200, count: 4 }],
+      },
+      {
+        input: {...analysisParams, urlsAggsQueries: [3, 4]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 6 }, { status: 200, count: 8 }],
+      },
+      {
+        input: {...analysisParams, urlsAggsQueries: [5, 6]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 10 }, { status: 200, count: 12 }],
+      },
     ];
 
     requests.forEach(({input, callback}, i) => {
@@ -86,7 +110,7 @@ describe('batchMiddleware', () => {
   it('must batch what can be batch together', done => {
     const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
       status: 200,
-      data: v * 2,
+      data: { count: v * 2 },
     })));
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
@@ -98,7 +122,7 @@ describe('batchMiddleware', () => {
           urlsAggsQueries: [1],
         },
         callback: sinon.spy(),
-        result: [2],
+        result: [{ status: 200, count: 2 }],
       },
       {
         input: {
@@ -108,7 +132,7 @@ describe('batchMiddleware', () => {
           urlsAggsQueries: [2],
         },
         callback: sinon.spy(),
-        result: [4],
+        result: [{ status: 200, count: 4 }],
       },
       {
         input: {
@@ -118,7 +142,7 @@ describe('batchMiddleware', () => {
           urlsAggsQueries: [3],
         },
         callback: sinon.spy(),
-        result: [6],
+        result: [{ status: 200, count: 6 }],
       },
     ];
 
@@ -297,7 +321,7 @@ describe('batchMiddleware', () => {
       {
         input: {...analysisParams, urlsAggsQueries: [0]},
         callback: sinon.spy(),
-        middlewareOutput: [null, [2]],
+        middlewareOutput: [null, [{ status: 200, count: 2 }]],
       },
       {
         input: {...analysisParams, urlsAggsQueries: [1]},
@@ -317,15 +341,15 @@ describe('batchMiddleware', () => {
       {
         input: {...analysisParams, urlsAggsQueries: [2]},
         callback: sinon.spy(),
-        middlewareOutput: [null, [6]],
+        middlewareOutput: [null, [{ status: 200, count: 6 }]],
       },
     ];
     const apiResult = [
-      {status: 200, data: 2},
+      {status: 200, data: { count: 2 }},
       {status: 500, error: {
         message: 'Server error',
       }},
-      {status: 200, data: 6},
+      {status: 200, data: { count: 6 }},
     ];
 
     const getUrlsAggs = ({urlsAggsQueries}, callback) => {
@@ -369,16 +393,16 @@ describe('batchMiddleware', () => {
       {
         input: {...analysisParams, urlsAggsQueries: [2]},
         callback: sinon.spy(),
-        middlewareOutput: [null, [6]],
+        middlewareOutput: [null, [{ status: 200, count: 6 }]],
       },
     ];
     const apiResult = [
-      {status: 200, data: 2},
+      {status: 200, data: { count: 2 }},
       {status: 400, error: {
         error_code: 34,
         message: 'Query is not valid',
       }},
-      {status: 200, data: 6},
+      {status: 200, data: { count: 6 }},
     ];
 
     const getUrlsAggs = ({urlsAggsQueries}, callback) => {
@@ -412,13 +436,25 @@ describe('batchMiddleware', () => {
     })(middlewareAPI);
     const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
       status: 200,
-      data: v * 2,
+      data: { count: v * 2 },
     })));
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
-      {input: {...analysisParams, urlsAggsQueries: [1]}, callback: sinon.spy(), result: [2]},
-      {input: {...analysisParams, urlsAggsQueries: [2]}, callback: sinon.spy(), result: [4]},
-      {input: {...analysisParams, urlsAggsQueries: [3]}, callback: sinon.spy(), result: [6]},
+      {
+        input: {...analysisParams, urlsAggsQueries: [1]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 2 }],
+      },
+      {
+        input: {...analysisParams, urlsAggsQueries: [2]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 4 }],
+      },
+      {
+        input: {...analysisParams, urlsAggsQueries: [3]},
+        callback: sinon.spy(),
+        result: [{ status: 200, count: 6 }],
+      },
     ];
 
     requests.forEach(({input, callback}, i) => {
