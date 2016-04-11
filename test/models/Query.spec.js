@@ -58,7 +58,7 @@ describe('Query', function() {
     });
   });
 
-  describe('toJsonAPI', function() {
+  describe('toBQLAggsQuery', function() {
     it('should return JSON object', function() {
       const query = new Query()
         .addAggregate(
@@ -136,7 +136,7 @@ describe('Query', function() {
         },
       };
 
-      chai.expect(query.toJsonAPI()).to.deep.equal(json);
+      chai.expect(query.toBQLAggsQuery()).to.deep.equal(json);
     });
   });
 

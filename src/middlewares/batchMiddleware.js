@@ -14,7 +14,7 @@ export const DEFAULT_BATCHED_OPERATIONS = [
   {
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
-    commonKeys: ['username', 'projectSlug', 'analysisSlug'],
+    commonKeys: ['username', 'projectSlug', 'analysisSlug', 'area'],
     batchedKeyPath: ['urlsAggsQueries'],
     queueLimit: 15,
   },
@@ -112,11 +112,20 @@ class Queue {
               },
             });
           }
-          return callback(null, itemsResults.map(itemResult => itemResult.data));
+          return callback(null, itemsResults.map(itemResult => {
+            return isArray(itemResult) ? itemResult.map(this._formatResponse) : this._formatResponse(itemResult);
+          }));
         });
       },
       this.options,
     );
+  }
+
+  _formatResponse(result) {
+    return {
+      ...omit(result, ['error', 'data']),
+      ...result.data,
+    };
   }
 
   _onRequest() {
