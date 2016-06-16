@@ -1,8 +1,8 @@
 # [Jobs middleware](../../src/middlewares/jobsMiddleware.js)
 
-Some operations like creating a pdf or exporting a list of url as a csv need to be done asynchronously because they can take more time than common timeouts can accept. "Asynchronous" operations needed to be initiate by calling their create endpoint and then keeping calling the poll endpoint till the operation is finished.
+Some operations like creating a pdf or exporting a list of url as a csv need to be done asynchronously because they can take more time than common timeouts can accept. Asynchronous operations need to be start by calling their create endpoint and then keeping calling the poll endpoint till the operation is finished.
 
-For instance, to create a pdf, you need to call createPdfExport that returns a job id. Then poll getPdfExportStatus every X seconds with that job id till the response indicate that the job is done.
+For instance, to create a pdf, you need to call createUrlsExport that returns a job id. Then poll getUrlsExportStatus every X seconds with that job id till the response indicate that the job is done.
 
 This middleware abstract this logic in a way that you just have to call the create job operation, meanwhile the milddleware will poll the API and returns the response when finished.
 
@@ -23,12 +23,12 @@ const sdk = applyMiddleware(
   jobsMiddleware()
 )(baseSdk);
 
-AnalysisController.createPDFExport({
+AnalysisController.createUrlsExport({
   username,
   projectSlug,
   analysisSlug,
+  urlsQuery,
   area,
-  section,
 }, (err, result) => {
   if (err) {
     //Handle Error
@@ -40,16 +40,13 @@ AnalysisController.createPDFExport({
 
 ## Without the middleware
 ``` JS
-const params = {
-  username: 'botify',
-  projectSlug: 'botify.com',
-  analyseSlug: 'foo',
-};
 
-AnalysisController.createPDFExport({
-  ...params
+AnalysisController.createUrlsExport({
+  username,
+  projectSlug,
+  analysisSlug,
+  urlsQuery,
   area,
-  section,
 }, (err, response) => {
   if (err) {
     //Handle creating error
@@ -57,7 +54,7 @@ AnalysisController.createPDFExport({
   }
 
   const interval = setInterval(() => {
-    AnalysisController.getPdfExportStatus({
+    AnalysisController.getUrlsExportStatus({
       ...params
       pdfExportId: response.job_id,
     }, (err, pollResponse) => {
