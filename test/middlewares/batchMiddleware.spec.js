@@ -327,13 +327,12 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, urlsAggsQueries: [1]},
         callback: sinon.spy(),
         middlewareOutput: [{
-          errorMessage: 'Resource 0 failed',
+          errorMessage: 'A resource failed',
           errorCode: 500,
           errorResponse: {
             status: 500,
             error: {
               message: 'Server error',
-              resource_index: 0,
             },
           },
         }],
@@ -378,14 +377,13 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, urlsAggsQueries: [0, 2]},
         callback: sinon.spy(),
         middlewareOutput: [{
-          errorMessage: 'Resource 1 failed',
+          errorMessage: 'A resource failed',
           errorCode: 400,
           errorResponse: {
             status: 400,
             error: {
               message: 'Query is not valid',
               error_code: 34,
-              resource_index: 1,
             },
           },
         }],
