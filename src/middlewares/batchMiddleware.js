@@ -1,6 +1,5 @@
 import get from 'lodash.get';
 import find from 'lodash.find';
-import findIndex from 'lodash.findindex';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
