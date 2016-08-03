@@ -9,10 +9,12 @@ export const DEFAULT_QUERY_OPERATIONS = [
   {
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
+    queriesProperty: 'urlsAggsQueries',
   },
   {
     controllerId: 'ProjectController',
     operationId: 'getProjectUrlsAggs',
+    queriesProperty: 'urlsAggsQueries',
   },
 ];
 
@@ -36,7 +38,7 @@ export default function({
         return next(...arguments);
       }
 
-      const queries = get(params, 'urlsAggsQueries');
+      const queries = get(params, queryOperation.queriesProperty);
       if (!queries || !isArray(queries)) {
         throw new Error('urlsAggsQueries param must be an array');
       }
