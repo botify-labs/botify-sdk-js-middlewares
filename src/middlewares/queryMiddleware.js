@@ -5,7 +5,7 @@ import isArray from 'lodash.isarray';
 import Query from '../models/Query';
 
 
-export const QUERY_OPERATIONS = [
+export const DEFAULT_QUERY_OPERATIONS = [
   {
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
@@ -27,10 +27,11 @@ export default function({
   processResponse = false,
   transformTermKeys = false,
   injectMetadata = false,
+  queryOperations = DEFAULT_QUERY_OPERATIONS,
 } = {}) {
   return function queryMiddleware({controllerId, operationId}) {
     return next => function(params, callback, options) {
-      const queryOperation = find(QUERY_OPERATIONS, op => op.controllerId === controllerId && op.operationId === operationId);
+      const queryOperation = find(queryOperations, op => op.controllerId === controllerId && op.operationId === operationId);
       if (!queryOperation) {
         return next(...arguments);
       }
