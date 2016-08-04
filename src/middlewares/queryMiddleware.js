@@ -49,14 +49,15 @@ export default function({
         }
       }
 
-      next(
-        {
-          ...params,
-          urlsAggsQueries: queries.map(query => {
-            return query instanceof Query ? query.toBQLAggsQuery() : query;
-          }),
-        },
-        function(error, results) {
+      const res = {
+        ...params
+      };
+
+      res[queryOperation.queriesProperty] = queries.map(query => {
+        return query instanceof Query ? query.toBQLAggsQuery() : query;
+      });
+
+      next(res, function(error, results) {
           if (error || !processResponse) {
             return callback(...arguments);
           }
