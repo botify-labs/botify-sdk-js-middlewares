@@ -49,38 +49,38 @@ export default function({
         }
       }
 
-      const res = {
-        ...params
+      const nextRes = {
+        ...params,
       };
 
-      res[queryOperation.queriesProperty] = queries.map(query => {
+      nextRes[queryOperation.queriesProperty] = queries.map(query => {
         return query instanceof Query ? query.toBQLAggsQuery() : query;
       });
 
-      next(res, function(error, results) {
-          if (error || !processResponse) {
-            return callback(...arguments);
-          }
-          let processResponseError = null;
-          let processedResponse;
-          try {
-            processedResponse = results.map((result, i) => {
-              if (isArray(result)) {
-                return result.map(res => queries[i].processResponse(res, {
-                  transformTermKeys,
-                  injectMetadata,
-                }));
-              }
-              return queries[i].processResponse(result, {
+      next(nextRes, function(error, results) {
+        if (error || !processResponse) {
+          return callback(...arguments);
+        }
+        let processResponseError = null;
+        let processedResponse;
+        try {
+          processedResponse = results.map((result, i) => {
+            if (isArray(result)) {
+              return result.map(res => queries[i].processResponse(res, {
                 transformTermKeys,
                 injectMetadata,
-              });
+              }));
+            }
+            return queries[i].processResponse(result, {
+              transformTermKeys,
+              injectMetadata,
             });
-          } catch (e) {
-            processResponseError = e;
-          }
-          callback(processResponseError, processedResponse);
-        },
+          });
+        } catch (e) {
+          processResponseError = e;
+        }
+        callback(processResponseError, processedResponse);
+      },
         options
       );
     };
