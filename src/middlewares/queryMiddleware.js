@@ -40,12 +40,12 @@ export default function({
 
       const queries = get(params, queryOperation.queriesProperty);
       if (!queries || !isArray(queries)) {
-        throw new Error('urlsAggsQueries param must be an array');
+        throw new Error(queryOperation.queriesProperty + ' param must be an array');
       }
 
       if (processResponse) {
         if (!queries.every(query => query instanceof Query)) {
-          throw new Error('urlsAggsQueries param must be an array of instance of Query');
+          throw new Error(queryOperation.queriesProperty + ' param must be an array of instance of Query');
         }
       }
 
