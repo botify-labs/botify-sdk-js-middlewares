@@ -51,7 +51,7 @@ export default function({
 
       const nextRes = {
         ...params,
-        [queryOperation.queriesProperty]: queries.map(query => query instanceof Query ? query.toBQLAggsQuery() : query)
+        [queryOperation.queriesProperty]: queries.map(query => query instanceof Query ? query.toBQLAggsQuery() : query),
       };
 
       next(nextRes, function(error, results) {
