@@ -9,10 +9,12 @@ export const DEFAULT_QUERY_OPERATIONS = [
   {
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
+    queriesProperty: 'urlsAggsQueries',
   },
   {
     controllerId: 'ProjectController',
     operationId: 'getProjectUrlsAggs',
+    queriesProperty: 'urlsAggsQueries',
   },
 ];
 
@@ -36,48 +38,46 @@ export default function({
         return next(...arguments);
       }
 
-      const queries = get(params, 'urlsAggsQueries');
+      const queries = get(params, queryOperation.queriesProperty);
       if (!queries || !isArray(queries)) {
-        throw new Error('urlsAggsQueries param must be an array');
+        throw new Error(queryOperation.queriesProperty + ' param must be an array');
       }
 
       if (processResponse) {
         if (!queries.every(query => query instanceof Query)) {
-          throw new Error('urlsAggsQueries param must be an array of instance of Query');
+          throw new Error(queryOperation.queriesProperty + ' param must be an array of instance of Query');
         }
       }
 
-      next(
-        {
-          ...params,
-          urlsAggsQueries: queries.map(query => {
-            return query instanceof Query ? query.toBQLAggsQuery() : query;
-          }),
-        },
-        function(error, results) {
-          if (error || !processResponse) {
-            return callback(...arguments);
-          }
-          let processResponseError = null;
-          let processedResponse;
-          try {
-            processedResponse = results.map((result, i) => {
-              if (isArray(result)) {
-                return result.map(res => queries[i].processResponse(res, {
-                  transformTermKeys,
-                  injectMetadata,
-                }));
-              }
-              return queries[i].processResponse(result, {
+      const nextRes = {
+        ...params,
+        [queryOperation.queriesProperty]: queries.map(query => query instanceof Query ? query.toBQLAggsQuery() : query),
+      };
+
+      next(nextRes, function(error, results) {
+        if (error || !processResponse) {
+          return callback(...arguments);
+        }
+        let processResponseError = null;
+        let processedResponse;
+        try {
+          processedResponse = results.map((result, i) => {
+            if (isArray(result)) {
+              return result.map(res => queries[i].processResponse(res, {
                 transformTermKeys,
                 injectMetadata,
-              });
+              }));
+            }
+            return queries[i].processResponse(result, {
+              transformTermKeys,
+              injectMetadata,
             });
-          } catch (e) {
-            processResponseError = e;
-          }
-          callback(processResponseError, processedResponse);
-        },
+          });
+        } catch (e) {
+          processResponseError = e;
+        }
+        callback(processResponseError, processedResponse);
+      },
         options
       );
     };
