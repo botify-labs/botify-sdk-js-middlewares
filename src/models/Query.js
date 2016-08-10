@@ -20,6 +20,7 @@ class Query {
     this.filters = null;
     this.fields = [];
     this.sorts = [];
+    this.operation = {};
 
     if (controllerId && operationId) {
       this.operation = {
