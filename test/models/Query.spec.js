@@ -8,9 +8,18 @@ describe('Query', function() {
   describe('constructor', function() {
     it('should create a basic object with empty fields, aggregates, filters and sort', function() {
       const query = new Query();
-      chai.expect(query.name).to.equal('');
       chai.expect(query.getFilters()).to.be.null;
       chai.expect(query.getAggregates()).to.be.empty;
+    });
+
+    it('should set controllerId and operationId if provided', function() {
+      const query = new Query('Controller', 'Operation');
+      chai.expect(query.operation).to.deep.equal({ controllerId: 'Controller', operationId: 'Operation' });
+    });
+
+    it('should set operationId if provided alone', function() {
+      const query = new Query('Operation');
+      chai.expect(query.operation).to.deep.equal({ operationId: 'Operation' });
     });
   });
 
