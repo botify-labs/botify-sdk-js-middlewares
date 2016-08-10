@@ -9,15 +9,28 @@ import ApiResponseError from '../errors/ApiResponseError';
 
 
 class Query {
+
   /**
-   * @param  {?String} name
+   * @param  {String?} controllerId
+   * @param  {String?} operationId
+   * Note: other signature constructor(operationId: String?)
    */
-  constructor(name = '') {
+  constructor(controllerId, operationId) {
     this.aggregates = [];
     this.filters = null;
     this.fields = [];
     this.sorts = [];
-    this.name = name;
+
+    if (controllerId && operationId) {
+      this.operation = {
+        controllerId,
+        operationId,
+      };
+    } else if (controllerId && !operationId) {
+      this.operation = {
+        operationId: controllerId,
+      };
+    }
   }
 
 
@@ -121,11 +134,8 @@ class Query {
   }
 
 
-  /**
-   * @return {String}
-   */
-  getName() {
-    return this.name;
+  getOperation() {
+    return this.operation;
   }
 
 
