@@ -81,6 +81,17 @@ describe('Query', function() {
     });
   });
 
+  describe('setPageSize', function() {
+    it('should default to a page size of 100', function() {
+      const query = new Query();
+      chai.expect(query.getPageSize()).to.equal(100);
+    });
+
+    it('should set a pageSize if specified', function() {
+      const query = new Query()
+        .setPageSize(666);
+      chai.expect(query.getPageSize()).to.equal(666);
+    });
   describe('toBQLAggsQuery', function() {
     it('should return JSON object', function() {
       const query = new Query()

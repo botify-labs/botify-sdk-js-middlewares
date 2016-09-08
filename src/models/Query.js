@@ -22,6 +22,7 @@ class Query {
     this.sorts = [];
     this.operation = {};
     this.page = null;
+    this.pageSize = 100;
 
     if (controllerId && operationId) {
       this.operation = {
@@ -149,6 +150,14 @@ class Query {
     return this;
   }
 
+  getPageSize() {
+    return this.pageSize;
+  }
+
+  setPageSize(pageSize) {
+    this.pageSize = pageSize;
+    return this;
+  }
 
   /**
    * Generates the BQLQuery JSON object
