@@ -21,6 +21,8 @@ class Query {
     this.fields = [];
     this.sorts = [];
     this.operation = {};
+    this.page = null;
+    this.pageSize = 100;
 
     if (controllerId && operationId) {
       this.operation = {
@@ -137,6 +139,36 @@ class Query {
 
   getOperation() {
     return this.operation;
+  }
+
+  getPage() {
+    return this.page;
+  }
+
+  setPage(page) {
+    if (Number(page) !== page || page % 1 !== 0) {
+      throw new Error('Page number must be an integer.');
+    }
+    if (page < 0) {
+      throw new Error('Page number cannot be a negative number.');
+    }
+    this.page = page;
+    return this;
+  }
+
+  getPageSize() {
+    return this.pageSize;
+  }
+
+  setPageSize(pageSize) {
+    if (Number(pageSize) !== pageSize || pageSize % 1 !== 0) {
+      throw new Error('Page size must be an integer.');
+    }
+    if (pageSize < 0) {
+      throw new Error('Page size cannot be a negative number.');
+    }
+    this.pageSize = pageSize;
+    return this;
   }
 
 
