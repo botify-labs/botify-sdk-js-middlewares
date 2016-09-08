@@ -73,6 +73,37 @@ describe('Query', function() {
       chai.expect(query.getPage()).to.be.null;
     });
 
+    it('should throw if Page is not an integer (if Page is a string)', function() {
+      const query = new Query();
+      const page = 'test';
+      const error = 'Page number must be an integer.';
+
+      chai.expect(query.setPage.bind(null, page)).to.throw(error);
+    });
+
+    it('should throw if Page is not an integer (if Page is undefined)', function() {
+      const query = new Query();
+      const error = 'Page number must be an integer.';
+
+      chai.expect(query.setPage.bind(null, undefined)).to.throw(error);
+    });
+
+    it('should throw if PageSize is not an integer (if PageSize is a float)', function() {
+      const query = new Query();
+      const page = 13.37;
+      const error = 'Page number must be an integer.';
+
+      chai.expect(query.setPage.bind(null, page)).to.throw(error);
+    });
+
+    it('should throw if PageSize is negative', function() {
+      const query = new Query();
+      const page = -13;
+      const error = 'Page number cannot be a negative number.';
+
+      chai.expect(query.setPage.bind(null, page)).to.throw(error);
+    });
+
     it('should set page when setPage is called', function() {
       const query = new Query()
         .setPage(17);
@@ -92,6 +123,46 @@ describe('Query', function() {
         .setPageSize(666);
       chai.expect(query.getPageSize()).to.equal(666);
     });
+
+    it('should throw if PageSize is not an integer (if PageSize is a string)', function() {
+      const query = new Query();
+      const pageSize = 'test';
+      const error = 'Page size must be an integer.';
+
+      chai.expect(query.setPageSize.bind(null, pageSize)).to.throw(error);
+    });
+
+    it('should throw if PageSize is not an integer (if PageSize is undefined)', function() {
+      const query = new Query();
+      const error = 'Page size must be an integer.';
+
+      chai.expect(query.setPageSize.bind(null, undefined)).to.throw(error);
+    });
+
+    it('should throw if PageSize is not an integer (if PageSize is a float)', function() {
+      const query = new Query();
+      const pageSize = 13.37;
+      const error = 'Page size must be an integer.';
+
+      chai.expect(query.setPageSize.bind(null, pageSize)).to.throw(error);
+    });
+
+    it('should throw if PageSize is negative', function() {
+      const query = new Query();
+      const pageSize = -13;
+      const error = 'Page size cannot be a negative number.';
+
+      chai.expect(query.setPageSize.bind(null, pageSize)).to.throw(error);
+    });
+
+    it('should throw if PageSize exceeds limits', function() {
+      const query = new Query();
+      const error = 'Requested page size (1337) exceeds maximum size (1000 entries).';
+
+      chai.expect(query.setPageSize.bind(null, 1337)).to.throw(error);
+    });
+  });
+
   describe('toBQLAggsQuery', function() {
     it('should return JSON object', function() {
       const query = new Query()

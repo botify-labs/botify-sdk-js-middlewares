@@ -146,6 +146,12 @@ class Query {
   }
 
   setPage(page) {
+    if (Number(page) !== page || page % 1 !== 0) {
+      throw new Error('Page number must be an integer.');
+    }
+    if (page < 0) {
+      throw new Error('Page number cannot be a negative number.');
+    }
     this.page = page;
     return this;
   }
@@ -155,9 +161,19 @@ class Query {
   }
 
   setPageSize(pageSize) {
+    if (Number(pageSize) !== pageSize || pageSize % 1 !== 0) {
+      throw new Error('Page size must be an integer.');
+    }
+    if (pageSize < 0) {
+      throw new Error('Page size cannot be a negative number.');
+    }
+    if (pageSize > 1000) {
+      throw new Error('Requested page size (' + pageSize + ') exceeds maximum size (1000 entries).');
+    }
     this.pageSize = pageSize;
     return this;
   }
+
 
   /**
    * Generates the BQLQuery JSON object
