@@ -167,9 +167,6 @@ class Query {
     if (pageSize < 0) {
       throw new Error('Page size cannot be a negative number.');
     }
-    if (pageSize > 1000) {
-      throw new Error('Requested page size (' + pageSize + ') exceeds maximum size (1000 entries).');
-    }
     this.pageSize = pageSize;
     return this;
   }

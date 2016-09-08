@@ -154,13 +154,6 @@ describe('Query', function() {
 
       chai.expect(query.setPageSize.bind(null, pageSize)).to.throw(error);
     });
-
-    it('should throw if PageSize exceeds limits', function() {
-      const query = new Query();
-      const error = 'Requested page size (1337) exceeds maximum size (1000 entries).';
-
-      chai.expect(query.setPageSize.bind(null, 1337)).to.throw(error);
-    });
   });
 
   describe('toBQLAggsQuery', function() {
