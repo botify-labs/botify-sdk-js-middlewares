@@ -67,6 +67,20 @@ describe('Query', function() {
     });
   });
 
+  describe('setPage', function() {
+    it('should not have a page setting if none was given', function() {
+      const query = new Query();
+      chai.expect(query.getPage()).to.be.null;
+    });
+
+    it('should set page when setPage is called', function() {
+      const query = new Query()
+        .setPage(17);
+
+      chai.expect(query.getPage()).to.equal(17);
+    });
+  });
+
   describe('toBQLAggsQuery', function() {
     it('should return JSON object', function() {
       const query = new Query()

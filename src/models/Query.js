@@ -21,6 +21,7 @@ class Query {
     this.fields = [];
     this.sorts = [];
     this.operation = {};
+    this.page = null;
 
     if (controllerId && operationId) {
       this.operation = {
@@ -137,6 +138,15 @@ class Query {
 
   getOperation() {
     return this.operation;
+  }
+
+  getPage() {
+    return this.page;
+  }
+
+  setPage(page) {
+    this.page = page;
+    return this;
   }
 
 
