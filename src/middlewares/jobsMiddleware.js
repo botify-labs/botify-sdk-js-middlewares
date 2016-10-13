@@ -12,6 +12,10 @@ const JOBS = [
     poll: { controllerId: 'AnalysisController', operationId: 'getPdfExportStatus', jobIdKey: 'pdfExportId' },
   },
   {
+    create: { controllerId: 'AnalysisController', operationId: 'createAdvancedExport' },
+    poll: { controllerId: 'AnalysisController', operationId: 'getAdvancedExportStatus', jobIdKey: 'advancedExportId' },
+  },
+  {
     create: { controllerId: 'SegmentController', operationId: 'createDryRun' },
     poll: { controllerId: 'SegmentController', operationId: 'getDryRunStatus', jobIdKey: 'dryRunId' },
   },
