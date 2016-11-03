@@ -111,14 +111,17 @@ class Query {
       throw new Error('sorts must be an array of {field: string, order: string}');
     }
     this.sorts = [];
-    sorts.forEach(sort => this.addSort(sort.field, sort.order));
+    sorts.forEach(sort => {
+      const { field, order, ...rest } = sort;
+      this.addSort(field, order, rest)
+    });
     return this;
   }
 
   /**
    * @param {string} field
    */
-  addSort(field, order = 'desc') {
+  addSort(field, order = 'desc', rest = {}) {
     if (typeof field !== 'string') {
       throw new Error('field must be a string');
     }
@@ -128,6 +131,7 @@ class Query {
     this.sorts = this.sorts.concat({
       field,
       order,
+      ...rest,
     });
     return this;
   }
