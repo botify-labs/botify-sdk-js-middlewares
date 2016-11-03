@@ -113,7 +113,7 @@ class Query {
     this.sorts = [];
     sorts.forEach(sort => {
       const { field, order, ...rest } = sort;
-      this.addSort(field, order, rest)
+      this.addSort(field, order, rest);
     });
     return this;
   }
