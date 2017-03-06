@@ -33,6 +33,40 @@ describe('QueryTermGroupBy', function() {
       chai.expect(instanciation('delay_last_byte', 'foo')).to.throw(expectedError);
       chai.expect(instanciation('delay_last_byte')).to.not.throw(expectedError);
     });
+
+    it('should create a Term Group object with a complex field aggregation', function() {
+      const field = {
+        distinct: {
+          field: 'host',
+          order: {
+            count: 'desc',
+          },
+        },
+      };
+      const queryTermGroupBy = new QueryTermGroupBy(field);
+
+      chai.expect(queryTermGroupBy.field).to.be.equal(field.distinct.field);
+      chai.expect(queryTermGroupBy.order).to.be.equal(field.distinct.order);
+      chai.expect(queryTermGroupBy.size).to.be.equal(100); // Default sizing
+    });
+
+    it('should throw an error if complex field object is invalid', function() {
+      const instanciation = (field) => () => new QueryTermGroupBy(field);
+      const expectedError = 'Invalid field provided. Field must either be a string or a POJO with the \'distinct\' key.';
+
+      chai.expect(instanciation({})).to.throw(expectedError);
+      chai.expect(instanciation({ field: 'test' })).to.throw(expectedError);
+
+      const field = {
+        distinct: {
+          field: 'host',
+          order: {
+            count: 'desc',
+          },
+        },
+      };
+      chai.expect(instanciation(field)).to.not.throw(expectedError);
+    });
   });
 
   describe('toJsonAPI', function() {
