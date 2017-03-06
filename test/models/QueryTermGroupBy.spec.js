@@ -53,7 +53,15 @@ describe('QueryTermGroupBy', function() {
       ];
       const queryTermGroupBy = new QueryTermGroupBy(field, terms);
 
-      const json = 'http_code';
+      const json = {
+        distinct: {
+          size: 100,
+          field: 'http_code',
+          order: {
+            value: 'asc',
+          },
+        },
+      };
       chai.expect(queryTermGroupBy.toJsonAPI()).to.deep.equal(json);
     });
   });
