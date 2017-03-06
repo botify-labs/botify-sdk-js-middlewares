@@ -18,7 +18,7 @@ class QueryAggregate {
   }
 
   /**
-   * @param {String} field
+   * @param {String|Object} field - Can be string (field) or object for more complex descriptions
    * @param {?Array<{value, ?metadata}>} terms
    * Example of Terms format
    * [
@@ -40,7 +40,7 @@ class QueryAggregate {
 
   /**
    * Alias for addTermGroupBy
-   * @param {String} field
+   * @param {String|Object} field - Can be string (field) or object for more complex descriptions
    */
   addGroupBy(field) {
     return this.addTermGroupBy(field);

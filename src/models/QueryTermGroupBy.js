@@ -1,23 +1,47 @@
 import find from 'lodash.find';
 import isArray from 'lodash.isarray';
 
+const DEFAULT_AGG_SIZE = 100;
+const DEFAULT_AGG_ORDER = {
+  value: 'asc',
+};
 
 class QueryTermGroupBy {
   /**
-   * @param  {String} field
-   * @param  {?Array} terms
+   * @param  {Object|String} descriptor or field id
    * @return {QueryTermGroupBy Class}
    */
-  constructor(field, terms = []) {
-    this.field = field;
+  constructor(descriptor, terms = []) {
     if (!isArray(terms)) {
       throw new Error('terms must be an Array');
     }
     this.terms = terms;
+
+    const isSimpleField = typeof descriptor === 'string';
+    if (!isSimpleField && !descriptor.distinct) {
+      throw new Error('Invalid field provided. Field must either be a string or a POJO with the \'distinct\' key.');
+    }
+
+    // Simple Aggregates use a string to define their groups
+    if (isSimpleField) {
+      this.field = descriptor;
+      this.order = DEFAULT_AGG_ORDER;
+      this.size = DEFAULT_AGG_SIZE;
+    } else { // Complex Aggregates use an object to define their groups
+      this.field = descriptor.distinct.field;
+      this.order = descriptor.distinct.order || DEFAULT_AGG_ORDER;
+      this.size = descriptor.distinct.size || DEFAULT_AGG_SIZE;
+    }
   }
 
   toJsonAPI() {
-    return this.field;
+    return {
+      distinct: {
+        field: this.field,
+        order: this.order,
+        size: this.size,
+      },
+    };
   }
 
   applyKeyReducers(keyItem, {transformTermKeys, injectMetadata} = {}) {
