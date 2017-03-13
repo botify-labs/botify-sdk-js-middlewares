@@ -57,7 +57,12 @@ describe('QueryAggregate', function() {
       queryAggregate.addTermGroupBy(field, terms);
 
       chai.expect(queryAggregate.getGroupBys()).to.have.length(1);
-      chai.expect(queryAggregate.getGroupBys()).to.include({field, terms});
+      chai.expect(queryAggregate.getGroupBys()).to.include({
+        terms,
+        field: 'http_code',
+        order: { value: 'asc' },
+        size: 100,
+      });
     });
   });
 
@@ -66,9 +71,13 @@ describe('QueryAggregate', function() {
       const queryAggregate = new QueryAggregate();
       const field = 'http_code';
       queryAggregate.addGroupBy(field);
-
       chai.expect(queryAggregate.getGroupBys()).to.have.length(1);
-      chai.expect(queryAggregate.getGroupBys()).to.include({field, terms: []});
+      chai.expect(queryAggregate.getGroupBys()).to.include({
+        terms: [],
+        field: 'http_code',
+        order: { value: 'asc' },
+        size: 100,
+      });
     });
   });
 
@@ -146,7 +155,12 @@ describe('QueryAggregate', function() {
 
       chai.expect(queryAggregate.getGroupBys()).to.have.length(2);
       chai.expect(queryAggregate.getGroupBys()).to.include({field: rangeField, ranges});
-      chai.expect(queryAggregate.getGroupBys()).to.include({field: termField, terms});
+      chai.expect(queryAggregate.getGroupBys()).to.include({
+        terms,
+        field: 'http_code',
+        order: { value: 'asc' },
+        size: 100,
+      });
     });
   });
 
@@ -194,7 +208,13 @@ describe('QueryAggregate', function() {
 
       const json = {
         group_by: [
-          'http_code',
+          {
+            distinct: {
+              field: 'http_code',
+              order: { value: 'asc' },
+              size: 100,
+            },
+          },
           {
             range: {
               field: 'delay_last_byte',

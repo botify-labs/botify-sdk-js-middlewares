@@ -199,7 +199,13 @@ describe('Query', function() {
         aggs: [
           {
             group_by: [
-              'http_code',
+              {
+                distinct: {
+                  field: 'http_code',
+                  order: { value: 'asc' },
+                  size: 100,
+                },
+              },
               {
                 range: {
                   field: 'delay_last_byte',
