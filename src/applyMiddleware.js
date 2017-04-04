@@ -1,19 +1,21 @@
 import endsWith from 'lodash.endswith';
-import mapValues from 'lodash.mapvalues';
 
 import applyMiddlewareAsync from './utils/applyMiddlewareAsync';
 
 
 export function applyMiddlewareController(...middlewares) {
   return (controller, controllerId, baseSdk) => {
-    return mapValues(controller, (operation, operationId) => {
+    return Object.getOwnPropertyNames(controller).reduce((res, key) => {
       const middlewareAPI = {
         controllerId,
-        operationId,
+        operationId: key,
         baseSdk,
       };
-      return applyMiddlewareAsync(...middlewares.concat(middlewareAPI))(operation);
-    });
+      return {
+        ...res,
+        [key]: applyMiddlewareAsync(...middlewares.concat(middlewareAPI))(controller[key]),
+      };
+    }, {});
   };
 }
 
@@ -25,9 +27,12 @@ export function applyMiddlewareController(...middlewares) {
  */
 export default function applyMiddleware(...middlewares) {
   return sdk => {
-    return mapValues(sdk, (value, key) => {
+    return Object.keys(sdk).reduce((res, key) => {
       const isController = endsWith(key, 'Controller');
-      return isController ? applyMiddlewareController(...middlewares)(value, key, sdk) : value;
-    });
+      return {
+        ...res,
+        [key]: isController ? applyMiddlewareController(...middlewares)(sdk[key], key, sdk) : sdk[key],
+      };
+    }, {});
   };
 }
