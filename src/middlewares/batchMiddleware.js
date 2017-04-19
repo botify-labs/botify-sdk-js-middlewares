@@ -1,6 +1,5 @@
 import get from 'lodash.get';
 import find from 'lodash.find';
-import findIndex from 'lodash.findindex';
 import flatten from 'lodash.flatten';
 import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
@@ -97,24 +96,31 @@ class Queue {
             });
           }
           const itemsResults = items.map(item => result[resultIndex++]);
-          const resourceErrorIndex = findIndex(itemsResults, itemResult => !!itemResult.error);
-          if (resourceErrorIndex >= 0) {
-            const resourceError = itemsResults[resourceErrorIndex];
-            return callback({
-              errorMessage: `Resource ${resourceErrorIndex} failed`,
-              errorCode: resourceError.status,
-              errorResponse: {
-                ...resourceError,
-                error: {
-                  ...resourceError.error,
-                  resource_index: resourceErrorIndex,
-                },
-              },
-            });
+
+          function isResultOK(res) {
+            if (isArray(res)) {
+              return res.every(isResultOK);
+            }
+            if (!!res.error) {
+              callback({
+                errorMessage: `A resource failed`,
+                errorCode: res.status,
+                errorResponse: res,
+              });
+              return false;
+            }
+            return true;
           }
-          return callback(null, itemsResults.map(itemResult => {
-            return isArray(itemResult) ? itemResult.map(this._formatResponse) : this._formatResponse(itemResult);
-          }));
+
+          const noError = isResultOK(itemsResults);
+          if (noError) {
+            return callback(null, itemsResults.map(itemResult => {
+              if (isArray(itemResult)) {
+                return itemResult.map(this._formatResponse);
+              }
+              return this._formatResponse(itemResult);
+            }));
+          }
         });
       },
       this.options,

@@ -327,13 +327,12 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, urlsAggsQueries: [1]},
         callback: sinon.spy(),
         middlewareOutput: [{
-          errorMessage: 'Resource 0 failed',
+          errorMessage: 'A resource failed',
           errorCode: 500,
           errorResponse: {
             status: 500,
             error: {
               message: 'Server error',
-              resource_index: 0,
             },
           },
         }],
@@ -378,14 +377,13 @@ describe('batchMiddleware', () => {
         input: {...analysisParams, urlsAggsQueries: [0, 2]},
         callback: sinon.spy(),
         middlewareOutput: [{
-          errorMessage: 'Resource 1 failed',
+          errorMessage: 'A resource failed',
           errorCode: 400,
           errorResponse: {
             status: 400,
             error: {
               message: 'Query is not valid',
               error_code: 34,
-              resource_index: 1,
             },
           },
         }],
@@ -403,6 +401,74 @@ describe('batchMiddleware', () => {
         message: 'Query is not valid',
       }},
       {status: 200, data: { count: 6 }},
+    ];
+
+    const getUrlsAggs = ({urlsAggsQueries}, callback) => {
+      callback(null, apiResult);
+    };
+    const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
+
+    requests.forEach(({input, callback}, i) => {
+      nextHandler(getUrlsAggsSpy)(input, callback, options);
+    });
+
+    setTimeout(() => {
+      // Expect each callback to be called with rights params
+      requests.forEach(({callback, middlewareOutput}) => {
+        chai.expect(callback.callCount).to.be.equal(1);
+        chai.expect(callback.getCall(0).args).to.be.deep.equal(middlewareOutput);
+      });
+
+      done();
+    }, 0);
+  });
+
+  it('must returns an error if specific nested item failed', done => {
+    const requests = [
+      {
+        input: {...analysisParams, urlsAggsQueries: [0, 2]},
+        callback: sinon.spy(),
+        middlewareOutput: [{
+          errorMessage: 'A resource failed',
+          errorCode: 400,
+          errorResponse: {
+            status: 400,
+            error: {
+              message: 'Query is not valid',
+              error_code: 34,
+            },
+          },
+        }],
+      },
+      {
+        input: {...analysisParams, urlsAggsQueries: [2]},
+        callback: sinon.spy(),
+        middlewareOutput: [{
+          errorMessage: 'A resource failed',
+          errorCode: 401,
+          errorResponse: {
+            status: 401,
+            error: {
+              message: 'This is not valid',
+              error_code: 340,
+            },
+          },
+        }],
+      },
+    ];
+    const apiResult = [
+      [
+        { status: 200, data: { count: 1 } },
+        { status: 200, data: { count: 3 } },
+      ],
+      [
+        { status: 400, error: { error_code: 34, message: 'Query is not valid' } },
+        { status: 200, data: { count: 3 } },
+      ],
+      [
+        { status: 200, data: { count: 6 } },
+        { status: 401, error: { error_code: 340, message: 'This is not valid' } },
+      ],
     ];
 
     const getUrlsAggs = ({urlsAggsQueries}, callback) => {
