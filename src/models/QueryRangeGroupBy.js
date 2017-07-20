@@ -30,7 +30,7 @@ class QueryRangeGroupBy {
   }
 
   applyKeyReducers(keyItem, {injectMetadata} = {}) {
-    let key = keyItem;
+    let key = keyItem || {}; // In some case key can be null
 
     if (injectMetadata) {
       key = this._injectMetadata(key);
