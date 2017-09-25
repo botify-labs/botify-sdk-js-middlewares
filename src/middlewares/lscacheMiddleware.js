@@ -54,7 +54,12 @@ export default function({
         params,
         function(error, result) {
           if (!error) {
-            bucket.set(itemKey, result, LSCACHE_EXPIRATION_MIN);
+            try {
+              bucket.set(itemKey, result, LSCACHE_EXPIRATION_MIN);
+            } catch(e) {
+              // If an error occurred while setting cache, flush the bucket
+              bucket.flushRecursive();
+            }
           }
           callback(...arguments);
         },
