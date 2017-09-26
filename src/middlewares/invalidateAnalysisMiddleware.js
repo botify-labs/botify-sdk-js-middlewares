@@ -29,8 +29,13 @@ function flushIfAnalysisDateLastModifiedChanged({ username, projectSlug, analysi
   if (previousDateLastModified !== dateLastModified) {
     // Flush Bucket
     analysisBucket.flushRecursive();
-    // Store date Last Modified of analysis
-    invalidateAnalysisBucket.set(analysisBucketId, dateLastModified, LSCACHE_EXPIRATION_MIN);
+    try {
+      // Store date Last Modified of analysis
+      invalidateAnalysisBucket.set(analysisBucketId, dateLastModified, LSCACHE_EXPIRATION_MIN);
+    } catch (e) {
+      // If we get an error while setting the entry, flush the bucket
+      invalidateAnalysisBucket.flushRecursive();
+    }
   }
 }
 
