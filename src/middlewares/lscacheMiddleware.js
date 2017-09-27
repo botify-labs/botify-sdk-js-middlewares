@@ -58,7 +58,9 @@ export default function({
               bucket.set(itemKey, result, LSCACHE_EXPIRATION_MIN);
             } catch (e) {
               // If an error occurred while setting cache, flush the bucket
-              bucket.flushRecursive();
+              bucket.keys().forEach(key => {
+                bucket.remove(key);
+              });
             }
           }
           callback(...arguments);

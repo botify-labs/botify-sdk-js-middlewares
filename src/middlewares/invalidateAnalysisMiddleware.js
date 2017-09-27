@@ -34,7 +34,9 @@ function flushIfAnalysisDateLastModifiedChanged({ username, projectSlug, analysi
       invalidateAnalysisBucket.set(analysisBucketId, dateLastModified, LSCACHE_EXPIRATION_MIN);
     } catch (e) {
       // If we get an error while setting the entry, flush the bucket
-      invalidateAnalysisBucket.flushRecursive();
+      invalidateAnalysisBucket.keys().forEach(key => {
+        invalidateAnalysisBucket.remove(key);
+      });
     }
   }
 }
