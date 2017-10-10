@@ -62,10 +62,13 @@ export default function({
         let processedResponse;
         try {
           processedResponse = results.map((result, i) => {
-            // result can be an array when we do an aggregate on multiple analyses
+            // If result is an array, then we requested data for multiple analyses.
+            // In this case, failure to get a valid answer for some of the analyses is not a
+            // fatal error - so we remove failed requests from the response instead of throwing
             if (isArray(result)) {
-              // Remove failed aggregates on specific analysis
+              // Remove failed requests on certain analyses
               const filteredAnalyses = result.filter((res) => res.status === 200);
+              // We still throw if the query fails for analyses
               if (filteredAnalyses.length === 0) {
                 throw new ApiResponseError('query failed on all analyses');
               }
