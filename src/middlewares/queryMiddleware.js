@@ -3,7 +3,7 @@ import get from 'lodash.get';
 import isArray from 'lodash.isarray';
 
 import Query from '../models/Query';
-
+import ApiResponseError from '../errors/ApiResponseError';
 
 export const DEFAULT_QUERY_OPERATIONS = [
   {
@@ -62,8 +62,18 @@ export default function({
         let processedResponse;
         try {
           processedResponse = results.map((result, i) => {
+            // If result is an array, then we requested data for multiple analyses.
+            // In this case, failure to get a valid answer for some of the analyses is not a
+            // fatal error - so we remove failed requests from the response instead of throwing
             if (isArray(result)) {
-              return result.map(res => queries[i].processResponse(res, {
+              // Remove failed requests on certain analyses
+              const filteredAnalyses = result.filter((res) => res.status === 200);
+              // We still throw if the query fails for analyses
+              if (filteredAnalyses.length === 0) {
+                throw new ApiResponseError('query failed on all analyses');
+              }
+
+              return filteredAnalyses.map(res => queries[i].processResponse(res, {
                 transformTermKeys,
                 injectMetadata,
               }));
