@@ -3,7 +3,7 @@ import get from 'lodash.get';
 import isArray from 'lodash.isarray';
 
 import Query from '../models/Query';
-
+import ApiResponseError from '../errors/ApiResponseError';
 
 export const DEFAULT_QUERY_OPERATIONS = [
   {
@@ -62,8 +62,15 @@ export default function({
         let processedResponse;
         try {
           processedResponse = results.map((result, i) => {
+            // result can be an array when we do an aggregate on multiple analyses
             if (isArray(result)) {
-              return result.map(res => queries[i].processResponse(res, {
+              // Remove failed aggregates on specific analysis
+              const filteredAnalyses = result.filter((res) => res.status === 200);
+              if (filteredAnalyses.length === 0) {
+                throw new ApiResponseError('query failed on all analyses');
+              }
+
+              return filteredAnalyses.map(res => queries[i].processResponse(res, {
                 transformTermKeys,
                 injectMetadata,
               }));
