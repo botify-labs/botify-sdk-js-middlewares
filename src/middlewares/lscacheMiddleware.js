@@ -36,7 +36,22 @@ export default function({
       const options = omit(arguments[2], ['cache', 'invalidate', 'bucketId']);
       const cachedOperation = find(cachedOperations, co => co.controllerId === controllerId && co.operationId === operationId);
 
-      if (!(typeof cache === 'undefined' ? cachedOperation : cache)) {
+      // Check in LS in cache is disabled by the API Manager configuration
+      let apiManagerDisableCache = false;
+      if (localStorage) {
+        const configString = localStorage.getItem('api-manager-configuration');
+        if (configString) {
+          try {
+            const config = JSON.parse(configString);
+            apiManagerDisableCache = config.disableCache;
+          } catch (err) {
+            /* eslint no-console:0 */
+            console.error(`Couln't parse API Manager config from LS`);
+          }
+        }
+      }
+
+      if (!(typeof cache === 'undefined' ? cachedOperation : cache) || apiManagerDisableCache) {
         return next(params, callback, options);
       }
 
