@@ -203,7 +203,7 @@ describe('Query', function() {
                 distinct: {
                   field: 'http_code',
                   order: { value: 'asc' },
-                  size: 100,
+                  size: 300,
                 },
               },
               {

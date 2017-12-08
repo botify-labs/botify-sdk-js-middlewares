@@ -61,7 +61,7 @@ describe('QueryAggregate', function() {
         terms,
         field: 'http_code',
         order: { value: 'asc' },
-        size: 100,
+        size: 300,
       });
     });
   });
@@ -76,7 +76,7 @@ describe('QueryAggregate', function() {
         terms: [],
         field: 'http_code',
         order: { value: 'asc' },
-        size: 100,
+        size: 300,
       });
     });
   });
@@ -159,7 +159,7 @@ describe('QueryAggregate', function() {
         terms,
         field: 'http_code',
         order: { value: 'asc' },
-        size: 100,
+        size: 300,
       });
     });
   });
@@ -212,7 +212,7 @@ describe('QueryAggregate', function() {
             distinct: {
               field: 'http_code',
               order: { value: 'asc' },
-              size: 100,
+              size: 300,
             },
           },
           {

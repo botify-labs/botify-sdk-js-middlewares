@@ -47,7 +47,7 @@ describe('QueryTermGroupBy', function() {
 
       chai.expect(queryTermGroupBy.field).to.be.equal(field.distinct.field);
       chai.expect(queryTermGroupBy.order).to.be.equal(field.distinct.order);
-      chai.expect(queryTermGroupBy.size).to.be.equal(100); // Default sizing
+      chai.expect(queryTermGroupBy.size).to.be.equal(300); // Default sizing
     });
 
     it('should throw an error if complex field object is invalid', function() {
@@ -89,7 +89,7 @@ describe('QueryTermGroupBy', function() {
 
       const json = {
         distinct: {
-          size: 100,
+          size: 300,
           field: 'http_code',
           order: {
             value: 'asc',
