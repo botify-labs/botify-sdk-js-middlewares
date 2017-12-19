@@ -1,6 +1,6 @@
 {
   "name": "botify-sdk-middlewares",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "description": "Botify Rest API SDK middlewares",
   "author": "Botify <labs@botify.com>",
   "license": "MIT",
