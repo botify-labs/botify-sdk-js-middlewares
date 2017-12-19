@@ -1,7 +1,7 @@
 import find from 'lodash.find';
 import isArray from 'lodash.isarray';
 
-const DEFAULT_AGG_SIZE = 100;
+const DEFAULT_AGG_SIZE = 300;
 const DEFAULT_AGG_ORDER = {
   value: 'asc',
 };
