@@ -69,13 +69,15 @@ class Queue {
   }
 
   _requestIfNeed() {
-    if (this.size() === 1) {
+    // If I have a queue limit and the current number of queries
+    // is above this limit request right now, if not report the request
+    // so other requests can be sent in this batch too
+    if (this.queueLimit && this.size() >= this.queueLimit) {
+      this._request();
+    } else {
       setTimeout(() => {
         this._request();
       }, this.timeout);
-    }
-    if (this.queueLimit && this.size() >= this.queueLimit) {
-      this._request();
     }
   }
 
