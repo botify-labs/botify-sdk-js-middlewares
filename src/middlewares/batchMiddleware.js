@@ -7,6 +7,8 @@ import pick from 'lodash.pick';
 import pluck from 'lodash.pluck';
 import set from 'lodash.set';
 import omit from 'lodash.omit';
+import sumBy from 'lodash.sumby';
+import size from 'lodash.size';
 import objectHash from 'object-hash';
 
 
@@ -41,6 +43,13 @@ class Queue {
   }
 
   /**
+   * Return the size of the queue
+   */
+  size() {
+    return sumBy(this.resources, (resource) => size(resource.items));
+  }
+
+  /**
    * @param {Array<Item>} items
    * @param {Function}    callback
    */
@@ -60,12 +69,12 @@ class Queue {
   }
 
   _requestIfNeed() {
-    if (this.resources.length === 1) {
+    if (this.size() === 1) {
       setTimeout(() => {
         this._request();
       }, this.timeout);
     }
-    if (this.queueLimit && this.resources.length >= this.queueLimit) {
+    if (this.queueLimit && this.size() >= this.queueLimit) {
       this._request();
     }
   }

@@ -60,6 +60,8 @@
     "lodash.pick": "^3.1.0",
     "lodash.pluck": "^3.1.2",
     "lodash.set": "^3.7.4",
+    "lodash.size": "^4.2.0",
+    "lodash.sumby": "^4.6.0",
     "ls-cache": "^0.2.3",
     "object-hash": "^0.9.1"
   },
