@@ -1,8 +1,11 @@
 import isArray from 'lodash.isarray';
 import isEmpty from 'lodash.isempty';
+import isString from 'lodash.isstring';
 import isPlainObject from 'lodash.isplainobject';
 import isUndefined from 'lodash.isundefined';
 import omit from 'lodash.omit';
+import conformsTo from 'lodash.conformsto';
+import includes from 'lodash.includes';
 
 import QueryAggregate from './QueryAggregate';
 import ApiResponseError from '../errors/ApiResponseError';
@@ -91,8 +94,15 @@ class Query {
    * @param {string} field
    */
   addField(field) {
-    if (typeof field !== 'string') {
-      throw new Error('field must be a string');
+    if (!includes(['string', 'object'], typeof field)) {
+      throw new Error('field must be either a string or an object');
+    }
+    if (isPlainObject(field) && !conformsTo(field, {
+      name: isString,
+      function: isString,
+      args: isArray,
+    })) {
+      throw new Error('Field is not valid');
     }
     this.fields = this.fields.concat(field);
     return this;
