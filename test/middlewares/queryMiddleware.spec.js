@@ -32,7 +32,7 @@ describe('queryMiddleware', () => {
       },
     ];
     const params = {
-      urlsAggsQueries: queries,
+      aggsQueries: queries,
     };
 
     middleware(getUrlsAggsSpy)(params, callback, options);
@@ -40,7 +40,7 @@ describe('queryMiddleware', () => {
     // Expect operation to be called with transformed queries params
     chai.expect(getUrlsAggsSpy.callCount).to.be.equal(1);
     chai.expect(getUrlsAggsSpy.getCall(0).args[0]).to.be.deep.equal({
-      urlsAggsQueries: [
+      aggsQueries: [
         {
           aggs: [
             {
@@ -160,7 +160,7 @@ describe('queryMiddleware', () => {
 
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const params = {
-      urlsAggsQueries: [
+      aggsQueries: [
         new Query()
           .setFilters({field: 'http_code', value: 301})
           .addAggregate(
@@ -226,7 +226,7 @@ describe('queryMiddleware', () => {
 
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const params = {
-      urlsAggsQueries: [
+      aggsQueries: [
         new Query()
           .setFilters({field: 'http_code', value: 301})
           .addAggregate(
@@ -253,21 +253,21 @@ describe('queryMiddleware', () => {
     chai.expect(callback.getCall(0).args[1]).to.be.deep.equal(expectMiddlewareResult);
   });
 
-  it('must throw an error if urlsAggsQueries is not an array', () => {
+  it('must throw an error if aggsQueries is not an array', () => {
     const middleware = queryMiddleware()(middlewareAPI);
     const getUrlsAggs = () => {};
 
     const incorrectInput = [
-      { urlsAggsQueries: null },
-      { urlsAggsQueries: 1 },
-      { urlsAggsQueries: '' },
-      { urlsAggsQueries: {} },
+      { aggsQueries: null },
+      { aggsQueries: 1 },
+      { aggsQueries: '' },
+      { aggsQueries: {} },
     ];
     const correctInput = [
-      { urlsAggsQueries: [] },
+      { aggsQueries: [] },
     ];
 
-    const expectedError = 'urlsAggsQueries param must be an array';
+    const expectedError = 'aggsQueries param must be an array';
 
     incorrectInput.forEach(input => {
       chai.expect(middleware(getUrlsAggs).bind(null, input)).to.throw(expectedError);
@@ -282,16 +282,16 @@ describe('queryMiddleware', () => {
     const getUrlsAggs = () => {};
 
     const incorrectInput = [
-      { urlsAggsQueries: ['a', 'b'] },
-      { urlsAggsQueries: ['a', new Query()] },
-      { urlsAggsQueries: [new Query(), 'b'] },
+      { aggsQueries: ['a', 'b'] },
+      { aggsQueries: ['a', new Query()] },
+      { aggsQueries: [new Query(), 'b'] },
     ];
     const correctInput = [
-      { urlsAggsQueries: [new Query()] },
-      { urlsAggsQueries: [new Query(), new Query()] },
+      { aggsQueries: [new Query()] },
+      { aggsQueries: [new Query(), new Query()] },
     ];
 
-    const expectedError = 'urlsAggsQueries param must be an array of instance of Query';
+    const expectedError = 'aggsQueries param must be an array of instance of Query';
 
     incorrectInput.forEach(input => {
       chai.expect(middleware(getUrlsAggs).bind(null, input)).to.throw(expectedError);
@@ -312,7 +312,7 @@ describe('queryMiddleware', () => {
 
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const params = {
-      urlsAggsQueries: [
+      aggsQueries: [
         new Query()
           .addAggregate(
             new QueryAggregate().addMetric('avg', 'delay')

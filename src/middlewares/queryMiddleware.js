@@ -9,18 +9,18 @@ export const DEFAULT_QUERY_OPERATIONS = [
   {
     controllerId: 'AnalysisController',
     operationId: 'getUrlsAggs',
-    queriesProperty: 'urlsAggsQueries',
+    queriesProperty: 'aggsQueries',
   },
   {
     controllerId: 'ProjectController',
     operationId: 'getProjectUrlsAggs',
-    queriesProperty: 'urlsAggsQueries',
+    queriesProperty: 'aggsQueries',
   },
 ];
 
 
 /**
- * @param  {Boolean?} options.processResponse   Enable response post processing. If true, every urlsAggsQueries must be instance of Query.
+ * @param  {Boolean?} options.processResponse   Enable response post processing. If true, every aggsQueries must be instance of Query.
  * @param  {Boolean?} options.transformTermKeys Turn term keys into objects: key -> { value: key }
  * @param  {Boolean?} options.injectMetadata    Inject metadata in groups keys
  * @return {Middleware}
