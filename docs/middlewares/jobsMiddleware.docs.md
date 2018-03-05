@@ -27,7 +27,7 @@ AnalysisController.createUrlsExport({
   username,
   projectSlug,
   analysisSlug,
-  urlsQuery,
+  query,
   area,
 }, (err, result) => {
   if (err) {
@@ -45,7 +45,7 @@ AnalysisController.createUrlsExport({
   username,
   projectSlug,
   analysisSlug,
-  urlsQuery,
+  query,
   area,
 }, (err, response) => {
   if (err) {
