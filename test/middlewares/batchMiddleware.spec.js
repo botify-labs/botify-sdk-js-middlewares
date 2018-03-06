@@ -16,24 +16,24 @@ describe('batchMiddleware', () => {
   const nextHandler = batchMiddleware()(middlewareAPI);
 
   it('must call only once the operation but call every caller callbacks at the end', done => {
-    const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
+    const getUrlsAggs = ({aggsQueries}, callback) => callback(null, aggsQueries.map(v => ({
       status: 200,
       data: { count: v * 2 },
     })));
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
       {
-        input: {...analysisParams, urlsAggsQueries: [1]},
+        input: {...analysisParams, aggsQueries: [1]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 2 }],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [2]},
+        input: {...analysisParams, aggsQueries: [2]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 4 }],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [3]},
+        input: {...analysisParams, aggsQueries: [3]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 6 }],
       },
@@ -55,31 +55,31 @@ describe('batchMiddleware', () => {
       chai.expect(getUrlsAggsSpy.callCount).to.be.equal(1);
       chai.expect(getUrlsAggsSpy.getCall(0).args[0]).to.be.deep.equal({
         ...analysisParams,
-        urlsAggsQueries: [1, 2, 3],
+        aggsQueries: [1, 2, 3],
       });
       done();
     }, 0);
   });
 
   it('must handle calls with multiple queries', done => {
-    const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
+    const getUrlsAggs = ({aggsQueries}, callback) => callback(null, aggsQueries.map(v => ({
       status: 200,
       data: { count: v * 2 },
     })));
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
       {
-        input: {...analysisParams, urlsAggsQueries: [1, 2]},
+        input: {...analysisParams, aggsQueries: [1, 2]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 2 }, { status: 200, count: 4 }],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [3, 4]},
+        input: {...analysisParams, aggsQueries: [3, 4]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 6 }, { status: 200, count: 8 }],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [5, 6]},
+        input: {...analysisParams, aggsQueries: [5, 6]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 10 }, { status: 200, count: 12 }],
       },
@@ -101,14 +101,14 @@ describe('batchMiddleware', () => {
       chai.expect(getUrlsAggsSpy.callCount).to.be.equal(1);
       chai.expect(getUrlsAggsSpy.getCall(0).args[0]).to.be.deep.equal({
         ...analysisParams,
-        urlsAggsQueries: [1, 2, 3, 4, 5, 6],
+        aggsQueries: [1, 2, 3, 4, 5, 6],
       });
       done();
     }, 0);
   });
 
   it('must batch what can be batch together', done => {
-    const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
+    const getUrlsAggs = ({aggsQueries}, callback) => callback(null, aggsQueries.map(v => ({
       status: 200,
       data: { count: v * 2 },
     })));
@@ -119,7 +119,7 @@ describe('batchMiddleware', () => {
           username: 'botify',
           projectSlug: 'botify.com',
           analysisSlug: 'thatAnalysis',
-          urlsAggsQueries: [1],
+          aggsQueries: [1],
         },
         callback: sinon.spy(),
         result: [{ status: 200, count: 2 }],
@@ -129,7 +129,7 @@ describe('batchMiddleware', () => {
           username: 'botify',
           projectSlug: 'botify.fr',
           analysisSlug: 'thatAnalysis',
-          urlsAggsQueries: [2],
+          aggsQueries: [2],
         },
         callback: sinon.spy(),
         result: [{ status: 200, count: 4 }],
@@ -139,7 +139,7 @@ describe('batchMiddleware', () => {
           username: 'botify',
           projectSlug: 'botify.com',
           analysisSlug: 'thatAnalysis2',
-          urlsAggsQueries: [3],
+          aggsQueries: [3],
         },
         callback: sinon.spy(),
         result: [{ status: 200, count: 6 }],
@@ -165,7 +165,7 @@ describe('batchMiddleware', () => {
         username: 'botify',
         projectSlug: 'botify.com',
         analysisSlug: 'thatAnalysis',
-        urlsAggsQueries: [1],
+        aggsQueries: [1],
       });
 
       // Second batch
@@ -173,7 +173,7 @@ describe('batchMiddleware', () => {
         username: 'botify',
         projectSlug: 'botify.fr',
         analysisSlug: 'thatAnalysis',
-        urlsAggsQueries: [2],
+        aggsQueries: [2],
       });
 
       // Thrid batch
@@ -181,14 +181,14 @@ describe('batchMiddleware', () => {
         username: 'botify',
         projectSlug: 'botify.com',
         analysisSlug: 'thatAnalysis2',
-        urlsAggsQueries: [3],
+        aggsQueries: [3],
       });
       done();
     }, 0);
   });
 
   it('must not batch when it is specified in option', done => {
-    const getQueryAggregate = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
+    const getQueryAggregate = ({aggsQueries}, callback) => callback(null, aggsQueries.map(v => ({
       status: 200,
       data: v * 2,
     })));
@@ -202,7 +202,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          urlsAggsQueries: [1],
+          aggsQueries: [1],
         },
         callback: sinon.spy(),
         result: [2],
@@ -210,7 +210,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          urlsAggsQueries: [2],
+          aggsQueries: [2],
         },
         callback: sinon.spy(),
         result: [4],
@@ -218,7 +218,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          urlsAggsQueries: [3],
+          aggsQueries: [3],
         },
         callback: sinon.spy(),
         result: [6],
@@ -229,7 +229,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          urlsAggsQueries: [4],
+          aggsQueries: [4],
         },
         callback: sinon.spy(),
         options: notBatchOptions,
@@ -238,7 +238,7 @@ describe('batchMiddleware', () => {
       {
         input: {
           ...analysisParams,
-          urlsAggsQueries: [5],
+          aggsQueries: [5],
         },
         callback: sinon.spy(),
         options: notBatchOptions,
@@ -266,12 +266,12 @@ describe('batchMiddleware', () => {
 
   it('must returns the operation error if given', done => {
     const apiError = 'that error';
-    const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(apiError);
+    const getUrlsAggs = ({aggsQueries}, callback) => callback(apiError);
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
-      {input: {...analysisParams, urlsAggsQueries: [1]}, callback: sinon.spy()},
-      {input: {...analysisParams, urlsAggsQueries: [2]}, callback: sinon.spy()},
-      {input: {...analysisParams, urlsAggsQueries: [3]}, callback: sinon.spy()},
+      {input: {...analysisParams, aggsQueries: [1]}, callback: sinon.spy()},
+      {input: {...analysisParams, aggsQueries: [2]}, callback: sinon.spy()},
+      {input: {...analysisParams, aggsQueries: [3]}, callback: sinon.spy()},
     ];
 
     requests.forEach(({input, callback}, i) => {
@@ -290,12 +290,12 @@ describe('batchMiddleware', () => {
   });
 
   it('must returns an error if API returns an empty body', done => {
-    const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null);
+    const getUrlsAggs = ({aggsQueries}, callback) => callback(null);
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
-      {input: {...analysisParams, urlsAggsQueries: [1]}, callback: sinon.spy()},
-      {input: {...analysisParams, urlsAggsQueries: [2]}, callback: sinon.spy()},
-      {input: {...analysisParams, urlsAggsQueries: [3]}, callback: sinon.spy()},
+      {input: {...analysisParams, aggsQueries: [1]}, callback: sinon.spy()},
+      {input: {...analysisParams, aggsQueries: [2]}, callback: sinon.spy()},
+      {input: {...analysisParams, aggsQueries: [3]}, callback: sinon.spy()},
     ];
 
     requests.forEach(({input, callback}, i) => {
@@ -319,12 +319,12 @@ describe('batchMiddleware', () => {
   it('must returns an error if specific resource failed', done => {
     const requests = [
       {
-        input: {...analysisParams, urlsAggsQueries: [0]},
+        input: {...analysisParams, aggsQueries: [0]},
         callback: sinon.spy(),
         middlewareOutput: [null, [{ status: 200, count: 2 }]],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [1]},
+        input: {...analysisParams, aggsQueries: [1]},
         callback: sinon.spy(),
         middlewareOutput: [{
           errorMessage: 'Resource 0 failed',
@@ -339,7 +339,7 @@ describe('batchMiddleware', () => {
         }],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [2]},
+        input: {...analysisParams, aggsQueries: [2]},
         callback: sinon.spy(),
         middlewareOutput: [null, [{ status: 200, count: 6 }]],
       },
@@ -352,7 +352,7 @@ describe('batchMiddleware', () => {
       {status: 200, data: { count: 6 }},
     ];
 
-    const getUrlsAggs = ({urlsAggsQueries}, callback) => {
+    const getUrlsAggs = ({aggsQueries}, callback) => {
       callback(null, apiResult);
     };
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
@@ -375,7 +375,7 @@ describe('batchMiddleware', () => {
   it('must returns an error if specific item failed', done => {
     const requests = [
       {
-        input: {...analysisParams, urlsAggsQueries: [0, 2]},
+        input: {...analysisParams, aggsQueries: [0, 2]},
         callback: sinon.spy(),
         middlewareOutput: [{
           errorMessage: 'Resource 1 failed',
@@ -391,7 +391,7 @@ describe('batchMiddleware', () => {
         }],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [2]},
+        input: {...analysisParams, aggsQueries: [2]},
         callback: sinon.spy(),
         middlewareOutput: [null, [{ status: 200, count: 6 }]],
       },
@@ -405,7 +405,7 @@ describe('batchMiddleware', () => {
       {status: 200, data: { count: 6 }},
     ];
 
-    const getUrlsAggs = ({urlsAggsQueries}, callback) => {
+    const getUrlsAggs = ({aggsQueries}, callback) => {
       callback(null, apiResult);
     };
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
@@ -434,24 +434,24 @@ describe('batchMiddleware', () => {
         },
       ],
     })(middlewareAPI);
-    const getUrlsAggs = ({urlsAggsQueries}, callback) => callback(null, urlsAggsQueries.map(v => ({
+    const getUrlsAggs = ({aggsQueries}, callback) => callback(null, aggsQueries.map(v => ({
       status: 200,
       data: { count: v * 2 },
     })));
     const getUrlsAggsSpy = sinon.spy(getUrlsAggs);
     const requests = [
       {
-        input: {...analysisParams, urlsAggsQueries: [1]},
+        input: {...analysisParams, aggsQueries: [1]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 2 }],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [2]},
+        input: {...analysisParams, aggsQueries: [2]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 4 }],
       },
       {
-        input: {...analysisParams, urlsAggsQueries: [3]},
+        input: {...analysisParams, aggsQueries: [3]},
         callback: sinon.spy(),
         result: [{ status: 200, count: 6 }],
       },
@@ -474,12 +474,12 @@ describe('batchMiddleware', () => {
       // First batch
       chai.expect(getUrlsAggsSpy.getCall(0).args[0]).to.be.deep.equal({
         ...analysisParams,
-        urlsAggsQueries: [1, 2],
+        aggsQueries: [1, 2],
       });
       // Second batch
       chai.expect(getUrlsAggsSpy.getCall(1).args[0]).to.be.deep.equal({
         ...analysisParams,
-        urlsAggsQueries: [3],
+        aggsQueries: [3],
       });
       done();
     }, 0);
@@ -510,7 +510,7 @@ describe('batchMiddleware', () => {
     const func = (params, callback) => callback(null, {});
     const spiedFunc = sinon.spy(func);
     const spiedCallback = sinon.spy();
-    const param = {...analysisParams, urlsAggsQueries: []};
+    const param = {...analysisParams, aggsQueries: []};
 
     delayedMiddleware(spiedFunc)(param, spiedCallback);
     delayedMiddleware(spiedFunc)(param, spiedCallback);
