@@ -21,9 +21,8 @@
     "build:dist": "webpack --config webpack.config.production.js",
     "build": "npm run clean && npm run build:lib && npm run build:dist",
     "stats": "webpack --config webpack.config.stats.js && npm run clean",
-    "preversion": "npm run clean && npm run check",
-    "version": "npm run build",
-    "postversion": "git push && git push --tags && npm run clean",
+    "preversion": "npm run clean && npm run check && npm run build && git add -A lib dist && (git commit -m 'Update bundle' || true)",
+    "postversion": "git push && git push --tags",
     "prepublish": "npm run build",
     "postpublish": "npm run clean"
   },
